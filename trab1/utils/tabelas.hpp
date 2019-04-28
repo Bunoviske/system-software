@@ -51,14 +51,18 @@ public:
 
     int getDirectiveOperands(string directive);
     int getDirectiveSize(string directive);
+    bool isDirectiveInTable(string directive);
 
     int getInstructionOperands(string instruction);
     int getInstructionCode(string instruction);
     int getInstructionSize(string instruction);
+    bool isInstructionInTable(string instruction);
 
+    bool isSymbolInTable(string symbol);
     int getSymbolAddress(string symbol);
     void setSymbolTable(string symbol, int address);
 
+    bool isMacroInTable(string macroName);
     int getMacroArguments(string macroName);
     string getMacroAssemblyCode(string macroName);
     void setMacroAtTable(int arguments, int length, string assemblyCode);
@@ -77,6 +81,6 @@ private:
 
 };
 
-extern Tables tables;
+extern Tables tables; //classe so tem uma instancia global 
 
 #endif

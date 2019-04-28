@@ -1,0 +1,7 @@
+project(montador)
+cmake_minimum_required(VERSION 3.1)
+aux_source_directory(. SRC_LIST)
+aux_source_directory(./montador SRC_LIST1)
+aux_source_directory(./utils SRC_LIST2)
+add_executable(tradutor ${SRC_LIST} ${SRC_LIST1} ${SRC_LIST2})
+add_definitions("-std=c++11")

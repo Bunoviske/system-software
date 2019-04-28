@@ -8,9 +8,9 @@ class PreProcessing {
 
 public:
 
-    PreProcessing(); //construtor
+    PreProcessing() { } //construtor
     ~PreProcessing() { }
-    void run();
+    void run(string fileName);
 
 private:
 

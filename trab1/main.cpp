@@ -1,20 +1,22 @@
 #include "montador/preproc.hpp"
+#include "montador/passagem1.hpp"
+#include "montador/passagem2.hpp"
 
-int main( int argc, char** argv ){
+int main(int argc, char **argv)
+{
 
-    FileHandler fileHandler("teste.txt",false);
-    
-    bool eof = false;
-    while(!eof){
-
-        string line = fileHandler.readNextLine();
-        if (line == "-1")
-            eof = true;
-
-        else{
-            cout << line << endl;
-        }
+    if (argc < 2)
+    {
+        cout << "Insira o nome do arquivo asm" << endl;
+        return -1;
     }
+    string fileName = argv[1];
+
+    PreProcessing preProcessing;
+    FirstPassage firstPassage;
+    SecondPassage secondPassage;
+
+    preProcessing.run(fileName);
 
     return 1;
 }

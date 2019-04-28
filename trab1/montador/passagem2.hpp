@@ -6,7 +6,7 @@ class SecondPassage {
 
 public:
 
-    SecondPassage(); //construtor
+    SecondPassage() { } //construtor
     ~SecondPassage() { }
 
 private:

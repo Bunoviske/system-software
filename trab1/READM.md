@@ -7,5 +7,5 @@ Instruções para compilar e executar
 
 2- make
 
-3- ./tradutor
+3- ./tradutor arquivo.asm
 

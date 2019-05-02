@@ -1,6 +1,7 @@
-#include "montador/preproc.hpp"
-#include "montador/passagem1.hpp"
-#include "montador/passagem2.hpp"
+#include "montador/preproc/preprocService.hpp"
+#include "montador/preproc/preproc.hpp"
+
+string getFileNameWithoutExtension(string filename);
 
 int main(int argc, char **argv)
 {
@@ -11,12 +12,23 @@ int main(int argc, char **argv)
         return -1;
     }
     string fileName = argv[1];
+    string fileWithoutExtension = getFileNameWithoutExtension(fileName);
 
-    PreProcessing preProcessing;
-    FirstPassage firstPassage;
-    SecondPassage secondPassage;
-
-    preProcessing.run(fileName);
+    PreProcessingService preService(new PreProcessing());
+    preService.runService(fileName, fileWithoutExtension + ".pre");
 
     return 1;
+}
+
+string getFileNameWithoutExtension(string filename)
+{
+    string result = "";
+    for (int i = 0; i < filename.size(); i++)
+    {
+        if (filename[i] == '.')
+            break;
+        else
+            result += filename[i];
+    }
+    return result;
 }

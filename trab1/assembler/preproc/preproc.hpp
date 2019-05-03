@@ -1,8 +1,9 @@
 #ifndef PREPROC
 #define PREPROC
 
-#include "../preprocInterface.hpp"
+#include "../interfaces/preprocInterface.hpp"
 #include "../../utils/tablesService.hpp"
+#include "../errorAnalysis/errorService.hpp"
 
 class PreProcessing : public PreProcessingInterface {
 
@@ -15,6 +16,9 @@ public:
     FileWriter* getFileWriter(string filename);
 
 private:
+
+    ErrorService errorService;   
+    
 
 
 };

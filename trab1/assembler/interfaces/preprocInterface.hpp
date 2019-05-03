@@ -1,8 +1,8 @@
 #ifndef PREPROC_INTERFACE
 #define PREPROC_INTERFACE
 
-#include "../utils/fileReader.hpp"
-#include "../utils/fileWriter.hpp"
+#include "../../utils/fileReader.hpp"
+#include "../../utils/fileWriter.hpp"
 
 class PreProcessingInterface {
 

@@ -1,17 +1,17 @@
 #ifndef PREPROC_SERVICE
 #define PREPROC_SERVICE
 
-#include "../preprocInterface.hpp"
+#include "../interfaces/preprocInterface.hpp"
 
 class PreProcessingService {
 
 public:
 
-    PreProcessingInterface *preProcessing;
+    PreProcessingInterface *passage;
 
     //construtor
     PreProcessingService(PreProcessingInterface *preProcessing) { 
-        this->preProcessing = preProcessing;
+        this->passage = preProcessing;
     };
     
     ~PreProcessingService(){};

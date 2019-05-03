@@ -25,6 +25,9 @@ void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile){
             preprocFile->writeNextLine(line);
         }
     }    
+
+    errorService.getLexical(10).run();
+    cout << tables.getDirectiveOperands("SPACE") << endl;
     
 }
 

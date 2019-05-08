@@ -8,5 +8,7 @@ aux_source_directory(./assembler/passage1 SRC_LIST4)
 aux_source_directory(./assembler/passage2 SRC_LIST5)
 aux_source_directory(./assembler/errorAnalysis SRC_LIST6)
 
-add_executable(tradutor ${SRC_LIST} ${SRC_LIST1} ${SRC_LIST2} ${SRC_LIST3} ${SRC_LIST4} ${SRC_LIST5} ${SRC_LIST6})
+add_executable(tradutor ${SRC_LIST} ${SRC_LIST1} ${SRC_LIST2} 
+               ${SRC_LIST3} ${SRC_LIST4} ${SRC_LIST5} ${SRC_LIST6})
+               
 add_definitions("-std=c++11")

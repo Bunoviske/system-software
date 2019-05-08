@@ -21,4 +21,6 @@ void ErrorService::showErrorMessage(string message)
 {
 }
 
-int ErrorService::getErrorLine(string message) {}
+int ErrorService::getErrorLine(string message)
+{
+}

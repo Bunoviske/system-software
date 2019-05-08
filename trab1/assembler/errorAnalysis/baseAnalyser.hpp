@@ -2,6 +2,7 @@
 #define BASE_ANALYSIS
 
 #include "../interfaces/errorListener.hpp"
+#include "../../utils/tablesService.hpp"
 
 class BaseAnalyser {
 
@@ -17,10 +18,15 @@ public:
         this->currentLine = line;
     }
 
+
 protected:
 
     int currentLine;
     ErrorListener *errorListener;
+
+    void throwError(){
+        errorListener->onError(currentLine);
+    }
 
 };
 

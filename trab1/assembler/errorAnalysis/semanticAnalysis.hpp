@@ -10,10 +10,14 @@ class SemanticAnalyser : public BaseAnalyser
 public:
     SemanticAnalyser(){}; //construtor
     ~SemanticAnalyser(){};
-    void run();
 
+    bool isCorrectSection(int currentLine);
+    
 private:
 
+    int lineText, lineData;
+
+    
 };
 
 #endif

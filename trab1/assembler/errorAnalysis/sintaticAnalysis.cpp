@@ -3,5 +3,5 @@
 
 void SintaticAnalyser::run()
 {
-    errorListener->onError(currentLine);
+    throwError();
 }

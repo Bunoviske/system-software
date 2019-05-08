@@ -3,6 +3,7 @@
 
 #include "../interfaces/errorListener.hpp"
 #include "baseAnalyser.hpp"
+#include "lexicalAnalysis.hpp"
 
 class SintaticAnalyser : public BaseAnalyser{
 
@@ -10,10 +11,15 @@ public:
 
     SintaticAnalyser(){}; //construtor
     ~SintaticAnalyser(){};
-    void run();
+
+    void checkInstructionSintax();
+    void checkDirectiveSintax();
+    void checkLabelDefinitionSintax();
+    void checkLabelAloneSintax();
 
 private:
     
+    LexicalAnalyser lexical;
 
 };
 

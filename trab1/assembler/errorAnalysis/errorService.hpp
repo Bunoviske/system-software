@@ -30,6 +30,7 @@ public:
 
     //construtor
     ErrorService() {
+
         lexical.setErrorListener(new LexicalListener());
         sintatic.setErrorListener(new SintaticListener());
         semantic.setErrorListener(new SemanticListener());
@@ -37,11 +38,11 @@ public:
     ~ErrorService(){};
 
     //override dos metodos virtuais
-    virtual void showErrorMessage(string message);
-    virtual int getErrorLine(string message);
-    virtual LexicalAnalyser getLexical(int line);
-    virtual SintaticAnalyser getSintatic(int line);
-    virtual SemanticAnalyser getSemantic(int line);
+    void showErrorMessage(string message);
+    int getErrorLine(string message);
+    LexicalAnalyser getLexical(int line);
+    SintaticAnalyser getSintatic(int line);
+    SemanticAnalyser getSemantic(int line);
 
 private:
 

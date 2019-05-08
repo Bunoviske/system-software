@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
+#include <string>
 
 using namespace std;
 
@@ -50,7 +52,7 @@ class Tables
 {
 public:
     Tables() //construtor
-    {
+    {       
         directivesTable["SECTION"] = DirectiveTable(1, 0);
         directivesTable["SPACE"] = DirectiveTable(-1, -1); //-1 significa que operandos pode ser variavel e tamanho tb
         directivesTable["CONST"] = DirectiveTable(1, 1);
@@ -84,6 +86,7 @@ protected:
     map<string, int> symbolsTable; //string representa o rotulo e inteiro represento o endereço
     map<string, Mnt> mnt;
     map<int, string> mdt; //primeiro numero se refere a "linha" da tabela e a string é a macro
+
 };
 
 #endif

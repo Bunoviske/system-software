@@ -5,6 +5,7 @@ FileReader* Passage1::getFileReader(string filename){
     return new FileReader(filename);
 }
 
+
 //override
 void Passage1::run(FileReader *rawFile){
   

@@ -15,6 +15,8 @@ public:
 
 private:
 
+    ErrorService errorService; 
+
 
 };
 

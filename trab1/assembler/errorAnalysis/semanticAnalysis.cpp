@@ -2,5 +2,5 @@
 
 void SemanticAnalyser::run()
 {
-    errorListener->onError(currentLine);
+    throwError();
 }

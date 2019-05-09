@@ -19,7 +19,6 @@ public:
     LexicalAnalyser(){}; //construtor
     ~LexicalAnalyser(){};
 
-    void run();
     int getTokenType(string word);
     
 private:

@@ -1,11 +1,6 @@
 #include "lexicalAnalysis.hpp"
 
 
-void LexicalAnalyser::run()
-{
-    throwError();
-}
-
 int LexicalAnalyser::getTokenType(string word){
 
     tables.isDirectiveInTable(word);

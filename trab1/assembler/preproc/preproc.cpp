@@ -27,29 +27,26 @@ void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
             eof = true;
         else
         {
-            
-            cout << line << endl;
-
             vector<string> words;
             string preprocLine = "";
 
             words = getTokensOfLine(line); //retorna apenas palavras diferentes de comentarios, \t e \n. palavras
 
-            if (words.size())
-            { //garante que só chama essa funcao se há palavras
-                preprocLine = parseWords(lineNumber, words);
+            //cout << line << endl;
+            //cout << "Numero de palavras na linha " << words.size() << endl;
 
-                if (preprocLine != "")
-                {
-                    preprocFile->writeNextLine(preprocLine);
-                    lineNumber++;
-                }
-            }
+            // if (words.size())
+            // { //garante que só chama essa funcao se há palavras
+            //     preprocLine = parseWords(lineNumber, words);
+
+            //     if (preprocLine != "")
+            //     {
+            //         preprocFile->writeNextLine(preprocLine);
+            //         lineNumber++;
+            //     }
+            // }
         }
     }
-
-    errorService.getLexical(10).run();
-    cout << tables.getDirectiveOperands("SPACE") << endl;
 }
 
 string PreProcessing::parseWords(int lineNumber, vector<string> &words)
@@ -100,7 +97,6 @@ string PreProcessing::parseWords(int lineNumber, vector<string> &words)
 
         if (words[0] == "IF")
         {
-
         }
         else if (words[0] == "SECTION")
         {
@@ -118,9 +114,34 @@ string PreProcessing::parseWords(int lineNumber, vector<string> &words)
     }
 }
 
-vector<string>& PreProcessing::getTokensOfLine(string line){
+vector<string> PreProcessing::getTokensOfLine(string line)
+{
 
+    vector<string> words;
+    string currentWord = "";
 
+    for (size_t i = 0; i < line.size(); i++)
+    {
+        char charac = line[i];
+        if (charac != ' ' && charac != '\n' && charac != '\t')
+        {
+            if (charac == ';')
+            
+                //se for comentário, acaba a linha
+                break;
 
+            else{
+                currentWord += charac; //se for um caractere valido, adiciona ao token que esta sendo formado
+            }
+        }
+        else if (currentWord != "")
+        {
+            words.push_back(currentWord);
+            currentWord = "";
+        }
+    }
+    if (currentWord != "")
+        words.push_back(currentWord);
 
+    return words;
 }

@@ -2,6 +2,7 @@
 #define PASSAGEM2
 
 #include "../interfaces/passage2interface.hpp"
+#include "../errorAnalysis/errorService.hpp"
 
 class Passage2 : public Passage2Interface {
 

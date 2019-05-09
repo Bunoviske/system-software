@@ -21,7 +21,7 @@ private:
     ErrorService errorService;   
     
     string parseWords(int lineNumber, vector<string>& words);
-    vector<string>& getTokensOfLine(string line);
+    vector<string> getTokensOfLine(string line);
 
 };
 

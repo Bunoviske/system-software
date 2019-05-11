@@ -24,8 +24,8 @@ protected:
     int currentLine;
     ErrorListener *errorListener;
 
-    void throwError(){
-        errorListener->onError(currentLine);
+    void throwError(string error){
+        errorListener->onError(currentLine, error);
     }
 
 };

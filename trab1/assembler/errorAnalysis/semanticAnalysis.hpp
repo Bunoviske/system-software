@@ -3,21 +3,38 @@
 
 #include "../interfaces/errorListener.hpp"
 #include "baseAnalyser.hpp"
+#include "lexicalAnalysis.hpp"
 
 class SemanticAnalyser : public BaseAnalyser
 {
 
 public:
-    SemanticAnalyser(){}; //construtor
-    ~SemanticAnalyser(){};
 
-    bool isCorrectSection(int currentLine);
+    static int lineSectionText;
+    static int lineSectionData; 
+    //nao mudam para as varias instancias da classe de analise semantica.
+
+    SemanticAnalyser(){
+    }; //construtor
+    ~SemanticAnalyser(){}; 
+
+
+    bool isDirectiveInCorrectSection(string directive); 
+    bool isInstructionInCorrectSection();
+    void setSectionLine(string section); //currentLine é usada para determinar a linha da secao atual
+
+    void checkSectionOrder(); //TODO - chamar essa funcao antes da segunda passagem!
+
+    /*********** preproc semantic errors **************/
+    bool isLabelInEquTable(string label);
+    bool isEquAlreadyDefined(string label);
+    bool isMacroInTable(string macroName);
+    bool isMacroAlreadyDefined(string macroName);
     
+
 private:
 
-    int lineText, lineData;
-
-    
+    LexicalAnalyser lexical;
 };
 
 #endif

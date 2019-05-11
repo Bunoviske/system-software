@@ -1,6 +1,9 @@
 #ifndef ERROR_LISTENER
 #define ERROR_LISTENER
 
+#include <string>
+using namespace std;
+
 class ErrorListener {
 
 public:
@@ -9,7 +12,7 @@ public:
     ~ErrorListener(){};
 
     //metodos virtuais puros -> necessario implementar na classe derivada
-    virtual void onError(int line) = 0;
+    virtual void onError(int line, string error) = 0;
 
 };
 

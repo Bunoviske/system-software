@@ -66,10 +66,12 @@ bool LexicalAnalyser::isValidLabelToken(string s)
 
 bool LexicalAnalyser::isInstruction(string s)
 {
+    s = boost::to_upper_copy<std::string>(s);
     return (isValidLabelToken(s) && tables.isInstructionInTable(s));
 }
 bool LexicalAnalyser::isDirective(string s)
 {
+    s = boost::to_upper_copy<std::string>(s);
     return (isValidLabelToken(s) && tables.isDirectiveInTable(s));
 }
 bool LexicalAnalyser::isPlusOperation(string s)

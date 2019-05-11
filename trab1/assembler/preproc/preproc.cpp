@@ -14,10 +14,7 @@ FileWriter *PreProcessing::getFileWriter(string filename)
 
 //override
 void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
-{
-    //TODO - PROGRAMA DEVE ACEITAR INSTRU/DIRETIVAS/ROTULOS em maiuscula e minuscula.
-    //TODO - LABEL PODE SER MESMO NOME QUE INSTRU/DIRETIVA ????
-
+{    
     lineNumber = 1;
     bool eof = false;
     while (!eof)

@@ -3,6 +3,7 @@
 
 #include "../interfaces/errorListener.hpp"
 #include "baseAnalyser.hpp"
+#include <boost/algorithm/string.hpp>
 
 #define DEF_LABEL 0
 #define LABEL 1

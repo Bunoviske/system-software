@@ -23,6 +23,10 @@ public:
     int getSymbolAddress(string symbol);
     void setSymbolTable(string symbol, int address);
 
+    bool isLabelInEquTable(string label);
+    map<string,string> getEquTable();
+    void setEquTable(string label, string value);
+
     bool isMacroInTable(string macroName);
     int getMacroArguments(string macroName);
     string getMacroAssemblyCode(string macroName);

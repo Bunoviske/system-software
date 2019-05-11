@@ -3,7 +3,7 @@
 
 Instruções para compilar e executar
 
-1- cmake .                   # configura
+1- cmake .                   # configura makefile
 
 2- make                      # compila
 

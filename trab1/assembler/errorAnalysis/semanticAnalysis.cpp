@@ -25,7 +25,7 @@ bool SemanticAnalyser::isDirectiveInCorrectSection(string directive)
             throwError("Diretiva equ nao esta antes da secao de texto e dados");
             return false;
         }
-    else
+    else  if (directive == "MACRO")
     { // secao de texto. Essa logica só vale para diretivas, pois as q sao analisadas na secao de texto
         // estao no preproc. Nesse caso, pode ser que lineSectionData ainda seja 0 e vá ser definido depois
         // Nas outras passagens, não é necessário determinar a linha das secoes
@@ -34,7 +34,7 @@ bool SemanticAnalyser::isDirectiveInCorrectSection(string directive)
             return true;
         else
         {
-            throwError("Diretiva fora da secao de texto");
+            throwError("Diretiva macro fora da secao de texto");
             return false;
         }
     }

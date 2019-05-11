@@ -28,11 +28,7 @@ void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
         else
         {
             vector<string> tokens;
-
             tokens = getTokensOfLine(line); //retorna apenas palavras diferentes de comentarios, \t e \n. palavras
-
-            //cout << line << endl;
-            //cout << "Numero de palavras na linha " << tokens.size() << endl;
 
             if (tokens.size())
             {                                 //garante que só chama essa funcao se há palavras
@@ -104,11 +100,6 @@ void PreProcessing::changeEquValues(vector<string> *tokens)
 {
 
     map<string, string> equ = tables.getEquTable();
-    // cout << equ.size() << endl;
-    // for (map<string, string>::iterator it = equ.begin(); it != equ.end(); ++it)
-    // {
-    //     cout << it->first << ' ' << it->second << endl;
-    // }
     if (equ.size())
     {
         for (size_t i = 0; i < tokens->size(); i++)
@@ -149,22 +140,23 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
     {
         if (tokens[1] == "EQU")
         {
+            tokens[0].pop_back();
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
-                !errorService.getSemantic(lineNumber).isEquAlreadyDefined(tokens[1]))
+                !errorService.getSemantic(lineNumber).isEquAlreadyDefined(tokens[0]))
             {
                 cout << "equ def !!!" << endl;
-                tokens[0].pop_back();
                 tables.setEquTable(tokens[0], tokens[2]);
             }
         }
         else if (tokens[1] == "MACRO")
         {
+            tokens[0].pop_back();
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
                 !errorService.getSemantic(lineNumber).isMacroAlreadyDefined(tokens[0]))
             {
                 cout << "Macro def !!!" << endl;
                 //TODO
-                //tables.setMacroAtTable(tokens[0].pop_back(),getNumberOfMacroArguments(),getMacroAssemblyCode());
+                //tables.setMacroAtTable(tokens[0],getNumberOfMacroArguments(),getMacroAssemblyCode());
                 preprocTokens.push_back(tokens[0]); //adiciona no vetor que indica quando deve haver preproc para macro
             }
         }
@@ -184,9 +176,8 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
     if (errorService.getSintatic(lineNumber).checkDirectiveSintax(tokens))
     {
         if (tokens[0] == "IF") // TODO - IF PODE SER TB NA SECAO DE DADOS  ?????????
-        {
-            if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[0]) &&
-                errorService.getSemantic(lineNumber).isLabelInEquTable(tokens[1]))
+        { //nao analisa a posicao do IF no codigo pois ela pode ir em qualquer lugar
+            if (errorService.getSemantic(lineNumber).isLabelInEquTable(tokens[1]))
             {
                 if (tokens[1] == "0")
                 {

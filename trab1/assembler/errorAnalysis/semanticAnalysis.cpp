@@ -107,8 +107,19 @@ bool SemanticAnalyser::isMacroInTable(string macroName)
 }
 bool SemanticAnalyser::isMacroAlreadyDefined(string macroName)
 {
-    if (tables.isMacroInTable(macroName)){ 
+    if (tables.isMacroInTable(macroName)){
         throwError("Label ja definido como MACRO");
+        return true;
+    }
+    return false;
+}
+
+
+/************* 1st passage semantic errors **************/
+
+bool SemanticAnalyser::isSymbolAlreadyDefined(string label){
+    if(tables.isSymbolInTable(label)){
+        throwError("Label ja definido anteriormente");
         return true;
     }
     return false;

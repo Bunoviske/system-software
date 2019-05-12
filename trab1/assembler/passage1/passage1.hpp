@@ -16,8 +16,8 @@ public:
 
 private:
 
-    ErrorService errorService; 
-
+    ErrorService errorService;
+    vector<string> getTokensOfLine(string line);
 };
 
 #endif

@@ -124,3 +124,15 @@ bool SemanticAnalyser::isSymbolAlreadyDefined(string label){
     }
     return false;
 }
+
+bool isOperation(string token){
+    int tokenType = lexical.getTokenType(token);
+    if ((tokenType == INSTRUCTION) || (tokenType == DIRECTIVE)){
+        return true;
+    }
+    else{
+        throwError("Operacao invalida");
+        return false;
+    }
+
+}

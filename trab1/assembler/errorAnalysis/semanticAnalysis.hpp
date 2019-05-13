@@ -34,6 +34,7 @@ public:
 
     /********* 1st passage semantic errors ***********/
     bool isLabelAlreadyDefined(string label);
+    bool isOperation(string token);
 
 
 private:

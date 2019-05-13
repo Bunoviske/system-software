@@ -24,10 +24,10 @@ public:
     int getTokenType(string word);
 
     bool isNumerical(string s); //acessado pelo analisador semantico
-   
-    
+    string toUpperCase(string s);
+
 private:
-    
+
     bool hasInvalidSize(string s);
     bool isDecimalNumber(string s);
     bool isHexadecimalNumber(string s);

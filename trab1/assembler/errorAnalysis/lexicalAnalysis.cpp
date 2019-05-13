@@ -66,12 +66,12 @@ bool LexicalAnalyser::isValidLabelToken(string s)
 
 bool LexicalAnalyser::isInstruction(string s)
 {
-    s = boost::to_upper_copy<std::string>(s);
+    s = toUpperCase(s);
     return (isValidLabelToken(s) && tables.isInstructionInTable(s));
 }
 bool LexicalAnalyser::isDirective(string s)
 {
-    s = boost::to_upper_copy<std::string>(s);
+    s = toUpperCase(s);
     return (isValidLabelToken(s) && tables.isDirectiveInTable(s));
 }
 bool LexicalAnalyser::isPlusOperation(string s)
@@ -125,4 +125,9 @@ bool LexicalAnalyser::isHexadecimalNumber(string s)
         return it == s.end();
     }
     return false;
+}
+
+string LexicalAnalyser::toUpperCase(string s){
+    s = boost::to_upper_copy<std::string>(s);
+    return s;
 }

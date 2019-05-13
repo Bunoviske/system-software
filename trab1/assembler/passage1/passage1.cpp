@@ -12,7 +12,7 @@ void Passage1::run(FileReader *rawFile){
     bool eof = false;
     vector<string> words;
     int tokenType, positionCounter, lineCounter;
-    string instruction, line;
+    string instruction, line, operation;
 
     positionCounter = 0;
     lineCounter = 0;
@@ -51,7 +51,8 @@ void Passage1::run(FileReader *rawFile){
             }
 
             //checa se a operacao e valida
-            if(errorService.getSemantic(lineNumber).isOperation(words[0])){
+            if(errorService.getSemantic(lineCounter).isOperation(words[0])){
+                operation = errorService.getLexical(lineCounter).toUpperCase(words[0]);
                 if(tokenType == INSTRUCTION){   //instrucao
                     //achou - contador de posicao = contador de posicao + tamanho da instrucao
                     positionCounter = positionCounter + tables.getInstructionSize(operation);

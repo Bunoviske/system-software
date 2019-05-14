@@ -38,7 +38,7 @@ void Passage1::run(FileReader *rawFile){
             if(tokenType == DEF_LABEL){     //label
                 words[0].pop_back(); //remove dois pontos da definicao do label
                 //procura rotulo na tabela de simbolos
-                if(errorService.getSemantic(lineNumber).isSymbolAlreadyDefined(words[0])){   //achou
+                if(errorService.getSemantic(lineCounter).isSymbolAlreadyDefined(words[0])){   //achou
                     //achou - erro, simbolo redefinido
                     /*ERRO*/
                 }
@@ -46,7 +46,7 @@ void Passage1::run(FileReader *rawFile){
                     //nao achou - insere rotulo e contador de posicao na tabela
                     tables.setSymbolTable(words[0], positionCounter);
                 }
-                words.erase(0); //remove label
+                words.erase(words.begin()); //remove label
                 tokenType = errorService.getLexical(lineCounter).getTokenType(words[0]);    //tokenType do novo primeiro token da linha
             }
 

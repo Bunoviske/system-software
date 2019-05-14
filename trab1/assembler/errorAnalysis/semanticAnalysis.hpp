@@ -15,6 +15,7 @@ public:
     //nao mudam para as varias instancias da classe de analise semantica.
 
     SemanticAnalyser(){
+        lexical.setErrorListener(new LexicalListener());
     }; //construtor
     ~SemanticAnalyser(){};
 
@@ -29,17 +30,19 @@ public:
     bool isLabelInEquTable(string label);
     bool isEquAlreadyDefined(string label);
     bool isMacroInTable(string macroName);
+    bool isMacroCallCorrect(vector<string> tokens);
     bool isMacroAlreadyDefined(string macroName);
 
 
     /********* 1st passage semantic errors ***********/
-    bool isLabelAlreadyDefined(string label);
+    bool isSymbolAlreadyDefined(string label);
     bool isOperation(string token);
 
 
 private:
 
     LexicalAnalyser lexical;
+
 };
 
 #endif

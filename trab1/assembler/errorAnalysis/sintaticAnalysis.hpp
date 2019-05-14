@@ -9,7 +9,9 @@ class SintaticAnalyser : public BaseAnalyser{
 
 public:
 
-    SintaticAnalyser(){}; //construtor
+    SintaticAnalyser(){
+        lexical.setErrorListener(new LexicalListener());
+    }; //construtor
     ~SintaticAnalyser(){};
 
     bool checkInstructionSintax( vector<string>& tokens);

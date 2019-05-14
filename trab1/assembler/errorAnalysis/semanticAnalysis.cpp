@@ -4,6 +4,8 @@
 int SemanticAnalyser::lineSectionText = 0;
 int SemanticAnalyser::lineSectionData = 0;
 
+//TODO - TODA VEZ QUE CHAMAR LEXICO, TEM QUE CHAMAR A FUNCAO lexical.setCurrentLine();
+
 bool SemanticAnalyser::isDirectiveInCorrectSection(string directive)
 {
 
@@ -105,6 +107,7 @@ bool SemanticAnalyser::isMacroInTable(string macroName)
     throwError("Label nao foi definido como MACRO");
     return false;
 }
+
 bool SemanticAnalyser::isMacroAlreadyDefined(string macroName)
 {
     if (tables.isMacroInTable(macroName)){
@@ -112,6 +115,11 @@ bool SemanticAnalyser::isMacroAlreadyDefined(string macroName)
         return true;
     }
     return false;
+}
+
+// // TODO - ERRO SEMANTICO OU SINTATICO ???
+bool SemanticAnalyser::isMacroCallCorrect(vector<string> tokens){
+
 }
 
 
@@ -125,8 +133,11 @@ bool SemanticAnalyser::isSymbolAlreadyDefined(string label){
     return false;
 }
 
-bool isOperation(string token){
+bool SemanticAnalyser::isOperation(string token){
+
+    lexical.setLineNumber(this->currentLine);
     int tokenType = lexical.getTokenType(token);
+    
     if ((tokenType == INSTRUCTION) || (tokenType == DIRECTIVE)){
         return true;
     }

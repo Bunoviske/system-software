@@ -3,27 +3,6 @@
 
 #include "../interfaces/errorAnalysisInterface.hpp"
 
-class LexicalListener : public ErrorListener{
-    public:
-        void onError(int line, string error){
-            cout << "Erro lexico na linha: " << line << ". Erro: " << error << endl << endl;
-        }
-};
-
-class SintaticListener : public ErrorListener{
-    public:
-        void onError(int line, string error){
-            cout << "Erro sintatico na linha: " << line << ". Erro: " << error << endl << endl;
-        }
-};
-
-class SemanticListener : public ErrorListener{
-    public:
-        void onError(int line, string error){
-            cout << "Erro semantico na linha: " << line << ". Erro: " << error << endl << endl;
-        }
-};
-
 class ErrorService : public ErrorInterface{
 
 public:

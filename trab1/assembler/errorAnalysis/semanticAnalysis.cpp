@@ -27,7 +27,7 @@ bool SemanticAnalyser::isDirectiveInCorrectSection(string directive)
             throwError("Diretiva equ nao esta antes da secao de texto e dados");
             return false;
         }
-    else  if (directive == "MACRO")
+    else if (directive == "MACRO")
     { // secao de texto. Essa logica só vale para diretivas, pois as q sao analisadas na secao de texto
         // estao no preproc. Nesse caso, pode ser que lineSectionData ainda seja 0 e vá ser definido depois
         // Nas outras passagens, não é necessário determinar a linha das secoes
@@ -94,7 +94,8 @@ bool SemanticAnalyser::isLabelInEquTable(string label)
 
 bool SemanticAnalyser::isEquAlreadyDefined(string label)
 {
-    if (tables.isLabelInEquTable(label)){
+    if (tables.isLabelInEquTable(label))
+    {
         throwError("Label ja definido como EQU");
         return true;
     }
@@ -110,51 +111,60 @@ bool SemanticAnalyser::isMacroInTable(string macroName)
 
 bool SemanticAnalyser::isMacroAlreadyDefined(string macroName)
 {
-    if (tables.isMacroInTable(macroName)){
+    if (tables.isMacroInTable(macroName))
+    {
         throwError("Label ja definido como MACRO");
+        return true;
+    }
+    else if (tables.isLabelInEquTable(macroName))
+    {
+        throwError("Label ja definido como EQU");
         return true;
     }
     return false;
 }
 
-
 // TODO - ERRO SEMANTICO OU SINTATICO ???
 //funcao checa se o numero de argumentos é compativel e se a macro foi definida
-bool SemanticAnalyser::isMacroCallCorrect(vector<string> tokens){
-    
-    if (isMacroInTable(tokens[0])){
+bool SemanticAnalyser::isMacroCallCorrect(vector<string> tokens)
+{
+
+    if (isMacroInTable(tokens[0]))
+    {
         int numArguments = tables.getMacroArguments(tokens[0]);
-        if (numArguments == tokens.size()-1)
+        if (numArguments == tokens.size() - 1)
             return true;
 
         throwError("Numero errado de argumentos da macro");
     }
     return false;
-    
 }
-
 
 /************* 1st passage semantic errors **************/
 
-bool SemanticAnalyser::isSymbolAlreadyDefined(string label){
-    if(tables.isSymbolInTable(label)){
+bool SemanticAnalyser::isSymbolAlreadyDefined(string label)
+{
+    if (tables.isSymbolInTable(label))
+    {
         throwError("Label ja definido anteriormente");
         return true;
     }
     return false;
 }
 
-bool SemanticAnalyser::isOperation(string token){
+bool SemanticAnalyser::isOperation(string token)
+{
 
     lexical.setLineNumber(this->currentLine);
     int tokenType = lexical.getTokenType(token);
-    
-    if ((tokenType == INSTRUCTION) || (tokenType == DIRECTIVE)){
+
+    if ((tokenType == INSTRUCTION) || (tokenType == DIRECTIVE))
+    {
         return true;
     }
-    else{
+    else
+    {
         throwError("Operacao invalida");
         return false;
     }
-
 }

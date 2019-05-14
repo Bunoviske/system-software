@@ -117,9 +117,20 @@ bool SemanticAnalyser::isMacroAlreadyDefined(string macroName)
     return false;
 }
 
-// // TODO - ERRO SEMANTICO OU SINTATICO ???
-bool SemanticAnalyser::isMacroCallCorrect(vector<string> tokens){
 
+// TODO - ERRO SEMANTICO OU SINTATICO ???
+//funcao checa se o numero de argumentos é compativel e se a macro foi definida
+bool SemanticAnalyser::isMacroCallCorrect(vector<string> tokens){
+    
+    if (isMacroInTable(tokens[0])){
+        int numArguments = tables.getMacroArguments(tokens[0]);
+        if (numArguments == tokens.size()-1)
+            return true;
+
+        throwError("Numero errado de argumentos da macro");
+    }
+    return false;
+    
 }
 
 

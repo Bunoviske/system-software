@@ -11,15 +11,15 @@ class SemanticAnalyser : public BaseAnalyser
 public:
 
     static int lineSectionText;
-    static int lineSectionData; 
+    static int lineSectionData;
     //nao mudam para as varias instancias da classe de analise semantica.
 
     SemanticAnalyser(){
     }; //construtor
-    ~SemanticAnalyser(){}; 
+    ~SemanticAnalyser(){};
 
 
-    bool isDirectiveInCorrectSection(string directive); 
+    bool isDirectiveInCorrectSection(string directive);
     bool isInstructionInCorrectSection();
     void setSectionLine(string section); //currentLine é usada para determinar a linha da secao atual
 
@@ -30,7 +30,12 @@ public:
     bool isEquAlreadyDefined(string label);
     bool isMacroInTable(string macroName);
     bool isMacroAlreadyDefined(string macroName);
-    
+
+
+    /********* 1st passage semantic errors ***********/
+    bool isLabelAlreadyDefined(string label);
+    bool isOperation(string token);
+
 
 private:
 

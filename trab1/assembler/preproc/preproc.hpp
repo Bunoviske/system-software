@@ -1,10 +1,7 @@
 #ifndef PREPROC
 #define PREPROC
 
-#include "../interfaces/preprocInterface.hpp"
-#include "../../utils/tablesService.hpp"
-#include "../errorAnalysis/errorService.hpp"
-
+#include "macroProcessing.hpp"
 
 class PreProcessing : public PreProcessingInterface {
 
@@ -23,9 +20,11 @@ public:
 
 private:
 
-    ErrorService errorService;  
+    ErrorService errorService; 
+    MacroProcessing macroProcessing; 
     string preprocLine;
     int lineNumber;
+    map<string,int> macroNumberOfLines; //variavel auxilia na contagem das linhas de uma macro
     vector<string> preprocTokens; //contem diretivas e rotulos declarados que sao necessarios analisar no preproc
  
     void analyseDefLabel(vector<string> &tokens, FileReader *rawFile);
@@ -33,7 +32,6 @@ private:
     void analyseDirective(vector<string> &tokens, FileReader *rawFile);
 
     void parseTokens(vector<string>& tokens, FileReader *rawFile);
-    vector<string> getTokensOfLine(string line);
     bool tokensNeedPreproc(vector<string>& tokens);
     void changeEquValues(vector<string>* tokens);
     void assemblePreprocLine(vector<string> &tokens);

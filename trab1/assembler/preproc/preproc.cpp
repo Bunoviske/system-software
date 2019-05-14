@@ -14,7 +14,7 @@ FileWriter *PreProcessing::getFileWriter(string filename)
 
 //override
 void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
-{    
+{
     lineNumber = 1;
     bool eof = false;
     while (!eof)
@@ -86,7 +86,6 @@ void PreProcessing::parseTokens(vector<string> &tokens, FileReader *rawFile)
             cout << "TOKEN TYPE NAO UTILIZADO NO PREPROCESSAMENTO: " << tokenType << endl;
         }
     }
-
     else
     {
         //cout << "tokens dont need preproc" << endl;
@@ -103,7 +102,13 @@ void PreProcessing::changeEquValues(vector<string> *tokens)
         {
             for (map<string, string>::iterator it = equ.begin(); it != equ.end(); ++it)
             {
-                if ((*tokens)[i] == it->first)
+                string aux = (*tokens)[i];
+                if (aux[aux.size() - 1] == ',') //caso LABEL esteja como o primeiro argumento de COPY, tira a virgula
+                    aux.pop_back();
+                //se isso acontecer, é um erro! mas deve fazer a mudança justamente para sinalizar
+                //para a 2 passagem q é um argumento invalido. A virgula nao é recolada, mas nao faz diferenca pois é um erro
+
+                if (aux == it->first)
                     (*tokens)[i] = it->second;
             }
         }
@@ -112,11 +117,13 @@ void PreProcessing::changeEquValues(vector<string> *tokens)
 
 bool PreProcessing::tokensNeedPreproc(vector<string> &tokens)
 {
-
     for (size_t i = 0; i < tokens.size(); i++)
     {
         for (size_t j = 0; j < preprocTokens.size(); j++)
         {
+            if (j < 4) //diretivas sao sempre upperCase
+                tokens[i] = boost::to_upper_copy<string>(tokens[i]);
+
             if (tokens[i] == preprocTokens[j])
                 return true;
         }
@@ -135,9 +142,9 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
     //é possivel acessá-los sem verificar se vai dar seg fault
     if (errorService.getSintatic(lineNumber).checkLabelDefinitionSintax(tokens))
     {
-        if (tokens[1] == "EQU")
+        if (boost::to_upper_copy<string>(tokens[1]) == "EQU")
         {
-            tokens[0].pop_back();
+            tokens[0].pop_back(); //tira o dois pontos
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
                 !errorService.getSemantic(lineNumber).isEquAlreadyDefined(tokens[0]))
             {
@@ -145,15 +152,15 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
                 tables.setEquTable(tokens[0], tokens[2]);
             }
         }
-        else if (tokens[1] == "MACRO")
+        else if (boost::to_upper_copy<string>(tokens[1]) == "MACRO")
         {
-            tokens[0].pop_back();
+            tokens[0].pop_back(); //tira o dois pontos
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
                 !errorService.getSemantic(lineNumber).isMacroAlreadyDefined(tokens[0]))
             {
                 cout << "Macro def !!!" << endl;
-                //TODO
-                //tables.setMacroAtTable(tokens[0],getNumberOfMacroArguments(),getMacroAssemblyCode());
+                tables.setMacroAtTable(tokens[0], macroProcessing.getNumberOfMacroArguments(tokens),
+                                       macroProcessing.getMacroAssemblyCode(tokens, rawFile));
                 preprocTokens.push_back(tokens[0]); //adiciona no vetor que indica quando deve haver preproc para macro
             }
         }
@@ -172,7 +179,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
     //Se voltar true, quer dizer que as diretivas contem o numero correto de argumentos
     if (errorService.getSintatic(lineNumber).checkDirectiveSintax(tokens))
     {
-        if (tokens[0] == "IF") // TODO - IF PODE SER TB NA SECAO DE DADOS  ?????????
+        if (boost::to_upper_copy<string>(tokens[0]) == "IF")
         { //nao analisa a posicao do IF no codigo pois ela pode ir em qualquer lugar
             if (errorService.getSemantic(lineNumber).isLabelInEquTable(tokens[1]))
             {
@@ -193,7 +200,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
                 }
             }
         }
-        else if (tokens[0] == "SECTION")
+        else if (boost::to_upper_copy<string>(tokens[0]) == "SECTION")
         {
             errorService.getSemantic(lineNumber).setSectionLine(tokens[1]);
             assemblePreprocLine(tokens);
@@ -210,41 +217,12 @@ void PreProcessing::analyseMacroCall(vector<string> &tokens)
 {
     cout << "macro call" << endl;
     //analisa se o numero de parametros esta certo
-    if (errorService.getSintatic(lineNumber).checkMacroSintax(tokens))
+    if (errorService.getSintatic(lineNumber).checkMacroCallSintax(tokens))
     {
         // analisa se a macro ja foi definida. Nao analisa se esta na secao certa!
         if (errorService.getSemantic(lineNumber).isMacroInTable(tokens[0]))
         {
             //writeMacroAtPreprocFile(); TODO
-            cout << "Macro call !!!" << endl;
         }
     }
-}
-
-vector<string> PreProcessing::getTokensOfLine(string line)
-{
-    vector<string> tokens;
-    string currentWord = "";
-
-    for (size_t i = 0; i < line.size(); i++)
-    {
-        char charac = line[i];
-        if (charac != ' ' && charac != '\n' && charac != '\t')
-        {
-            if (charac == ';')
-                //se for comentário, acaba a linha
-                break;
-            else
-                currentWord += charac; //se for um caractere valido, adiciona ao token que esta sendo formado
-        }
-        else if (currentWord != "")
-        {
-            tokens.push_back(currentWord);
-            currentWord = "";
-        }
-    }
-    if (currentWord != "")
-        tokens.push_back(currentWord);
-
-    return tokens;
 }

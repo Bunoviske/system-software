@@ -2,24 +2,29 @@
 #define MACROPROC
 
 #include "preprocParsingFunction.hpp"
+#include <sstream>
 
-class MacroProcessing {
+class MacroProcessing
+{
 
 public:
-
-    MacroProcessing(){}; //construtor
+    MacroProcessing(){};  //construtor
     ~MacroProcessing(){}; //destrutor
-    
-    int getNumberOfMacroArguments(vector<string> &tokens);
-    string getMacroAssemblyCode(vector<string> &tokens,FileReader *rawFile);
+
+    int getNumberOfMacroArguments(vector<string> &tokens, bool isMacroDefinition);
+    string getMacroAssemblyCode(vector<string> &tokens, FileReader *rawFile);
+    vector<string> expandMacro(vector<string> &tokens); //retorna uma linha de codigo em cada posicao do vetor
 
 private:
-
-    vector<string> getMacroArguments(vector<string> &tokens);
+    //macro definition
     string assembleMacroLine(vector<string> tokens, vector<string> arguments);
+
+    //macro call
+    string substituteArguments(vector<string> tokens, vector<string> arguments);
+
+    //both
+    vector<string> getMacroArguments(vector<string> &tokens, bool isMacroDefinition);
+
 };
 
 #endif
-    
-    
-    

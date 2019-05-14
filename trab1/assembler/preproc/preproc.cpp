@@ -15,6 +15,9 @@ FileWriter *PreProcessing::getFileWriter(string filename)
 //override
 void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
 {
+    cout << "\nPreprocessing debug\n"
+         << endl;
+
     lineNumber = 1;
     bool eof = false;
     while (!eof)
@@ -23,20 +26,26 @@ void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
         if (line == "-1")
             eof = true;
         else
+            parseCodeLine(line, rawFile, preprocFile);
+    }
+    
+    cout << "\nEnd Preprocessing debug\n"
+         << endl;
+}
+
+void PreProcessing::parseCodeLine(string line, FileReader *rawFile, FileWriter *preprocFile)
+{
+    vector<string> tokens;
+    tokens = getTokensOfLine(line); //retorna apenas palavras diferentes de comentarios, \t e \n. palavras
+
+    if (tokens.size())
+    {                                              //garante que só chama essa funcao se há palavras
+        parseTokens(tokens, rawFile, preprocFile); //preprocLine será escrita nessa funcao
+
+        if (preprocLine != "")
         {
-            vector<string> tokens;
-            tokens = getTokensOfLine(line); //retorna apenas palavras diferentes de comentarios, \t e \n. palavras
-
-            if (tokens.size())
-            {                                 //garante que só chama essa funcao se há palavras
-                parseTokens(tokens, rawFile); //preprocLine será escrita nessa funcao
-
-                if (preprocLine != "")
-                {
-                    preprocFile->writeNextLine(preprocLine);
-                    lineNumber++;
-                }
-            }
+            preprocFile->writeNextLine(preprocLine);
+            lineNumber++;
         }
     }
 }
@@ -53,7 +62,7 @@ void PreProcessing::assemblePreprocLine(vector<string> &tokens)
     }
 }
 
-void PreProcessing::parseTokens(vector<string> &tokens, FileReader *rawFile)
+void PreProcessing::parseTokens(vector<string> &tokens, FileReader *rawFile, FileWriter *preprocFile)
 {
     preprocLine = ""; //reinicia a string que escreve no arquivo de preproc
 
@@ -75,7 +84,7 @@ void PreProcessing::parseTokens(vector<string> &tokens, FileReader *rawFile)
             analyseDefLabel(tokens, rawFile);
 
         else if (tokenType == LABEL) //nesse caso so pode ser chamando MACRO
-            analyseMacroCall(tokens);
+            analyseMacroCall(tokens, rawFile, preprocFile);
 
         else if (tokenType == DIRECTIVE)
             analyseDirective(tokens, rawFile);
@@ -121,10 +130,12 @@ bool PreProcessing::tokensNeedPreproc(vector<string> &tokens)
     {
         for (size_t j = 0; j < preprocTokens.size(); j++)
         {
-            if (j < 4) //diretivas sao sempre upperCase
-                tokens[i] = boost::to_upper_copy<string>(tokens[i]);
+            string aux = tokens[i];
 
-            if (tokens[i] == preprocTokens[j])
+            if (j < 4) //diretivas sao sempre upperCase
+                aux = boost::to_upper_copy<string>(tokens[i]);
+
+            if (aux == preprocTokens[j])
                 return true;
         }
     }
@@ -148,7 +159,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
                 !errorService.getSemantic(lineNumber).isEquAlreadyDefined(tokens[0]))
             {
-                cout << "equ def !!!" << endl;
+                cout << "equ def" << endl;
                 tables.setEquTable(tokens[0], tokens[2]);
             }
         }
@@ -158,8 +169,8 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
                 !errorService.getSemantic(lineNumber).isMacroAlreadyDefined(tokens[0]))
             {
-                cout << "Macro def !!!" << endl;
-                tables.setMacroAtTable(tokens[0], macroProcessing.getNumberOfMacroArguments(tokens),
+                cout << "macro def" << endl;
+                tables.setMacroAtTable(tokens[0], macroProcessing.getNumberOfMacroArguments(tokens, true),
                                        macroProcessing.getMacroAssemblyCode(tokens, rawFile));
                 preprocTokens.push_back(tokens[0]); //adiciona no vetor que indica quando deve haver preproc para macro
             }
@@ -185,18 +196,25 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
             {
                 if (tokens[1] == "0")
                 {
-                    // TODO - EQU PODE RECEBER NUMERO NEGATIVO NO IF ?????
-                    // se a proxima linha nao puder ser escrita, le a proxima que tem algum conteudo e nao faz nada
-                    string line;
-                    do
+                    if (isMacroLine)
+                        //se for uma linha da macro, nao le do arquivo. apenas sinaliza para pular a proxima linha da macro no loop dela
+                        skipNextMacroLine = true;
+                    else
                     {
-                        line = rawFile->readNextLine();
-                        if (line == "-1")
+                        cout << "pula proxima" << endl;
+                        // TODO - EQU PODE RECEBER NUMERO NEGATIVO NO IF ?????
+                        // se a proxima linha nao puder ser escrita, le a proxima que tem algum conteudo e nao faz nada
+                        string line;
+                        do
                         {
-                            cout << "Nao ha linha para incluir depois do if" << endl;
-                            break;
-                        }
-                    } while (getTokensOfLine(line).size() == 0);
+                            line = rawFile->readNextLine();
+                            if (line == "-1")
+                            {
+                                cout << "Nao ha linha para incluir depois do if" << endl;
+                                break;
+                            }
+                        } while (getTokensOfLine(line).size() == 0);
+                    }
                 }
             }
         }
@@ -213,16 +231,34 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
     }
 }
 
-void PreProcessing::analyseMacroCall(vector<string> &tokens)
+void PreProcessing::analyseMacroCall(vector<string> &tokens, FileReader *rawFile, FileWriter *preprocFile)
 {
     cout << "macro call" << endl;
     //analisa se o numero de parametros esta certo
     if (errorService.getSintatic(lineNumber).checkMacroCallSintax(tokens))
     {
-        // analisa se a macro ja foi definida. Nao analisa se esta na secao certa!
-        if (errorService.getSemantic(lineNumber).isMacroInTable(tokens[0]))
+        // analisa se a macro ja foi definida e se foi chamada da forma correta. Nao analisa se esta na secao certa!
+        if (errorService.getSemantic(lineNumber).isMacroCallCorrect(tokens))
         {
-            //writeMacroAtPreprocFile(); TODO
+
+            //expansao da macro
+            vector<string> macroLines = macroProcessing.expandMacro(tokens);
+
+            for (size_t i = 0; i < macroLines.size(); i++)
+            {
+                //rodar o preprocessamento de cada linha da macro
+                isMacroLine = true; //variavel que auxilia na logica do IF
+                parseCodeLine(macroLines[i], rawFile, preprocFile);
+
+                if (skipNextMacroLine)
+                {
+                    i++; //pula a proxima linha caso seja IF 0
+                    skipNextMacroLine = false;
+                }
+            }
+            //se for expandida uma macro aqui, é necessario resetar preprocLine
+            preprocLine = "";
+            isMacroLine = false;
         }
     }
 }

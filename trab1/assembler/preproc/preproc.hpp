@@ -41,6 +41,10 @@ private:
     void assemblePreprocLine(vector<string> &tokens);
     bool tokensNeedPreproc(vector<string> &tokens);
     void changeEquValues(vector<string> *tokens);
+    void checkDefLabelInNextLine(vector<string> *tokens, FileReader *rawFile);
+    void getLabelDefInNextLine(vector<string>* tokens, FileReader *rawFile);
+
 };
+
 
 #endif

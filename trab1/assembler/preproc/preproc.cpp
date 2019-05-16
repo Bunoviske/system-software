@@ -28,7 +28,7 @@ void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
         else
             parseCodeLine(line, rawFile, preprocFile);
     }
-    
+
     cout << "\nEnd Preprocessing debug\n"
          << endl;
 }
@@ -65,6 +65,9 @@ void PreProcessing::assemblePreprocLine(vector<string> &tokens)
 void PreProcessing::parseTokens(vector<string> &tokens, FileReader *rawFile, FileWriter *preprocFile)
 {
     preprocLine = ""; //reinicia a string que escreve no arquivo de preproc
+
+    //caso seja definicao de label na proxima linha, tokens sera sobrescrito com os tokens corretos da proxima linha
+    checkDefLabelInNextLine(&tokens, rawFile);
 
     //independente do que for ser feito no preproc, deve-se varrer a linha e verificar sem tem algum equ
     //que deve ser substituido
@@ -115,13 +118,48 @@ void PreProcessing::changeEquValues(vector<string> *tokens)
                 if (aux[aux.size() - 1] == ',') //caso LABEL esteja como o primeiro argumento de COPY, tira a virgula
                     aux.pop_back();
                 //se isso acontecer, é um erro! mas deve fazer a mudança justamente para sinalizar
-                //para a 2 passagem q é um argumento invalido. A virgula nao é recolada, mas nao faz diferenca pois é um erro
+                //para a 2 passagem q é um argumento invalido. A virgula nao é recolocada, mas nao faz diferenca pois é um erro
 
                 if (aux == it->first)
                     (*tokens)[i] = it->second;
             }
         }
     }
+}
+
+void PreProcessing::getLabelDefInNextLine(vector<string> *tokens, FileReader *rawFile)
+{
+    string nextLine;
+    vector<string> nextLineTokens;
+
+    do
+    { // enquanto nao achar uma linha com tokens, fica no loop
+        nextLine = rawFile->readNextLine();
+        if (nextLine == "-1")
+        {
+            cout << "Nao ha linha depois do label (vai ser gerado erro sintatico)" << endl;
+            break;
+        }
+        nextLineTokens = getTokensOfLine(nextLine);
+    } while (nextLineTokens.size() == 0);
+
+    for (size_t i = 0; i < nextLineTokens.size(); i++)
+        tokens->push_back(nextLineTokens[i]); //adiciona a proxima linha depois da definicao do label
+}
+
+void PreProcessing::checkDefLabelInNextLine(vector<string> *tokens, FileReader *rawFile)
+{
+    // - checa se é definicao do label e se a definicao esta na proxima linha.
+    // - caso haja erro lexico aqui e nao seja diretiva de preproc, vai ser gerado erro de qualquer jeito.
+    //Isso está certo?
+
+    // - a definicao de label sera escrita na mesma linha no arquivo preproc
+
+    if (tokens->size() == 1)
+        if (errorService.getLexical(lineNumber).getTokenType((*tokens)[0]) == DEF_LABEL)
+        {
+            getLabelDefInNextLine(tokens, rawFile);
+        }
 }
 
 bool PreProcessing::tokensNeedPreproc(vector<string> &tokens)
@@ -146,8 +184,6 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
 {
 
     cout << "label definition" << endl;
-
-    //TODO - checar se definicao do label esta na proxima linha
 
     //Se voltar true, quer dizer que as diretivas contem o numero correto de argumentos, entao
     //é possivel acessá-los sem verificar se vai dar seg fault

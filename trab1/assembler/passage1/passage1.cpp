@@ -1,8 +1,11 @@
 #include "passage1.hpp"
 
-//#define DEBUG 1 //liga varios prints para acompanhar a execucao
+#define DEBUG 1 //liga varios prints para acompanhar a execucao
 //override
 FileReader* Passage1::getFileReader(string filename){
+    #ifdef DEBUG
+    cout << "___DEBUG - arquivo aberto: " << filename << endl;
+    #endif
     return new FileReader(filename);
 }
 
@@ -23,7 +26,7 @@ void Passage1::run(FileReader *rawFile){
         #ifdef DEBUG
         cout << "___DEBUG - lendo linha passagem1: " << lineCounter << endl;
         #endif
-        line = rawFile->readNextLine();
+        line = toUpperCase(rawFile->readNextLine());
         #ifdef DEBUG
         cout << "___DEBUG - linha passagem1: " << line <<  endl;
         #endif
@@ -156,9 +159,4 @@ int Passage1::checkSpaceSize(vector<string> words){
         return stoi(words[2]);
     }
     return 1;       //se nao tiver argumento, reserva apenas 1 byte
-}
-
-string Passage1::toUpperCase(string s){
-    // s = boost::to_upper_copy<std::string>(s);
-    return s;
 }

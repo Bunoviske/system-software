@@ -10,4 +10,5 @@ string FileReader::readNextLine()
         else
             return "-1"; //eof
     }
+
 }

@@ -24,7 +24,6 @@ public:
     int getTokenType(string word);
 
     bool isNumerical(string s); //acessado pelo analisador semantico
-    string toUpperCase(string s);
 
 private:
 
@@ -38,6 +37,8 @@ private:
     bool isPlusOperation(string s);
     bool isCopyArgument(string s);
     bool isValidLabelToken(string s);
+
+    string toUpperCase(string s);
 
 };
 

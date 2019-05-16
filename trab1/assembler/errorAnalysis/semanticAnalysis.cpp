@@ -142,28 +142,35 @@ bool SemanticAnalyser::isMacroCallCorrect(vector<string> tokens)
 
 /************* 1st passage semantic errors **************/
 
-bool SemanticAnalyser::isSymbolAlreadyDefined(string label)
-{
-    if (tables.isSymbolInTable(label))
-    {
+bool SemanticAnalyser::isSymbolAlreadyDefined(string label){
+
+    if(tables.isSymbolInTable(label)){
         throwError("Label ja definido anteriormente");
         return true;
     }
+
+    if(tables.isMacroInTable(label)){
+        throwError("Label ja definido como macro");
+        return true;
+    }
+
+    if(tables.isLabelInEquTable(label)){
+        throwError("Label ja definido com a diretiva EQU");
+        return true;
+    }
+    
     return false;
 }
 
-bool SemanticAnalyser::isOperation(string token)
-{
+bool SemanticAnalyser::isOperation(string token){
 
     lexical.setLineNumber(this->currentLine);
     int tokenType = lexical.getTokenType(token);
 
-    if ((tokenType == INSTRUCTION) || (tokenType == DIRECTIVE))
-    {
+    if ((tokenType == INSTRUCTION) || (tokenType == DIRECTIVE)){
         return true;
     }
-    else
-    {
+    else{
         throwError("Operacao invalida");
         return false;
     }

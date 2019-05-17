@@ -24,8 +24,6 @@ public:
 
     //acessado pelo analisador semantico
     bool isNumerical(string s); 
-    string toUpperCase(string s);
-
 
 private:
 

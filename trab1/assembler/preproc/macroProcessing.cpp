@@ -22,7 +22,7 @@ string MacroProcessing::getMacroAssemblyCode(vector<string> &tokens, FileReader 
 
     while (!macroEnd)
     {
-        string line = rawFile->readNextLine();
+        string line = toUpperCase(rawFile->readNextLine());
         if (line == "-1")
         {
             cout << "Erro semantico: Acabou arquivo sem encontrar END da MACRO. Inserir essa funcao na analise de erro" << endl;
@@ -32,7 +32,7 @@ string MacroProcessing::getMacroAssemblyCode(vector<string> &tokens, FileReader 
         {
             vector<string> nextTokens;
             nextTokens = getTokensOfLine(line);
-            if (nextTokens.size() == 1 && toUpperCase(nextTokens[0]) == "END")
+            if (nextTokens.size() == 1 && nextTokens[0] == "END")
                 macroEnd = true;
             else
             {

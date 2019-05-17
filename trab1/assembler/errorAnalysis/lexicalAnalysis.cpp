@@ -66,12 +66,10 @@ bool LexicalAnalyser::isValidLabelToken(string s)
 
 bool LexicalAnalyser::isInstruction(string s)
 {
-    s = toUpperCase(s);
     return (isValidLabelToken(s) && tables.isInstructionInTable(s));
 }
 bool LexicalAnalyser::isDirective(string s)
 {
-    s = toUpperCase(s);
     return (isValidLabelToken(s) && tables.isDirectiveInTable(s));
 }
 bool LexicalAnalyser::isPlusOperation(string s)
@@ -117,7 +115,7 @@ bool LexicalAnalyser::isDecimalNumber(string s)
 
 bool LexicalAnalyser::isHexadecimalNumber(string s)
 {
-    if (s.size() > 3 && s[0] == '0' && s[1] == 'x')
+    if (s.size() > 3 && s[0] == '0' && s[1] == 'X')
     {
         std::string::const_iterator it = s.begin() + 2;
         while (it != s.end() && std::isxdigit(*it))
@@ -127,14 +125,4 @@ bool LexicalAnalyser::isHexadecimalNumber(string s)
     return false;
 }
 
-string LexicalAnalyser::toUpperCase(string s){
-    std::string temp;
-    int i;
-    std::locale loc;
 
-    for(i = 0; i < s.length(); i++){
-        temp = temp + std::toupper(s[i], loc);
-    }
-
-    return temp;
-}

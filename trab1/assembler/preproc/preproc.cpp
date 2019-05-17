@@ -23,7 +23,7 @@ void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
     bool eof = false;
     while (!eof)
     {
-        string line = rawFile->readNextLine();
+        string line = toUpperCase(rawFile->readNextLine());
         if (line == "-1")
             eof = true;
         else
@@ -37,7 +37,7 @@ void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
 void PreProcessing::parseCodeLine(string line, FileReader *rawFile, FileWriter *preprocFile)
 {
     vector<string> tokens;
-    tokens = getTokensOfLine(line); //retorna apenas palavras diferentes de comentarios, \t e \n. palavras
+    tokens = getTokensOfLine(line); //retorna apenas palavras diferentes de comentarios, \t e \n
 
     if (tokens.size())
     {                                              //garante que só chama essa funcao se há palavras
@@ -135,7 +135,7 @@ void PreProcessing::getLabelDefInNextLine(vector<string> *tokens, FileReader *ra
 
     do
     { // enquanto nao achar uma linha com tokens, fica no loop
-        nextLine = rawFile->readNextLine();
+        nextLine = toUpperCase(rawFile->readNextLine());
         if (nextLine == "-1")
         {
             cout << "Nao ha linha depois do label (vai ser gerado erro sintatico)" << endl;
@@ -169,11 +169,7 @@ bool PreProcessing::tokensNeedPreproc(vector<string> &tokens)
     {
         for (size_t j = 0; j < preprocTokens.size(); j++)
         {
-            string aux = tokens[i];
-            if (j < 4) //diretivas sao sempre upperCase
-                aux = toUpperCase(tokens[i]);
-
-            if (aux == preprocTokens[j])
+            if (tokens[i] == preprocTokens[j])
                 return true;
         }
     }
@@ -189,7 +185,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
     //é possivel acessá-los sem verificar se vai dar seg fault
     if (errorService.getSintatic(lineNumber).checkLabelDefinitionSintax(tokens))
     {
-        if (toUpperCase(tokens[1]) == "EQU")
+        if (tokens[1] == "EQU")
         {
             tokens[0].pop_back(); //tira o dois pontos
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
@@ -199,7 +195,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
                 tables.setEquTable(tokens[0], tokens[2]);
             }
         }
-        else if (toUpperCase(tokens[1]) == "MACRO")
+        else if (tokens[1] == "MACRO")
         {
             tokens[0].pop_back(); //tira o dois pontos
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
@@ -226,7 +222,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
     //Se voltar true, quer dizer que as diretivas contem o numero correto de argumentos
     if (errorService.getSintatic(lineNumber).checkDirectiveSintax(tokens))
     {
-        if (toUpperCase(tokens[0]) == "IF")
+        if (tokens[0] == "IF")
         { //nao analisa a posicao do IF no codigo pois ela pode ir em qualquer lugar
             if (errorService.getSemantic(lineNumber).isLabelInEquTable(tokens[1]))
             {
@@ -243,7 +239,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
                         string line;
                         do
                         {
-                            line = rawFile->readNextLine();
+                            line = toUpperCase(rawFile->readNextLine());
                             if (line == "-1")
                             {
                                 cout << "Nao ha linha para incluir depois do if" << endl;
@@ -254,7 +250,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
                 }
             }
         }
-        else if (toUpperCase(tokens[0]) == "SECTION")
+        else if (tokens[0] == "SECTION")
         {
             errorService.getSemantic(lineNumber).setSectionLine(tokens[1]);
             assemblePreprocLine(tokens);

@@ -3,7 +3,6 @@
 
 #include "../interfaces/errorListener.hpp"
 #include "baseAnalyser.hpp"
-#include <boost/algorithm/string.hpp>
 
 #define DEF_LABEL 0
 #define LABEL 1
@@ -23,7 +22,10 @@ public:
 
     int getTokenType(string word);
 
-    bool isNumerical(string s); //acessado pelo analisador semantico
+    //acessado pelo analisador semantico
+    bool isNumerical(string s); 
+    string toUpperCase(string s);
+
 
 private:
 
@@ -38,7 +40,6 @@ private:
     bool isCopyArgument(string s);
     bool isValidLabelToken(string s);
 
-    string toUpperCase(string s);
 
 };
 

@@ -8,6 +8,7 @@ int SemanticAnalyser::lineSectionData = 0;
 
 bool SemanticAnalyser::isDirectiveInCorrectSection(string directive)
 {
+    directive = lexical.toUpperCase(directive);
 
     if (directive == "CONST" || directive == "SPACE")
     { //secao de dados
@@ -58,6 +59,8 @@ bool SemanticAnalyser::isInstructionInCorrectSection()
 
 void SemanticAnalyser::setSectionLine(string section)
 {
+    section = lexical.toUpperCase(section);
+
     if (section == "TEXT")
         lineSectionText = currentLine;
     else if (section == "DATA")
@@ -124,7 +127,6 @@ bool SemanticAnalyser::isMacroAlreadyDefined(string macroName)
     return false;
 }
 
-// TODO - ERRO SEMANTICO OU SINTATICO ???
 //funcao checa se o numero de argumentos é compativel e se a macro foi definida
 bool SemanticAnalyser::isMacroCallCorrect(vector<string> tokens)
 {

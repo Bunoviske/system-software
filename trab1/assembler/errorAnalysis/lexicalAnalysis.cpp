@@ -128,6 +128,13 @@ bool LexicalAnalyser::isHexadecimalNumber(string s)
 }
 
 string LexicalAnalyser::toUpperCase(string s){
-    s = boost::to_upper_copy<std::string>(s);
-    return s;
+    std::string temp;
+    int i;
+    std::locale loc;
+
+    for(i = 0; i < s.length(); i++){
+        temp = temp + std::toupper(s[i], loc);
+    }
+
+    return temp;
 }

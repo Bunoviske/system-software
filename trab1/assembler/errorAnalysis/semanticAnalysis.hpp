@@ -38,6 +38,9 @@ public:
     bool isSymbolAlreadyDefined(string label);
     bool isOperation(string token);
 
+    /********* 2nd passage semantic errors *******/
+
+    bool is isSymbolDefined(string label);
 
 private:
 

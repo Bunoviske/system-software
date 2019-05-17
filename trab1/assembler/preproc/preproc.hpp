@@ -3,7 +3,7 @@
 
 #include "macroProcessing.hpp"
 
-class PreProcessing : public PreProcessingInterface
+class PreProcessing : public PreProcessingInterface, private BaseClass
 {
 
 public:

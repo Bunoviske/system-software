@@ -1,10 +1,14 @@
 #ifndef MACROPROC
 #define MACROPROC
 
-#include "preprocParsingFunction.hpp"
+#include "../interfaces/preprocInterface.hpp"
+#include "../../utils/tablesService.hpp"
+#include "../errorAnalysis/errorService.hpp"
+
+#include "../baseClass/baseClass.hpp"
 #include <sstream>
 
-class MacroProcessing
+class MacroProcessing : private BaseClass
 {
 
 public:

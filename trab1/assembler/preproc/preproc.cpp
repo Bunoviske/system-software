@@ -15,6 +15,7 @@ FileWriter *PreProcessing::getFileWriter(string filename)
 //override
 void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
 {
+
     cout << "\nPreprocessing debug\n"
          << endl;
 
@@ -169,9 +170,8 @@ bool PreProcessing::tokensNeedPreproc(vector<string> &tokens)
         for (size_t j = 0; j < preprocTokens.size(); j++)
         {
             string aux = tokens[i];
-
             if (j < 4) //diretivas sao sempre upperCase
-                aux = boost::to_upper_copy<string>(tokens[i]);
+                aux = toUpperCase(tokens[i]);
 
             if (aux == preprocTokens[j])
                 return true;
@@ -189,7 +189,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
     //é possivel acessá-los sem verificar se vai dar seg fault
     if (errorService.getSintatic(lineNumber).checkLabelDefinitionSintax(tokens))
     {
-        if (boost::to_upper_copy<string>(tokens[1]) == "EQU")
+        if (toUpperCase(tokens[1]) == "EQU")
         {
             tokens[0].pop_back(); //tira o dois pontos
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
@@ -199,7 +199,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
                 tables.setEquTable(tokens[0], tokens[2]);
             }
         }
-        else if (boost::to_upper_copy<string>(tokens[1]) == "MACRO")
+        else if (toUpperCase(tokens[1]) == "MACRO")
         {
             tokens[0].pop_back(); //tira o dois pontos
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
@@ -226,7 +226,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
     //Se voltar true, quer dizer que as diretivas contem o numero correto de argumentos
     if (errorService.getSintatic(lineNumber).checkDirectiveSintax(tokens))
     {
-        if (boost::to_upper_copy<string>(tokens[0]) == "IF")
+        if (toUpperCase(tokens[0]) == "IF")
         { //nao analisa a posicao do IF no codigo pois ela pode ir em qualquer lugar
             if (errorService.getSemantic(lineNumber).isLabelInEquTable(tokens[1]))
             {
@@ -254,7 +254,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
                 }
             }
         }
-        else if (boost::to_upper_copy<string>(tokens[0]) == "SECTION")
+        else if (toUpperCase(tokens[0]) == "SECTION")
         {
             errorService.getSemantic(lineNumber).setSectionLine(tokens[1]);
             assemblePreprocLine(tokens);

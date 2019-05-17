@@ -82,8 +82,10 @@ void PreProcessing::parseTokens(vector<string> &tokens, FileReader *rawFile, Fil
         int tokenType = errorService.getLexical(lineNumber).getTokenType(tokens[0]);
 
         if (tokenType == INVALID_TOKEN)
+        {
+            assemblePreprocLine(tokens); //escreve a linha no arquivo preproc para mostrar que deu erro
             return;
-
+        }
         else if (tokenType == DEF_LABEL)
             analyseDefLabel(tokens, rawFile);
 
@@ -157,10 +159,13 @@ void PreProcessing::checkDefLabelInNextLine(vector<string> *tokens, FileReader *
     // - a definicao de label sera escrita na mesma linha no arquivo preproc
 
     if (tokens->size() == 1)
+    {
+        //nao precisa escrever no arquivo preproc caso dê erro aqui
         if (errorService.getLexical(lineNumber).getTokenType((*tokens)[0]) == DEF_LABEL)
         {
             getLabelDefInNextLine(tokens, rawFile);
         }
+    }
 }
 
 bool PreProcessing::tokensNeedPreproc(vector<string> &tokens)
@@ -194,6 +199,8 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
                 cout << "equ def" << endl;
                 tables.setEquTable(tokens[0], tokens[2]);
             }
+            else
+                assemblePreprocLine(tokens); //mostra no arquivo preproc a linha do erro
         }
         else if (tokens[1] == "MACRO")
         {
@@ -206,6 +213,8 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
                                        macroProcessing.getMacroAssemblyCode(tokens, rawFile));
                 preprocTokens.push_back(tokens[0]); //adiciona no vetor que indica quando deve haver preproc para macro
             }
+            else
+                assemblePreprocLine(tokens); //mostra no arquivo preproc a linha do erro
         }
         else
         {
@@ -213,6 +222,8 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
             cout << "DEFINICAO DE LABEL NAO UTILIZADO NO PREPROCESSAMENTO: LINHA" << lineNumber << endl;
         }
     }
+    else
+        assemblePreprocLine(tokens); //mostra no arquivo preproc a linha do erro
 }
 
 void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile)
@@ -249,6 +260,8 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
                     }
                 }
             }
+            else
+                assemblePreprocLine(tokens); //mostra no arquivo preproc a linha do erro
         }
         else if (tokens[0] == "SECTION")
         {
@@ -261,6 +274,8 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
             cout << "DIRETIVA NAO UTILIZADA NO PREPROCESSAMENTO. LINHA: " << lineNumber << endl;
         }
     }
+    else
+        assemblePreprocLine(tokens); //mostra no arquivo preproc a linha do erro
 }
 
 void PreProcessing::analyseMacroCall(vector<string> &tokens, FileReader *rawFile, FileWriter *preprocFile)
@@ -292,5 +307,9 @@ void PreProcessing::analyseMacroCall(vector<string> &tokens, FileReader *rawFile
             preprocLine = "";
             isMacroLine = false;
         }
+        else
+            assemblePreprocLine(tokens); //mostra no arquivo preproc a linha do erro
     }
+    else
+        assemblePreprocLine(tokens); //mostra no arquivo preproc a linha do erro
 }

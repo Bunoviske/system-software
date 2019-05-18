@@ -12,6 +12,7 @@
 #define DIRECTIVE 5
 #define INVALID_TOKEN 6
 #define COPY_ARGUMENT 7
+#define MACRO_ARGUMENT 8
 
 class LexicalAnalyser : public BaseAnalyser {
 
@@ -24,6 +25,7 @@ public:
 
     //acessado pelo analisador semantico
     bool isNumerical(string s); 
+    bool isOperation(string s);
 
 private:
 
@@ -37,6 +39,7 @@ private:
     bool isPlusOperation(string s);
     bool isCopyArgument(string s);
     bool isValidLabelToken(string s);
+    bool isValidMacroArgument(string s);
 
 
 };

@@ -27,6 +27,9 @@ int LexicalAnalyser::getTokenType(string word)
     else if (isCopyArgument(word))
         return COPY_ARGUMENT;
 
+    else if (isValidMacroArgument(word))
+        return MACRO_ARGUMENT;
+
     else if (isLabel(word))
         //precisa ser o ultimo teste do else if pois senao da conflito com isDirective ou isInstruction
         return LABEL;
@@ -36,6 +39,10 @@ int LexicalAnalyser::getTokenType(string word)
         throwError("Token inválido");
         return INVALID_TOKEN;
     }
+}
+
+bool LexicalAnalyser::isOperation(string s){
+    return isInstruction(s) || isDirective(s);
 }
 
 bool LexicalAnalyser::isLabelDef(string s)
@@ -48,6 +55,7 @@ bool LexicalAnalyser::isLabelDef(string s)
         return isValidLabelToken(s);
     }
 }
+
 bool LexicalAnalyser::isLabel(string s)
 {
     return isValidLabelToken(s);
@@ -94,7 +102,8 @@ bool LexicalAnalyser::hasInvalidSize(string s)
     return false;
 }
 
-bool LexicalAnalyser::isNumerical(string s){
+bool LexicalAnalyser::isNumerical(string s)
+{
 
     return (isDecimalNumber(s) || isHexadecimalNumber(s));
 }
@@ -115,7 +124,7 @@ bool LexicalAnalyser::isDecimalNumber(string s)
 
 bool LexicalAnalyser::isHexadecimalNumber(string s)
 {
-    if (s.size() > 3 && s[0] == '0' && s[1] == 'X')
+    if (s.size() >= 3 && s[0] == '0' && s[1] == 'X')
     {
         std::string::const_iterator it = s.begin() + 2;
         while (it != s.end() && std::isxdigit(*it))
@@ -125,4 +134,15 @@ bool LexicalAnalyser::isHexadecimalNumber(string s)
     return false;
 }
 
+bool LexicalAnalyser::isValidMacroArgument(string s)
+{
+    if (!s.empty() && s[0] != '&')
+        return false;
+    else{ 
+        s.erase(s.begin()); //tira &
+        if (s[s.size()-1] == ',') //tira a virgula caso exista
+            s.pop_back();
 
+        return isValidLabelToken(s);
+    }
+}

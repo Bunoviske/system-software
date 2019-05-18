@@ -16,6 +16,11 @@ FileWriter *PreProcessing::getFileWriter(string filename)
 void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
 {
 
+    // //vector<string> tokens = getTokensOfLine("SWAP: MACRO &A, &VALOR, &SIM");
+    // vector<string> tokens = getTokensOfLine("ADD_NUMBERS: MACRO &a, &b");
+    // cout << errorService.getSintatic(1).checkLabelDefinitionSintax(tokens) << endl;
+    // return;
+
     cout << "\nPreprocessing debug\n"
          << endl;
 

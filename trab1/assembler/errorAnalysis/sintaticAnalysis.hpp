@@ -5,6 +5,7 @@
 #include "baseAnalyser.hpp"
 #include "lexicalAnalysis.hpp"
 
+
 class SintaticAnalyser : public BaseAnalyser{
 
 public:
@@ -23,6 +24,16 @@ private:
     
     LexicalAnalyser lexical;
 
+    bool isValidLabel(string label);
+
+    /******* DIRETIVAS ********/
+    bool checkDirectiveNumOperands(vector<string> &tokens);
+    bool checkSectionSintax(vector<string> &tokens);
+    bool checkSpaceSintax(vector<string> &tokens);
+    bool checkConstSintax(vector<string> &tokens);
+    bool checkIFSintax(vector<string> &tokens);
+    bool checkEquSintax(vector<string> &tokens);
+    bool checkMacroDefSintax(vector<string> &tokens);
 };
 
 #endif

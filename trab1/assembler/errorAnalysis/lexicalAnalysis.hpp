@@ -25,6 +25,7 @@ public:
     //acessado pelo analisador semantico
     bool isNumerical(string s); 
 
+
 private:
 
     bool hasInvalidSize(string s);

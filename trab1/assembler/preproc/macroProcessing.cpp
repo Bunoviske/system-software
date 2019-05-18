@@ -32,7 +32,9 @@ string MacroProcessing::getMacroAssemblyCode(vector<string> &tokens, FileReader 
         {
             vector<string> nextTokens;
             nextTokens = getTokensOfLine(line);
+
             if (nextTokens.size() == 1 && nextTokens[0] == "END")
+
                 macroEnd = true;
             else
             {

@@ -24,6 +24,7 @@ bool SintaticAnalyser::checkDirectiveSintax(vector<string> tokens) {
 bool SintaticAnalyser::checkLabelDefinitionSintax(vector<string> &tokens) {return true;}
 bool SintaticAnalyser::checkMacroCallSintax(vector<string> &tokens) {return true;}
 
+
 bool SintaticAnalyser::checkSectionSintax(vector<string> tokens){
     if (tokens.size() <= 1){
         throwError("A diretiva section requer um argumento");
@@ -41,6 +42,7 @@ bool SintaticAnalyser::checkSectionSintax(vector<string> tokens){
 }
 
 bool SintaticAnalyser::checkSpaceSintax(vector<string> tokens){
+
     if (tokens.size() > 2){
         throwError("Diretiva SPACE admite apenas 0 ou 1 argumento");
         return false;
@@ -56,6 +58,7 @@ bool SintaticAnalyser::checkSpaceSintax(vector<string> tokens){
 }
 
 bool SintaticAnalyser::checkConstSintax(vector<string> tokens){
+
     if(tokens.size() == 1){
         throwError("Diretiva CONST precisa de um argumento");
         return false;

@@ -40,6 +40,7 @@ public:
 
     /********* 2nd passage semantic errors *******/
 
+
     bool isSymbolDefined(string label);
 
 

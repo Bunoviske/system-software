@@ -169,9 +169,7 @@ bool PreProcessing::tokensNeedPreproc(vector<string> &tokens)
     {
         for (size_t j = 0; j < preprocTokens.size(); j++)
         {
-
             if (tokens[i] == preprocTokens[j])
-
                 return true;
         }
     }
@@ -187,9 +185,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
     //é possivel acessá-los sem verificar se vai dar seg fault
     if (errorService.getSintatic(lineNumber).checkLabelDefinitionSintax(tokens))
     {
-
         if (tokens[1] == "EQU")
-
         {
             tokens[0].pop_back(); //tira o dois pontos
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
@@ -199,9 +195,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
                 tables.setEquTable(tokens[0], tokens[2]);
             }
         }
-
         else if (tokens[1] == "MACRO")
-
         {
             tokens[0].pop_back(); //tira o dois pontos
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
@@ -228,9 +222,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
     //Se voltar true, quer dizer que as diretivas contem o numero correto de argumentos
     if (errorService.getSintatic(lineNumber).checkDirectiveSintax(tokens))
     {
-
         if (tokens[0] == "IF")
-
         { //nao analisa a posicao do IF no codigo pois ela pode ir em qualquer lugar
             if (errorService.getSemantic(lineNumber).isLabelInEquTable(tokens[1]))
             {
@@ -258,9 +250,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
                 }
             }
         }
-
         else if (tokens[0] == "SECTION")
-
         {
             errorService.getSemantic(lineNumber).setSectionLine(tokens[1]);
             assemblePreprocLine(tokens);

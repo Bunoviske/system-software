@@ -8,8 +8,6 @@ int SemanticAnalyser::lineSectionData = 0;
 
 bool SemanticAnalyser::isDirectiveInCorrectSection(string directive)
 {
-    directive = lexical.toUpperCase(directive);
-
     if (directive == "CONST" || directive == "SPACE")
     { //secao de dados
         if (currentLine > lineSectionData && lineSectionData != 0)
@@ -59,8 +57,6 @@ bool SemanticAnalyser::isInstructionInCorrectSection()
 
 void SemanticAnalyser::setSectionLine(string section)
 {
-    section = lexical.toUpperCase(section);
-
     if (section == "TEXT")
         lineSectionText = currentLine;
     else if (section == "DATA")

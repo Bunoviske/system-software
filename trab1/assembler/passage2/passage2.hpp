@@ -3,8 +3,9 @@
 
 #include "../interfaces/passage2interface.hpp"
 #include "../errorAnalysis/errorService.hpp"
+#include "../baseClass/baseClass.hpp"
 
-class Passage2 : public Passage2Interface {
+class Passage2 : public Passage2Interface, private BaseClass {
 
 public:
 
@@ -16,7 +17,7 @@ public:
 
 private:
 
-    ErrorService errorService; 
+    ErrorService errorService;
 
 
 };

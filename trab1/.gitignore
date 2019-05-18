@@ -1,3 +1,8 @@
 /build/*
 /.vscode/*
 Trabalho1.pdf
+/CMakeFiles/*
+tradutor.exe
+cmake_install.cmake
+CMakeCache.txt
+Makefile

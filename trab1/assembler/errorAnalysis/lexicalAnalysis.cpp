@@ -124,5 +124,3 @@ bool LexicalAnalyser::isHexadecimalNumber(string s)
     }
     return false;
 }
-
-

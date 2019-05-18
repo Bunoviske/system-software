@@ -157,7 +157,7 @@ bool SemanticAnalyser::isSymbolAlreadyDefined(string label){
         throwError("Label ja definido com a diretiva EQU");
         return true;
     }
-    
+
     return false;
 }
 
@@ -173,4 +173,15 @@ bool SemanticAnalyser::isOperation(string token){
         throwError("Operacao invalida");
         return false;
     }
+}
+
+/************* 2nd passage semantic errors **************/
+
+
+bool SemanticAnalyser::isSymbolDefined(string label){
+    if(!tables.isSymbolInTable(label)){
+        throwError("Label nao definido");
+        return false;
+    }
+    return true;
 }

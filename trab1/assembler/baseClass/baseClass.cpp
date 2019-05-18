@@ -40,3 +40,10 @@ vector<string> BaseClass::getTokensOfLine(string line)
 
     return tokens;
 }
+
+int BaseClass::checkSpaceSize(vector<string> words){
+    if(words.size() == 2){   //se a diretiva SPACE tiver argumento, pula o tamanho reservado
+        return stoi(words[1]);
+    }
+    return 1;       //se nao tiver argumento, reserva apenas 1 byte
+}

@@ -25,6 +25,10 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
     lineCounter = 0;
     positionCounter = 0;
 
+    #ifdef DEBUG
+    cout << "___DEBUG - PASSAGEM2" << endl;
+    #endif
+
     while(!eof){
 
         line = rawFile->readNextLine();
@@ -61,7 +65,9 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                     argNumber = tables.getInstructionOperands(words[0]);
 
                     if(words[0] == "COPY"){
-                        words[1].erase(words[1].end()); //remove a virgula do final do operando do copy
+                        cout<<"temp"<<endl;
+                        words[1].erase(words[1].end()-1); //remove a virgula do final do operando do copy
+                        cout<<"temp2"<<endl;
                     }
 
                     if(argNumber >= 1){
@@ -93,11 +99,18 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                     #endif
 
 
-                    procLine = tables.getInstructionCode(words[0]);
+                    procLine = to_string(tables.getInstructionCode(words[0]));
+                    #ifdef DEBUG
+                    cout << "___DEBUG - Code da instrucao " << tables.getInstructionCode(words[0]) << endl;
+                    #endif
+
                     if(argNumber >= 1){ //1 ou 2 argumentos
                         if(arg1label){  //primeiro eh label
                             if(errorService.getSemantic(lineCounter).isSymbolDefined(words[1])){ //esta definido
                                 procLine = procLine + to_string(tables.getSymbolAddress(words[1]));
+                                #ifdef DEBUG
+                                cout << "___DEBUG - Endereco do label " << to_string(tables.getSymbolAddress(words[1])) << endl;
+                                #endif
                                 lineOk = true;
                             }
                             else{ //nao definido - instrucao nao sera compilada

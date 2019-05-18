@@ -9,7 +9,9 @@ FileReader* Passage1::getFileReader(string filename){
     return new FileReader(filename);
 }
 
-
+//ERROS CHECAGEM FALTA
+//checar sintatxe de const e SPACE
+//checar se const e space estao na secao correta
 //override
 void Passage1::run(FileReader *rawFile){
 
@@ -26,7 +28,7 @@ void Passage1::run(FileReader *rawFile){
         #ifdef DEBUG
         cout << "___DEBUG - lendo linha passagem1: " << lineCounter << endl;
         #endif
-        line = toUpperCase(rawFile->readNextLine());
+        line =  rawFile->readNextLine();
         #ifdef DEBUG
         cout << "___DEBUG - linha passagem1: " << line <<  endl;
         #endif
@@ -78,7 +80,7 @@ void Passage1::run(FileReader *rawFile){
 
             //checa se a operacao e valida
             if(errorService.getSemantic(lineCounter).isOperation(words[0])){
-                operation = toUpperCase(words[0]);
+                operation = words[0];
                 if(tokenType == INSTRUCTION){   //instrucao
                     //achou - contador de posicao = contador de posicao + tamanho da instrucao
                     positionCounter = positionCounter + tables.getInstructionSize(operation);
@@ -91,22 +93,33 @@ void Passage1::run(FileReader *rawFile){
                 else if(tokenType == DIRECTIVE){    //diretiva  -- execucao na segunda passagem apenas
                     //achou - executa diretiva / contador de posicao = valor retornado pela subrotina da diretiva
                     //positionCounter = diretiva(positionCounter, operation);
-                    if(words[0] == "SPACE"){    //diretiva SPACE
-                        positionCounter = positionCounter + checkSpaceSize(words);
+                    if(operation == "SPACE"){    //diretiva SPACE
+                        if(errorService.getSemantic(lineCounter).isDirectiveInCorrectSection(operation)){
+                            if(errorService.getSintatic(lineCounter).checkDirectiveSintax(words)){
+                                positionCounter = positionCounter + checkSpaceSize(words);
+                            }
+                        }
                         #ifdef DEBUG
                         cout << "___DEBUG - Diretiva SPACE - Incrementa positionCounter com o tamanho do space == " << positionCounter << endl;
                         #endif
                     }
 
-                    if(words[0] == "SECTION"){
-                        //nao faz nada com a diretiva SECTION
+                    if(operation == "SECTION"){
+                        //seta linhas no semantico com a diretiva SECTION
+                        if(errorService.getSintatic(lineCounter).checkSectionSintax(words)){
+                            errorService.getSemantic(lineCounter).setSectionLine(words[1]);
+                        }
                         #ifdef DEBUG
-                        cout << "___DEBUG - Diretiva SECTION - Nada a fazer" << endl;
+                        cout << "___DEBUG - Diretiva SECTION - Seta linhas" << endl;
                         #endif
                     }
 
-                    if(words[0] == "CONST"){
-                        positionCounter = positionCounter + 1;
+                    if(operation == "CONST"){
+                        if(errorService.getSemantic(lineCounter).isDirectiveInCorrectSection(operation)){
+                            if(errorService.getSintatic(lineCounter).checkDirectiveSintax(words)){
+                                positionCounter = positionCounter + 1;
+                            }
+                        }
                         #ifdef DEBUG
                         cout << "___DEBUG - Diretiva Const - Incrementa positionCounter == " << positionCounter << endl;
                         #endif

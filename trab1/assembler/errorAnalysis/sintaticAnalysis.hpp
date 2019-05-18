@@ -16,13 +16,16 @@ public:
     ~SintaticAnalyser(){};
 
     bool checkInstructionSintax( vector<string>& tokens);
-    bool checkDirectiveSintax( vector<string>& tokens);
+    bool checkDirectiveSintax( vector<string> tokens);
     bool checkLabelDefinitionSintax( vector<string>& tokens);
-    bool checkMacroCallSintax( vector<string>& tokens); 
+    bool checkMacroCallSintax( vector<string>& tokens);
+    bool checkSectionSintax(vector<string> tokens);
 
 private:
-    
+
     LexicalAnalyser lexical;
+    bool checkSpaceSintax(vector<string> tokens);
+    bool checkConstSintax(vector<string> tokens);
 
     bool isValidLabel(string label);
 

@@ -27,6 +27,7 @@ public:
     bool isNumerical(string s); 
     bool isOperation(string s);
 
+
 private:
 
     bool hasInvalidSize(string s);

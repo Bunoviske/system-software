@@ -58,7 +58,7 @@ public:
         directivesTable["CONST"] = DirectiveTable(1, 1);
         directivesTable["EQU"] = DirectiveTable(1, 0);
         directivesTable["IF"] = DirectiveTable(1, 0);
-        directivesTable["MACRO"] = DirectiveTable(0, 0);
+        directivesTable["MACRO"] = DirectiveTable(-1, 0); //-1 significa que operandos pode ser variavel 
         directivesTable["END"] = DirectiveTable(0, 0);
 
         instructionsTable["ADD"] = InstructionTable(1, 1, 2);

@@ -42,7 +42,6 @@ bool SintaticAnalyser::checkSectionSintax(vector<string> tokens){
 }
 
 bool SintaticAnalyser::checkSpaceSintax(vector<string> tokens){
-
     if (tokens.size() > 2){
         throwError("Diretiva SPACE admite apenas 0 ou 1 argumento");
         return false;
@@ -58,7 +57,6 @@ bool SintaticAnalyser::checkSpaceSintax(vector<string> tokens){
 }
 
 bool SintaticAnalyser::checkConstSintax(vector<string> tokens){
-
     if(tokens.size() == 1){
         throwError("Diretiva CONST precisa de um argumento");
         return false;

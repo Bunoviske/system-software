@@ -1,7 +1,7 @@
 
 
 
-Instruções para compilar e executar
+Instruções para compilar e executar usando c++11
 
 1- cmake .                   # configura makefile
 

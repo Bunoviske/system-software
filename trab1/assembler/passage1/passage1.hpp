@@ -19,8 +19,8 @@ public:
 private:
 
     ErrorService errorService;
-    vector<string> getTokensOfLine(string line);
-    // int checkSpaceSize(vector<string> words);
+    int runOperation(vector<string> words, int lineCounter);
+
 
 };
 

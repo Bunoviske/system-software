@@ -23,6 +23,9 @@ void Passage1::run(FileReader *rawFile){
     positionCounter = 0;
     lineCounter = 0;
 
+    #ifdef DEBUG
+    cout << "___DEBUG - PASSAGEM1" << endl;
+    #endif
 
     while(!eof){
         #ifdef DEBUG

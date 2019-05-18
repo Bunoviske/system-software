@@ -78,22 +78,24 @@ bool SintaticAnalyser::checkLabelDefinitionSintax(vector<string> &tokens)
 {
     lexical.setLineNumber(this->currentLine);
 
+    vector<string> tokensAux = tokens;
+
     //toda definicao de label deve ter um rotulo valido e uma operacao (diretiva ou instrucao) como argumentos
 
-    if (tokens.size() >= 2)
+    if (tokensAux.size() >= 2)
     {
-        if (lexical.getTokenType(tokens[0]) == DEF_LABEL)
+        if (lexical.getTokenType(tokensAux[0]) == DEF_LABEL)
         { //ja se sabe que o primeiro token é valido (redundante)
-            if (isValidLabel(tokens[0]))
+            if (isValidLabel(tokensAux[0]))
             { // porem nao se sabe se o label é valido (pode ser uma inst ou diretiva)
-                int tokenType = lexical.getTokenType(tokens[1]);
+                int tokenType = lexical.getTokenType(tokensAux[1]);
                 if (tokenType == INSTRUCTION)
                     return true; //nao verifica sintaxe da instrucao na definicao de label!!!
 
                 else if (tokenType == DIRECTIVE)
                 {
-                    tokens.erase(tokens.begin()); //tira definicao de rotulo para analisar a diretiva
-                    return checkDirectiveSintax(tokens);
+                    tokensAux.erase(tokensAux.begin()); //tira definicao de rotulo para analisar a diretiva
+                    return checkDirectiveSintax(tokensAux);
                 }
                 else
                 {

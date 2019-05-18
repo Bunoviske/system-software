@@ -78,6 +78,8 @@ void Passage1::run(FileReader *rawFile){
                 #endif
             }
 
+            //CHECA SE EXISTE ALGO NA LINHA PARA CONTINUAR A PASSAGEM:
+            //Caso em que nao ha - erro sintatico de definicao de label: label definido em uma linha em branco e label definido diretamente a seguir
             //checa se a operacao e valida
             if(errorService.getSemantic(lineCounter).isOperation(words[0])){
                 operation = words[0];
@@ -105,10 +107,10 @@ void Passage1::run(FileReader *rawFile){
                     }
 
                     if(operation == "SECTION"){
-                        //seta linhas no semantico com a diretiva SECTION
-                        if(errorService.getSintatic(lineCounter).checkSectionSintax(words)){
-                            errorService.getSemantic(lineCounter).setSectionLine(words[1]);
-                        }
+                        errorService.getSintatic(lineCounter).checkSectionSintax(words);
+                        // if(errorService.getSintatic(lineCounter).checkSectionSintax(words)){
+                        //     errorService.getSemantic(lineCounter).setSectionLine(words[1]);
+                        // }
                         #ifdef DEBUG
                         cout << "___DEBUG - Diretiva SECTION - Seta linhas" << endl;
                         #endif
@@ -167,9 +169,9 @@ vector<string> Passage1::getTokensOfLine(string line){ //temporario, possivelmen
 }
 
 
-int Passage1::checkSpaceSize(vector<string> words){
-    if(words.size() > 2){   //se a diretiva SPACE tiver argumento, pula o tamanho reservado
-        return stoi(words[2]);
-    }
-    return 1;       //se nao tiver argumento, reserva apenas 1 byte
-}
+// int Passage1::checkSpaceSize(vector<string> words){
+//     if(words.size() == 2){   //se a diretiva SPACE tiver argumento, pula o tamanho reservado
+//         return stoi(words[2]);
+//     }
+//     return 1;       //se nao tiver argumento, reserva apenas 1 byte
+// }

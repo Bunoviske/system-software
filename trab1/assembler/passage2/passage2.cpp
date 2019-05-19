@@ -28,6 +28,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
     #ifdef DEBUG
     cout << "___DEBUG_PASS2 - PASSAGEM2" << endl;
     #endif
+    errorService.getSemantic(lineCounter).checkSectionOrder();
 
     while(!eof){
 
@@ -60,7 +61,8 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                 /*---------words[0] == instrucao;--------*/
 
                 //checa sintaxe da Instrucao
-                if(errorService.getSintatic(lineCounter).checkInstructionSintax(words)){
+                if((errorService.getSintatic(lineCounter).checkInstructionSintax(words) && (errorService.getSemantic(lineCounter).checkInstructionSemantic(words))){
+
 
                     argNumber = tables.getInstructionOperands(words[0]);
                     #ifdef DEBUG

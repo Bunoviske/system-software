@@ -3,6 +3,8 @@
 //inicializacao das variaveis estaticas. Necessario ocorrer aqui, senao da erro
 int SemanticAnalyser::lineSectionText = 0;
 int SemanticAnalyser::lineSectionData = 0;
+int SemanticAnalyser::positionSectionText = 0;
+int SemanticAnalyser::positionSectionData = 0;
 
 //TODO - TODA VEZ QUE CHAMAR LEXICO, TEM QUE CHAMAR A FUNCAO lexical.setCurrentLine();
 
@@ -55,6 +57,14 @@ bool SemanticAnalyser::isInstructionInCorrectSection()
     }
 }
 
+void SemanticAnalyser::setSectionPosition(string section, int position){
+    if (section == "TEXT"){
+        positionSectionText = position;
+    }
+    else if (section == "DATA"){
+        positionSectionData = position;
+    }
+}
 
 void SemanticAnalyser::setSectionLine(string section)
 {
@@ -210,5 +220,9 @@ bool SemanticAnalyser::checkInstructionSemantic(vector<string> tokens){
 }
 
 bool SemanticAnalyser::checkJumpToCorrectSection(vector<string> tokens){
-    return true; //TODO  - checar se o label do jump esta na secao correta; necessario saber a POSICAO onde data comeca, nao a linha
+    if(tables.getSymbolAddress(tokens[1]) < positionSectionData){
+        return true; //TODO  - checar se o label do jump esta na secao correta; necessario saber a POSICAO onde data comeca, nao a linha
+    }
+    throwError("Jump para a secao de dados");
+    return false;
 }

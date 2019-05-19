@@ -24,15 +24,15 @@ public:
     int getTokenType(string word);
 
     //acessado pelo analisador semantico
-    bool isNumerical(string s); 
+    bool isNumerical(string s);
     bool isOperation(string s);
+    bool isHexadecimalNumber(string s);
 
 
 private:
 
     bool hasInvalidSize(string s);
     bool isDecimalNumber(string s);
-    bool isHexadecimalNumber(string s);
     bool isLabelDef(string s);
     bool isLabel(string s);
     bool isInstruction(string s);

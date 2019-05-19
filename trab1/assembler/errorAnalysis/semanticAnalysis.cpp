@@ -204,7 +204,7 @@ bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset){
 
 bool SemanticAnalyser::checkInstructionSemantic(vector<string> tokens){
     if((tokens[0] == "JMP") || (tokens[0] == "JMPN") || (tokens[0] == "JMPP") || (tokens[0] == "JMPZ")){
-        return checkJumpToCorrectSection(words);
+        return checkJumpToCorrectSection(tokens);
     }
     return true;
 }

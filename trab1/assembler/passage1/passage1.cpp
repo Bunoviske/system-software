@@ -4,7 +4,7 @@
 //override
 FileReader* Passage1::getFileReader(string filename){
     #ifdef DEBUG
-    cout << "___DEBUG - arquivo aberto: " << filename << endl;
+    cout << "___DEBUG_PASS1 - arquivo aberto: " << filename << endl;
     #endif
     return new FileReader(filename);
 }
@@ -24,16 +24,16 @@ void Passage1::run(FileReader *rawFile){
     lineCounter = 0;
 
     #ifdef DEBUG
-    cout << "___DEBUG - PASSAGEM1" << endl;
+    cout << "___DEBUG_PASS1 - PASSAGEM1" << endl;
     #endif
 
     while(!eof){
         #ifdef DEBUG
-        cout << "___DEBUG - lendo linha passagem1: " << lineCounter << endl;
+        cout << "___DEBUG_PASS1 - lendo linha passagem1: " << lineCounter << endl;
         #endif
         line =  rawFile->readNextLine();
         #ifdef DEBUG
-        cout << "___DEBUG - linha passagem1: " << line <<  endl;
+        cout << "___DEBUG_PASS1 - linha passagem1: " << line <<  endl;
         #endif
         lineCounter++;
 
@@ -49,7 +49,7 @@ void Passage1::run(FileReader *rawFile){
             tokenType = errorService.getLexical(lineCounter).getTokenType(words[0]);
 
             #ifdef DEBUG
-            cout << "___DEBUG - token: " << words[0] << " tokenType: " << tokenType << endl;
+            cout << "___DEBUG_PASS1 - token: " << words[0] << " tokenType: " << tokenType << endl;
             #endif
 
             /***** PRIMEIRO TOKEN EH LABEL *****/
@@ -59,26 +59,26 @@ void Passage1::run(FileReader *rawFile){
                     words[0].pop_back(); //remove dois pontos da definicao do label
                     //procura rotulo na tabela de simbolos
                     #ifdef DEBUG
-                    cout << "___DEBUG - LABEL Encontrado == " << words[0] << endl;
+                    cout << "___DEBUG_PASS1 - LABEL Encontrado == " << words[0] << endl;
                     #endif
                     if(errorService.getSemantic(lineCounter).isSymbolAlreadyDefined(words[0])){   //achou
                         //achou - erro, simbolo redefinido
                         /*ERRO*/
                         #ifdef DEBUG
-                        cout << "___DEBUG - LABEL ja na tabela de simbolos, macro ou equ, ERRO - simbolo redefinido" << endl;
+                        cout << "___DEBUG_PASS1 - LABEL ja na tabela de simbolos, macro ou equ, ERRO - simbolo redefinido" << endl;
                         #endif
                     }
                     else{   //nao achou
                         //nao achou - insere rotulo e contador de posicao na tabela
                         tables.setSymbolTable(words[0], positionCounter);
                         #ifdef DEBUG
-                        cout << "___DEBUG - LABEL nao encontrado na tabela, inserido" << endl;
+                        cout << "___DEBUG_PASS1 - LABEL nao encontrado na tabela, inserido" << endl;
                         #endif
                     }
                     words.erase(words.begin()); //remove label
                     // tokenType = errorService.getLexical(lineCounter).getTokenType(words[0]);    //tokenType do novo primeiro token da linha
                     #ifdef DEBUG
-                    cout << "___DEBUG - Label removido, novo token: " << words[0] << endl;
+                    cout << "___DEBUG_PASS1 - Label removido, novo token: " << words[0] << endl;
                     #endif
                     positionCounter = positionCounter + runOperation(words, lineCounter);
                 }
@@ -89,7 +89,7 @@ void Passage1::run(FileReader *rawFile){
                 }
             }
             #ifdef DEBUG
-            cout << "___DEBUG - PositionCounter == " << positionCounter << endl;
+            cout << "___DEBUG_PASS1 - PositionCounter == " << positionCounter << endl;
             #endif
 
             //CHECA SE EXISTE ALGO NA LINHA PARA CONTINUAR A PASSAGEM:
@@ -118,7 +118,7 @@ int Passage1::runOperation(vector<string> words, int lineCounter){
         //analisa se a operacao possui os argumentos corretamente - sintatico - SEGUNDA PASSAGEM
         // errorService.getSintatic(lineCounter).checkInstructionSintax(words);
         #ifdef DEBUG
-        cout << "___DEBUG - Instrucao " << operation << " - Incrementa positionCounter com o tamanho da instrucao == " << temp << endl;
+        cout << "___DEBUG_PASS1 - Instrucao " << operation << " - Incrementa positionCounter com o tamanho da instrucao == " << temp << endl;
         #endif
     }
     else if(tokenType == DIRECTIVE){    //diretiva  -- execucao na segunda passagem apenas
@@ -131,7 +131,7 @@ int Passage1::runOperation(vector<string> words, int lineCounter){
                 }
             }
             #ifdef DEBUG
-            cout << "___DEBUG - Diretiva SPACE - Incrementa positionCounter com o tamanho do space == " << temp << endl;
+            cout << "___DEBUG_PASS1 - Diretiva SPACE - Incrementa positionCounter com o tamanho do space == " << temp << endl;
             #endif
         }
 
@@ -140,7 +140,7 @@ int Passage1::runOperation(vector<string> words, int lineCounter){
             //     errorService.getSemantic(lineCounter).setSectionLine(words[1]);
             // }
             #ifdef DEBUG
-            cout << "___DEBUG - Diretiva SECTION - Nada a fazer" << endl;
+            cout << "___DEBUG_PASS1 - Diretiva SECTION - Nada a fazer" << endl;
             #endif
         }
 
@@ -151,7 +151,7 @@ int Passage1::runOperation(vector<string> words, int lineCounter){
                 }
             }
             #ifdef DEBUG
-            cout << "___DEBUG - Diretiva Const - Incrementa positionCounter == " << temp << endl;
+            cout << "___DEBUG_PASS1 - Diretiva Const - Incrementa positionCounter == " << temp << endl;
             #endif
         }
 

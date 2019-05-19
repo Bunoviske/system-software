@@ -24,6 +24,7 @@ public:
     bool isInstructionInCorrectSection();
     void setSectionLine(string section); //currentLine é usada para determinar a linha da secao atual
 
+
     void checkSectionOrder(); //TODO - chamar essa funcao antes da segunda passagem!
 
     /*********** preproc semantic errors **************/
@@ -43,11 +44,12 @@ public:
 
     bool isSymbolDefined(string label);
     bool isSymbolOffsetCorrect(string label, int offset);
-
+    bool checkInstructionSemantic(vector<string> tokens);
 
 private:
 
     LexicalAnalyser lexical;
+    bool checkJumpToCorrectSection(vector<string> tokens);
 
 };
 

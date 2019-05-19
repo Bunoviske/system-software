@@ -55,6 +55,7 @@ bool SemanticAnalyser::isInstructionInCorrectSection()
     }
 }
 
+
 void SemanticAnalyser::setSectionLine(string section)
 {
     if (section == "TEXT")
@@ -66,6 +67,7 @@ void SemanticAnalyser::setSectionLine(string section)
         throwError("Secao inexistente");
     }
 }
+
 
 void SemanticAnalyser::checkSectionOrder()
 {
@@ -197,4 +199,16 @@ bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset){
 
     throwError("Acesso a posicao nao reservada para esse label");
     return false;
+}
+
+
+bool SemanticAnalyser::checkInstructionSemantic(vector<string> tokens){
+    if((tokens[0] == "JMP") || (tokens[0] == "JMPN") || (tokens[0] == "JMPP") || (tokens[0] == "JMPZ")){
+        return checkJumpToCorrectSection(words);
+    }
+    return true;
+}
+
+bool SemanticAnalyser::checkJumpToCorrectSection(vector<string> tokens){
+    return true; //TODO  - checar se o label do jump esta na secao correta; necessario saber a POSICAO onde data comeca, nao a linha
 }

@@ -177,7 +177,13 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                     cout << "___DEBUG_PASS2 - CONST: " << words[1] << endl;
                     #endif
                     positionCounter = positionCounter + 1;
-                    procLine = words[1];
+                    if(errorService.getLexical(lineCounter).isHexadecimalNumber(words[1])){
+                        words[1].erase(words[1].begin(), words[1].begin()+2);
+                        procLine = to_string(stoi(words[1], NULL, 16));
+                    }
+                    else{
+                        procLine = words[1];
+                    }
                 }
 
                 #ifdef DEBUG

@@ -239,10 +239,7 @@ bool Passage2::checkLabel(string s, int lineCounter){
     if(s.back() == ','){
         s.erase(s.end()-1);
     }
-    if(errorService.getLexical(lineCounter).getTokenType(s) == LABEL){
-        return true;
-    }
-    return false;
+    return errorService.getSintatic(lineCounter).checkInstructionOperandSintax(s);
 }
 
 bool Passage2::isSymbolOffset(vector<string> words, int labelIndex, int lineCounter){

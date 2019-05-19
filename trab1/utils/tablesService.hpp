@@ -22,6 +22,7 @@ public:
     bool isSymbolInTable(string symbol);
     int getSymbolAddress(string symbol);
     void setSymbolTable(string symbol, int address);
+    int getNextSymbolAddress(string symbol);
 
     bool isLabelInEquTable(string label);
     map<string,string> getEquTable();
@@ -41,13 +42,13 @@ private:
 
 };
 
-extern TablesService tables; //classe so tem uma instancia global 
+extern TablesService tables; //classe so tem uma instancia global
 
 #endif
 
 
     /*
-    * TESTE DA CLASSE TABLES SERVICE  
+    * TESTE DA CLASSE TABLES SERVICE
     */
 
     // cout << tables.getDirectiveOperands("CONST") << endl;

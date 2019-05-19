@@ -53,6 +53,11 @@ bool TablesService::isSymbolInTable(string symbol)
     return !(symbolsTable.find(symbol) == symbolsTable.end());
 }
 
+int TablesService::getNextSymbolAddress(string symbol){
+    map<string, int>::iterator it = symbolsTable.find(symbol);  //iterator comecando no simbolo conhecido
+    it++;
+    return it->second;
+}
 /****************** MACRO *******************/
 
 int TablesService::getMacroArguments(string macroName)
@@ -90,7 +95,7 @@ bool TablesService::isLabelInEquTable(string label)
 {
     return !(equTable.find(label) == equTable.end());
 }
-map<string,string> TablesService::getEquTable() 
+map<string,string> TablesService::getEquTable()
 {
     return equTable;
 }

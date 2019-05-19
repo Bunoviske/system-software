@@ -5,28 +5,35 @@
 //IMPORTANTE: toda funcao do analisador sintatico so deve ser chamada depois que souber que o primeiro token é valido
 // isso quer dizer que nao se analisa lexicamente tokens[0] em nenhuma funcao!
 
+//essa instrucao so verifica numero de operandos
 bool SintaticAnalyser::checkInstructionSintax(vector<string> tokens)
 {
     lexical.setLineNumber(this->currentLine);
-    //JMP
-    if((tokens[0] == "JMP") || (tokens[0] == "JMPN") || (tokens[0] == "JMPP") || (tokens[0] == "JMPZ")){
-        if(tokens.size() > 2){
-            throwError("Instrucoes de jump aceitam apenas 1 argumento");
-            return false;
-        }
-        else{
-            if(tokens.size() == 1){
-                throwError("Instrucoes de jump precisam de 1 argumento");
-                return false;
-            }
-            else{ //numero de argumentos correto
-                return true;
-            }
-        }
-    }
 
-    //TODO - ADD L1 + 1
-    return true;
+    int numArgs = tables.getInstructionOperands(tokens[0]);
+
+    if (numArgs == 0 && tokens.size() == 1)
+        return true;
+
+    if (numArgs == 1 && (tokens.size() == 2 || tokens.size() == 4))
+        return true;
+
+    if (numArgs == 2 && (tokens.size() == 3 || tokens.size() == 5 || tokens.size() == 7))
+        return true;
+
+    throwError("Numero errado de argumentos para essa instrucao");
+    return false;
+}
+
+bool SintaticAnalyser::checkInstructionOperandSintax(string s)
+{
+    lexical.setLineNumber(this->currentLine);
+
+    if (lexical.getTokenType(s) == LABEL)
+        return true;
+
+    throwError("Tipo de argumento errado para essa instrucao");
+    return false;
 }
 
 //quando essa funcao é chamada, sabe-se q tem pelo menos uma posicao no vetor igual ao LABEL
@@ -169,13 +176,17 @@ bool SintaticAnalyser::checkDirectiveSintax(vector<string> &tokens)
     }
 }
 
-bool SintaticAnalyser::checkSymbolOffsetSintax(vector<string> tokens, int labelIndex){
+bool SintaticAnalyser::checkSymbolOffsetSintax(vector<string> tokens, int labelIndex)
+{
     lexical.setLineNumber(this->currentLine);
-    if(tokens[labelIndex+1] == "+"){
-        if(lexical.getTokenType(tokens[labelIndex+2]) == NUMBER){
+    if (tokens[labelIndex + 1] == "+")
+    {
+        if (lexical.getTokenType(tokens[labelIndex + 2]) == NUMBER)
+        {
             return true;
         }
-        else{
+        else
+        {
             throwError("Erro na sintaxe de vetores");
             return false;
         }

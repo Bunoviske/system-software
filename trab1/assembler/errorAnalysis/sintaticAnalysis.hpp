@@ -15,11 +15,13 @@ public:
     }; //construtor
     ~SintaticAnalyser(){};
 
-    bool checkInstructionSintax( vector<string> tokens);
     bool checkDirectiveSintax( vector<string>& tokens);
     bool checkLabelDefinitionSintax( vector<string>& tokens);
     bool checkMacroCallSintax( vector<string>& tokens);
+    
     bool checkSymbolOffsetSintax(vector<string> tokens, int labelIndex);
+    bool checkInstructionSintax( vector<string> tokens);
+    bool checkInstructionOperandSintax(string s);
 
 private:
 

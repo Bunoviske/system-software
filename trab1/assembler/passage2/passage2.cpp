@@ -61,7 +61,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                 /*---------words[0] == instrucao;--------*/
 
                 //checa sintaxe da Instrucao
-                if((errorService.getSintatic(lineCounter).checkInstructionSintax(words) && (errorService.getSemantic(lineCounter).checkInstructionSemantic(words))){
+                if((errorService.getSintatic(lineCounter).checkInstructionSintax(words) && (errorService.getSemantic(lineCounter).checkInstructionSemantic(words)))){
 
 
                     argNumber = tables.getInstructionOperands(words[0]);

@@ -42,6 +42,7 @@ public:
 
 
     bool isSymbolDefined(string label);
+    bool isSymbolOffsetCorrect(string label, int offset);
 
 
 private:

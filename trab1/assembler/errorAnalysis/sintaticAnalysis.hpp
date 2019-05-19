@@ -19,6 +19,7 @@ public:
     bool checkDirectiveSintax( vector<string>& tokens);
     bool checkLabelDefinitionSintax( vector<string>& tokens);
     bool checkMacroCallSintax( vector<string>& tokens);
+    bool checkSymbolOffsetSintax(vector<string> tokens, int labelIndex);
 
 private:
 

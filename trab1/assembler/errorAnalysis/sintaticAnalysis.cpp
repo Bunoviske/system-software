@@ -153,14 +153,26 @@ bool SintaticAnalyser::checkDirectiveSintax(vector<string> &tokens)
     }
 }
 
-/********************************* METODOS PRIVADOS QUE ANALISAM DIRETIVAS 
- * 
- * 
- *  sao necessarios varios metodos pois nao existe arvore de derivacao para fazer algo generico. 
+bool SintaticAnalyser::checkSymbolOffsetSintax(vector<string> tokens, int labelIndex){
+    lexical.setLineNumber(this->currentLine);
+    if(tokens[labelIndex+1] == "+"){
+        if(lexical.getTokenType(tokens[labelIndex+2]) == NUMBER){
+            return true;
+        }
+        else{
+            throwError("Erro na sintaxe de vetores");
+            return false;
+        }
+    }
+}
+/********************************* METODOS PRIVADOS QUE ANALISAM DIRETIVAS
+ *
+ *
+ *  sao necessarios varios metodos pois nao existe arvore de derivacao para fazer algo generico.
  *  Cada funcao deve saber se os operandos sao do tipo valido. Para instrucoes, isso nao é necessario
  *  pois so se aceita rotulo como argumento
- *   
- * 
+ *
+ *
  * *********************************/
 
 bool SintaticAnalyser::checkDirectiveNumOperands(vector<string> &tokens)

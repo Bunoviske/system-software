@@ -184,3 +184,17 @@ bool SemanticAnalyser::isSymbolDefined(string label){
     }
     return true;
 }
+
+
+bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset){
+    int currentAddress, nextAddress;
+    currentAddress = tables.getSymbolAddress(label);
+    nextAddress = tables.getNextSymbolAddress(label);
+
+    if(currentAddress + offset < nextAddress){
+        return true;
+    }
+
+    throwError("Acesso a posicao nao reservada para esse label");
+    return false;
+}

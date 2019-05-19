@@ -163,6 +163,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
             }
 
             if(tokenType == DIRECTIVE){
+                lineOk = true;
                 //checa sintaxe da diretiva -- ja checado na primeira passagem
                 //executa diretiva
                 if(words[0] == "SPACE"){
@@ -187,12 +188,16 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                         procLine = words[1];
                     }
                 }
+                if(words[0] == "SECTION"){
+                    lineCounter--; //para nao incrementar o linecounter quando for section
+                    lineOk = false;
+                }
 
                 #ifdef DEBUG
                 cout << "___DEBUG_PASS2 - PositonCounter: " << positionCounter << endl;
                 #endif
 
-                lineOk = true;
+
 
             }
 

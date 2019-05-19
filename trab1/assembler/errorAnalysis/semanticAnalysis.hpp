@@ -12,6 +12,9 @@ public:
 
     static int lineSectionText;
     static int lineSectionData;
+    static int positionSectionText;
+    static int positionSectionData;
+    
     //nao mudam para as varias instancias da classe de analise semantica.
 
     SemanticAnalyser(){
@@ -22,6 +25,7 @@ public:
 
     bool isDirectiveInCorrectSection(string directive);
     bool isInstructionInCorrectSection();
+    void setSectionPosition(string section, int position);
     void setSectionLine(string section); //currentLine é usada para determinar a linha da secao atual
 
 

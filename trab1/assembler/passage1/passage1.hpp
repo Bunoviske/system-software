@@ -19,7 +19,7 @@ public:
 private:
 
     ErrorService errorService;
-    int runOperation(vector<string> words, int lineCounter);
+    int runOperation(vector<string> words, int lineCounter, int positionCounter);
 
 
 };

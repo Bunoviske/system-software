@@ -80,12 +80,12 @@ void Passage1::run(FileReader *rawFile){
                     #ifdef DEBUG
                     cout << "___DEBUG_PASS1 - Label removido, novo token: " << words[0] << endl;
                     #endif
-                    positionCounter = positionCounter + runOperation(words, lineCounter);
+                    positionCounter = positionCounter + runOperation(words, lineCounter, positionCounter);
                 }
             }
             else{
                 if(errorService.getSemantic(lineCounter).isOperation(words[0])){
-                    positionCounter = positionCounter + runOperation(words, lineCounter);
+                    positionCounter = positionCounter + runOperation(words, lineCounter, positionCounter);
                 }
             }
             #ifdef DEBUG
@@ -105,7 +105,7 @@ void Passage1::run(FileReader *rawFile){
 
 
 
-int Passage1::runOperation(vector<string> words, int lineCounter){
+int Passage1::runOperation(vector<string> words, int lineCounter, int positionCounter){
     int tokenType, temp = 0;
     string operation;
 
@@ -139,8 +139,9 @@ int Passage1::runOperation(vector<string> words, int lineCounter){
             // if(errorService.getSintatic(lineCounter).checkSectionSintax(words)){
             //     errorService.getSemantic(lineCounter).setSectionLine(words[1]);
             // }
+            errorService.getSemantic(lineCounter).setSectionPosition(words[1], positionCounter);
             #ifdef DEBUG
-            cout << "___DEBUG_PASS1 - Diretiva SECTION - Nada a fazer" << endl;
+            cout << "___DEBUG_PASS1 - Diretiva SECTION - Guarda posicao das sections" << endl;
             #endif
         }
 

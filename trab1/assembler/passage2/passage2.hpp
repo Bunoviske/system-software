@@ -20,7 +20,8 @@ private:
 
     ErrorService errorService;
     bool checkLabel(string s, int lineCounter);
-
+    bool isSymbolOffset(vector<string> words, int labelIndex, int lineCounter);
+    int checkSymbolOffset(vector<string> words, int labelIndex, int lineCounter);
 
 };
 

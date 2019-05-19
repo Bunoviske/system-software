@@ -15,7 +15,7 @@ FileWriter* Passage2::getFileWriter(string filename){
 //override
 void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
     vector<string> words;
-    int tokenType, lineCounter, positionCounter, argNumber, i;
+    int tokenType, lineCounter, positionCounter, argNumber, i, arg1offset, arg2offset, arg2index;
     string line, procLine;
     bool eof = false;
     bool arg1label, arg2label, lineOk;
@@ -26,7 +26,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
     positionCounter = 0;
 
     #ifdef DEBUG
-    cout << "___DEBUG - PASSAGEM2" << endl;
+    cout << "___DEBUG_PASS2 - PASSAGEM2" << endl;
     #endif
 
     while(!eof){
@@ -40,12 +40,12 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
             tokenType = errorService.getLexical(lineCounter).getTokenType(words[0]);
 
             #ifdef DEBUG
-            cout << "___DEBUG - token: " << words[0] << " tokenType: " << tokenType << endl;
+            cout << "___DEBUG_PASS2 - token: " << words[0] << " tokenType: " << tokenType << endl;
             #endif
 
             if(tokenType == DEF_LABEL){ //ignora labels
                 #ifdef DEBUG
-                cout << "___DEBUG - LABEL Encontrado == " << words[0] << " IGNORADO" << endl;
+                cout << "___DEBUG_PASS2 - LABEL Encontrado == " << words[0] << " IGNORADO" << endl;
                 #endif
                 words.erase(words.begin());
                 tokenType = errorService.getLexical(lineCounter).getTokenType(words[0]);
@@ -54,62 +54,62 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
             //CHECA O MESMO QUE PASSAGEM 1 APOS DEFINICAO DE LABEL
             if(tokenType == INSTRUCTION){
                 #ifdef DEBUG
-                cout << "___DEBUG - Instrucao: " << words[0] << endl;
+                cout << "___DEBUG_PASS2 - Instrucao: " << words[0] << endl;
                 #endif
 
-                /*---------words[0] == instrucao; words[1] == label1; words[2] == label2--------*/
+                /*---------words[0] == instrucao;--------*/
 
                 //checa sintaxe da Instrucao
                 if(errorService.getSintatic(lineCounter).checkInstructionSintax(words)){
 
                     argNumber = tables.getInstructionOperands(words[0]);
-
-                    if(words[0] == "COPY"){
-                        cout<<"temp"<<endl;
-                        words[1].erase(words[1].end()-1); //remove a virgula do final do operando do copy
-                        cout<<"temp2"<<endl;
-                    }
+                    #ifdef DEBUG
+                    cout << "___DEBUG_PASS2 - argnumber: " << argNumber << endl;
+                    #endif
 
                     if(argNumber >= 1){
                         arg1label = checkLabel(words[1], lineCounter);  //primeiro argumento eh label
+                        if(isSymbolOffset(words, 1, lineCounter)){
+                            #ifdef DEBUG
+                            cout << "___DEBUG_PASS2 - arg1 possui offset" << endl;
+                            #endif
+                            arg2index = 4;
+                        }
+                        else{
+                            #ifdef DEBUG
+                            cout << "___DEBUG_PASS2 - arg1 nao possui offset" << endl;
+                            #endif
+                            arg2index = 2;
+                        }
+                        if(words[0] == "COPY"){
+                            #ifdef DEBUG
+                            cout << "___DEBUG_PASS2 - copy - virgula removida do fim do arg1: " << words[arg2index-1] << endl;
+                            #endif
+                            words[1].erase(words[arg2index-1].end()-1); //remove a virgula do final do primeiro operando do copy
+                        }
                         if(argNumber == 2){
-                            arg2label = checkLabel(words[2], lineCounter);  //segundo argumento eh label
+                            arg2label = checkLabel(words[arg2index], lineCounter);  //segundo argumento eh label
                         }
                     }
 
-                    // if(words[0] != "STOP"){ //nao eh stop - todas possuem pelo menos 1 argumento
-                    //
-                    //
-                    //     if(words[0] == "COPY"){
-                    //         argNumber = 2;
-                    //         words.erase(2); //removendo virgula entre operandos da instrucao copy - garantido existir este elemento devido a checagem ja realizada da sintaxe da instrucao
-                    //
-                    //     }
-                    //     else{   //qualquer outra instrucao  - 1 argumento
-                    //         argNumber = 1;
-                    //     }
-                    // }
-                    // else{
-                    //     argNumber = 0;
-                    // }
 
                     #ifdef DEBUG
-                    cout << "___DEBUG - Numero de argumentos " << argNumber << endl;
-                    cout << "___DEBUG - 1 label: " << arg1label << " 2 label: " << arg2label << endl;
+                    cout << "___DEBUG_PASS2 - Numero de argumentos " << argNumber << endl;
+                    cout << "___DEBUG_PASS2 - 1 label: " << arg1label << " 2 label: " << arg2label << endl;
                     #endif
 
 
                     procLine = to_string(tables.getInstructionCode(words[0]));
                     #ifdef DEBUG
-                    cout << "___DEBUG - Code da instrucao " << tables.getInstructionCode(words[0]) << endl;
+                    cout << "___DEBUG_PASS2 - Code da instrucao " << tables.getInstructionCode(words[0]) << endl;
                     #endif
 
                     if(argNumber >= 1){ //1 ou 2 argumentos
                         if(arg1label){  //primeiro eh label
                             if(errorService.getSemantic(lineCounter).isSymbolDefined(words[1])){ //esta definido
-                                procLine = procLine + to_string(tables.getSymbolAddress(words[1]));
+                                procLine = procLine + to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter));
                                 #ifdef DEBUG
-                                cout << "___DEBUG - Endereco do label " << to_string(tables.getSymbolAddress(words[1])) << endl;
+                                cout << "___DEBUG_PASS2 - Endereco do label " << to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter)) << endl;
                                 #endif
                                 lineOk = true;
                             }
@@ -123,8 +123,8 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
 
                         if(argNumber == 2){ //dois argumentos
                             if(arg2label){ //segundo eh label
-                                if(errorService.getSemantic(lineCounter).isSymbolDefined(words[2])){ //esta definido
-                                    procLine = procLine + to_string(tables.getSymbolAddress(words[2]));
+                                if(errorService.getSemantic(lineCounter).isSymbolDefined(words[arg2index])){ //esta definido
+                                    procLine = procLine + to_string(tables.getSymbolAddress(words[arg2index]) + checkSymbolOffset(words, 2, lineCounter));
                                     lineOk = true;
                                 }
                                 else{   //nao definido - instrucao nao sera compilada
@@ -139,14 +139,14 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                     //else - redundante. caso sejam 0 argumentos, nada extra precisa ser feito
 
                     #ifdef DEBUG
-                    cout << "___DEBUG - procLine: " << procLine << endl;
-                    cout << "___DEBUG - lineOk: " << lineOk << endl;
+                    cout << "___DEBUG_PASS2 - procLine: " << procLine << endl;
+                    cout << "___DEBUG_PASS2 - lineOk: " << lineOk << endl;
                     #endif
 
                     if(lineOk){
                         positionCounter = positionCounter + tables.getInstructionSize(words[0]);
                         #ifdef DEBUG
-                        cout << "___DEBUG - PositonCounter: " << positionCounter << endl;
+                        cout << "___DEBUG_PASS2 - PositonCounter: " << positionCounter << endl;
                         #endif
                     }
 
@@ -165,7 +165,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                 //executa diretiva
                 if(words[0] == "SPACE"){
                     #ifdef DEBUG
-                    cout << "___DEBUG - SPACE: " << checkSpaceSize(words) << endl;
+                    cout << "___DEBUG_PASS2 - SPACE: " << checkSpaceSize(words) << endl;
                     #endif
                     positionCounter = positionCounter + checkSpaceSize(words);
                     for(i=0;i<checkSpaceSize(words);i++){
@@ -174,14 +174,14 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                 }
                 if(words[0] == "CONST"){
                     #ifdef DEBUG
-                    cout << "___DEBUG - CONST: " << words[1] << endl;
+                    cout << "___DEBUG_PASS2 - CONST: " << words[1] << endl;
                     #endif
                     positionCounter = positionCounter + 1;
                     procLine = words[1];
                 }
 
                 #ifdef DEBUG
-                cout << "___DEBUG - PositonCounter: " << positionCounter << endl;
+                cout << "___DEBUG_PASS2 - PositonCounter: " << positionCounter << endl;
                 #endif
 
                 lineOk = true;
@@ -199,7 +199,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
             if(lineOk){ //escreve no arquivo apenas se a linha estiver ok
                 preprocFile->writeNextLine(procLine);
                 #ifdef DEBUG
-                cout << "___DEBUG - ProcLine " << procLine << endl;
+                cout << "___DEBUG_PASS2 - ProcLine " << procLine << endl;
                 #endif
                 procLine = "";
             }
@@ -223,8 +223,76 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
 }
 
 bool Passage2::checkLabel(string s, int lineCounter){
+    if(s.back() == ','){
+        s.erase(s.end()-1);
+    }
     if(errorService.getLexical(lineCounter).getTokenType(s) == LABEL){
         return true;
     }
     return false;
+}
+
+bool Passage2::isSymbolOffset(vector<string> words, int labelIndex, int lineCounter){
+    bool check = false;
+    #ifdef DEBUG
+    cout << "___DEBUG_PASS2 - isSymbolOffset chamado " << endl;
+    #endif
+    if(words[labelIndex] != words.back()){
+        if(words[labelIndex+1] == "+"){
+            #ifdef DEBUG
+            cout << "___DEBUG_PASS2 - arg possui + "<< endl;
+            #endif
+            if(errorService.getSintatic(lineCounter).checkSymbolOffsetSintax(words, labelIndex)){
+                #ifdef DEBUG
+                cout << "___DEBUG_PASS2 - sintaxe + correta " << endl;
+                #endif
+                check = true;
+            }
+            else{
+                #ifdef DEBUG
+                cout << "___DEBUG_PASS2 - sintaxe + incorreta " << endl;
+                #endif
+                words.erase(words.begin()+labelIndex+1);    //erro na sintaxe == possui + mas nao possui numero = remove o +, trata como sem offset
+                #ifdef DEBUG
+                cout << "___DEBUG_PASS2 - removido + do argumento " << endl;
+                #endif
+            }
+        }
+        else{   /*DESNECESSARIO - APENAS PARA DEBUG - REMOVER DO FINAL------------------------------------------------------------*/
+            #ifdef DEBUG
+            cout << "___DEBUG_PASS2 - arg nao possui +" << endl;
+            #endif
+        }
+    }
+    else{   /*DESNECESSARIO - APENAS PARA DEBUG - REMOVER DO FINAL------------------------------------------------------------*/
+        #ifdef DEBUG
+        cout << "___DEBUG_PASS2 - arg1 eh o ultimo token " << endl;
+        #endif
+    }
+    return check;
+}
+
+int Passage2::checkSymbolOffset(vector<string> words, int labelIndex, int lineCounter){
+    int offset = 0;
+    if(words[labelIndex] != words.back()){
+        if(words[labelIndex+1] == "+"){
+            if(errorService.getSemantic(lineCounter).isSymbolOffsetCorrect(words[labelIndex], stoi(words[labelIndex+2]))){
+                offset = stoi(words[labelIndex+2]);
+                #ifdef DEBUG
+                cout << "___DEBUG_PASS2 - Label com offset: " << offset << endl;
+                #endif
+            }
+        }
+        else{   /*DESNECESSARIO - APENAS PARA DEBUG - REMOVER DO FINAL------------------------------------------------------------*/
+            #ifdef DEBUG
+            cout << "___DEBUG_PASS2 - Label sem offset: " << offset << endl;
+            #endif
+        }
+    }
+    else{   /*DESNECESSARIO - APENAS PARA DEBUG - REMOVER DO FINAL------------------------------------------------------------*/
+        #ifdef DEBUG
+        cout << "___DEBUG_PASS2 - Label sem offset - ultimo token da linha" << offset << endl;
+        #endif
+    }
+    return offset;
 }

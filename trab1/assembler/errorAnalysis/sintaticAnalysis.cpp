@@ -172,8 +172,14 @@ bool SintaticAnalyser::checkDirectiveSintax(vector<string> &tokens)
 bool SintaticAnalyser::checkSymbolOffsetSintax(vector<string> tokens, int labelIndex){
     lexical.setLineNumber(this->currentLine);
     if(tokens[labelIndex+1] == "+"){
-        if(lexical.getTokenType(tokens[labelIndex+2]) == NUMBER){
-            return true;
+        if(tokens[labelIndex+1] != tokens.back()){
+            if(lexical.getTokenType(tokens[labelIndex+2]) == NUMBER){
+                return true;
+            }
+            else{
+                throwError("Erro na sintaxe de vetores");
+                return false;
+            }
         }
         else{
             throwError("Erro na sintaxe de vetores");

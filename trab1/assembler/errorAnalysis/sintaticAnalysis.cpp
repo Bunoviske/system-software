@@ -5,9 +5,25 @@
 //IMPORTANTE: toda funcao do analisador sintatico so deve ser chamada depois que souber que o primeiro token é valido
 // isso quer dizer que nao se analisa lexicamente tokens[0] em nenhuma funcao!
 
-bool SintaticAnalyser::checkInstructionSintax(vector<string> &tokens)
+bool SintaticAnalyser::checkInstructionSintax(vector<string> tokens)
 {
     lexical.setLineNumber(this->currentLine);
+    //JMP
+    if((tokens[0] == "JMP") || (tokens[0] == "JMPN") || (tokens[0] == "JMPP") || (tokens[0] == "JMPZ")){
+        if(tokens.size() > 2){
+            throwError("Instrucoes de jump aceitam apenas 1 argumento");
+            return false;
+        }
+        else{
+            if(tokens.size() == 1){
+                throwError("Instrucoes de jump precisam de 1 argumento");
+                return false;
+            }
+            else{ //numero de argumentos correto
+                return true;
+            }
+        }
+    }
 
     //TODO - ADD L1 + 1
     return true;

@@ -25,8 +25,8 @@ int main(int argc, char **argv)
     Passage1Service pass1Service(new Passage1());
     pass1Service.runService(fileWithoutExtension + ".pre");
 
-    // Passage2Service pass2Service(new Passage2());
-    // pass2Service.runService(fileWithoutExtension + ".pre", fileWithoutExtension + ".obj");
+    Passage2Service pass2Service(new Passage2());
+    pass2Service.runService(fileWithoutExtension + ".pre", fileWithoutExtension + ".obj");
 
     return 1;
 }

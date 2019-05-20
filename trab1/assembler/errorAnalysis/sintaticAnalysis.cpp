@@ -40,6 +40,7 @@ bool SintaticAnalyser::checkInstructionSintax(vector<string> tokens)
     throwError("Numero errado de argumentos para essa instrucao");
     return false;
 }
+
 bool SintaticAnalyser::checkCopyArguments(vector<string> tokens)
 //codigo igual a funcao que checa chamada de macro. Modularizar depois
 {

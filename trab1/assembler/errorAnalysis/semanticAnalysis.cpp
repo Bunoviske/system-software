@@ -197,21 +197,23 @@ bool SemanticAnalyser::isOperation(string token)
 
 /************* 2nd passage semantic errors **************/
 
-bool SemanticAnalyser::isSymbolDefined(string label)
-{
-    if (!tables.isSymbolInTable(label))
-    {
+bool SemanticAnalyser::isSymbolDefined(string label){
+    if (!tables.isSymbolInTable(label)){
         throwError("Label nao definido");
         return false;
     }
     return true;
 }
 
-bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset)
-{
+bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset){
     int currentAddress, nextAddress;
-    currentAddress = tables.getSymbolAddress(label);
-    nextAddress = tables.getNextSymbolAddress(label); //sempre vai ter um proximo offset (0LastSymbolAux)
+    if(isSymbolDefined(label)){
+        currentAddress = tables.getSymbolAddress(label);
+        nextAddress = tables.getNextSymbolAddress(label); //sempre vai ter um proximo offset (0LastSymbolAux)
+    }
+    else{
+        return false;
+    }
 
     if (currentAddress + offset < nextAddress)
     {
@@ -268,7 +270,7 @@ bool SemanticAnalyser::checkInstructionSemantic(vector<string> tokens)
             if (tokenType == COPY_ARGUMENT || tokenType == LABEL)
                 numLabel++;
 
-            if (numLabel == 2 && tables.isInConstTable(tokens[i])) 
+            if (numLabel == 2 && tables.isInConstTable(tokens[i]))
             //sintaxe vai estar correta, entao ultimo label pode ser acessado por token[i] diretamente
             {
                 throwError("Nao pode alterar valor constante");
@@ -281,10 +283,12 @@ bool SemanticAnalyser::checkInstructionSemantic(vector<string> tokens)
 
 bool SemanticAnalyser::checkJumpToCorrectSection(vector<string> tokens)
 {
-    if (tables.getSymbolAddress(tokens[1]) < positionSectionData)
-    {
-        return true;
+    if(isSymbolDefined(tokens[1])){
+        if (tables.getSymbolAddress(tokens[1]) < positionSectionData)
+        {
+            return true;
+        }
+        throwError("Jump para a secao de dados");
     }
-    throwError("Jump para a secao de dados");
     return false;
 }

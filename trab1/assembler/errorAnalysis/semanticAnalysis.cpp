@@ -210,13 +210,13 @@ bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset){
     if(isSymbolDefined(label)){
         currentAddress = tables.getSymbolAddress(label);
         nextAddress = tables.getNextSymbolAddress(label); //sempre vai ter um proximo offset (0LastSymbolAux)
+        cout << "current " << currentAddress << " next " << nextAddress << endl;
     }
     else{
         return false;
     }
 
-    if (currentAddress + offset < nextAddress)
-    {
+    if (currentAddress + offset < nextAddress){
         return true;
     }
 
@@ -227,6 +227,7 @@ bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset){
 //so se entra nessa funcao se souber que a sintaxe esta certa, entao pode acessar vetor sem verificar
 bool SemanticAnalyser::checkInstructionSemantic(vector<string> tokens)
 {
+    lexical.setLineNumber(this->currentLine);
     if ((tokens[0] == "JMP") || (tokens[0] == "JMPN") || (tokens[0] == "JMPP") || (tokens[0] == "JMPZ"))
     {
         return checkJumpToCorrectSection(tokens);

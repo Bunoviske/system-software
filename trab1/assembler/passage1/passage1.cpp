@@ -1,7 +1,7 @@
 #include "passage1.hpp"
 
 //utilizado pela funcao runOperation, para guardar o label na tabela de CONST, caso seja essa a diretiva
-string globalLabel; 
+string globalLabel;
 
 #define DEBUG 1 //liga varios prints para acompanhar a execucao
 //override
@@ -42,6 +42,9 @@ void Passage1::run(FileReader *rawFile){
 
         if (line == "-1"){
             eof = true;
+            #ifdef DEBUG
+            cout << "___DEBUG_PASS1 - 0LastSymbolAux " << positionCounter <<  endl;
+            #endif
             tables.setSymbolTable("0lastSymbolAux", positionCounter);
 
 
@@ -145,7 +148,7 @@ int Passage1::runOperation(vector<string> words, int lineCounter, int positionCo
             // }
             if(errorService.getSintatic(lineCounter).checkDirectiveSintax(words))
                 errorService.getSemantic(lineCounter).setSectionPosition(words[1], positionCounter);
-                
+
             #ifdef DEBUG
             cout << "___DEBUG_PASS1 - Diretiva SECTION - Guarda posicao das sections" << endl;
             #endif

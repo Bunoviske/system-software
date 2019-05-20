@@ -1,6 +1,6 @@
 #include "passage1.hpp"
 
-#define DEBUG 1 //liga varios prints para acompanhar a execucao
+//#define DEBUG 1 //liga varios prints para acompanhar a execucao
 //override
 FileReader* Passage1::getFileReader(string filename){
     #ifdef DEBUG
@@ -21,7 +21,7 @@ void Passage1::run(FileReader *rawFile){
     string instruction, line, operation;
 
     positionCounter = 0;
-    lineCounter = 1;
+    lineCounter = 0;
 
     #ifdef DEBUG
     cout << "___DEBUG_PASS1 - PASSAGEM1" << endl;

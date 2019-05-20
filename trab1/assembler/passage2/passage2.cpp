@@ -54,148 +54,157 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
 
             //CHECA O MESMO QUE PASSAGEM 1 APOS DEFINICAO DE LABEL
             if(tokenType == INSTRUCTION){
-                #ifdef DEBUG
-                cout << "___DEBUG_PASS2 - Instrucao: " << words[0] << endl;
-                #endif
-
-                /*---------words[0] == instrucao;--------*/
-
-                //checa sintaxe da Instrucao
-                if((errorService.getSintatic(lineCounter).checkInstructionSintax(words) && (errorService.getSemantic(lineCounter).checkInstructionSemantic(words)))){
-
-
-                    argNumber = tables.getInstructionOperands(words[0]);
+                if(errorService.getSemantic(lineCounter).isInstructionInCorrectSection()){
                     #ifdef DEBUG
-                    cout << "___DEBUG_PASS2 - argnumber: " << argNumber << endl;
+                    cout << "___DEBUG_PASS2 - Instrucao: " << words[0] << endl;
                     #endif
 
-                    if(argNumber >= 1){
-                        arg1label = checkLabel(words[1], lineCounter);  //primeiro argumento eh label
-                        if(isSymbolOffset(words, 1, lineCounter)){
-                            #ifdef DEBUG
-                            cout << "___DEBUG_PASS2 - arg1 possui offset" << endl;
-                            #endif
-                            arg2index = 4;
-                        }
-                        else{
-                            #ifdef DEBUG
-                            cout << "___DEBUG_PASS2 - arg1 nao possui offset" << endl;
-                            #endif
-                            arg2index = 2;
-                        }
-                        if(words[0] == "COPY"){
-                            #ifdef DEBUG
-                            cout << "___DEBUG_PASS2 - copy - virgula removida do fim do arg1: " << words[arg2index-1] << endl;
-                            #endif
-                            words[1].erase(words[arg2index-1].end()-1); //remove a virgula do final do primeiro operando do copy
-                        }
-                        if(argNumber == 2){
-                            arg2label = checkLabel(words[arg2index], lineCounter);  //segundo argumento eh label
-                        }
-                    }
+                    /*---------words[0] == instrucao;--------*/
+
+                    //checa sintaxe da Instrucao
+                    if((errorService.getSintatic(lineCounter).checkInstructionSintax(words) && (errorService.getSemantic(lineCounter).checkInstructionSemantic(words)))){
 
 
-                    #ifdef DEBUG
-                    cout << "___DEBUG_PASS2 - Numero de argumentos " << argNumber << endl;
-                    cout << "___DEBUG_PASS2 - 1 label: " << arg1label << " 2 label: " << arg2label << endl;
-                    #endif
+                        argNumber = tables.getInstructionOperands(words[0]);
+                        #ifdef DEBUG
+                        cout << "___DEBUG_PASS2 - argnumber: " << argNumber << endl;
+                        #endif
 
-
-                    procLine = to_string(tables.getInstructionCode(words[0]));
-                    #ifdef DEBUG
-                    cout << "___DEBUG_PASS2 - Code da instrucao " << tables.getInstructionCode(words[0]) << endl;
-                    #endif
-
-                    if(argNumber >= 1){ //1 ou 2 argumentos
-                        if(arg1label){  //primeiro eh label
-                            if(errorService.getSemantic(lineCounter).isSymbolDefined(words[1])){ //esta definido
-                                procLine = procLine + to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter));
+                        if(argNumber >= 1){
+                            arg1label = checkLabel(words[1], lineCounter);  //primeiro argumento eh label
+                            if(isSymbolOffset(words, 1, lineCounter)){
                                 #ifdef DEBUG
-                                cout << "___DEBUG_PASS2 - Endereco do label " << to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter)) << endl;
+                                cout << "___DEBUG_PASS2 - arg1 possui offset" << endl;
                                 #endif
-                                lineOk = true;
+                                arg2index = 4;
                             }
-                            else{ //nao definido - instrucao nao sera compilada
-                                lineOk = false;
+                            else{
+                                #ifdef DEBUG
+                                cout << "___DEBUG_PASS2 - arg1 nao possui offset" << endl;
+                                #endif
+                                arg2index = 2;
                             }
-                        }
-                        else{
-                            procLine = procLine + words[1]; //se nao for label, eh imediato ??
+                            if(words[0] == "COPY"){
+                                #ifdef DEBUG
+                                cout << "___DEBUG_PASS2 - copy - virgula removida do fim do arg1: " << words[arg2index-1] << endl;
+                                #endif
+                                words[1].erase(words[arg2index-1].end()-1); //remove a virgula do final do primeiro operando do copy
+                            }
+                            if(argNumber == 2){
+                                arg2label = checkLabel(words[arg2index], lineCounter);  //segundo argumento eh label
+                            }
                         }
 
-                        if(argNumber == 2){ //dois argumentos
-                            if(arg2label){ //segundo eh label
-                                if(errorService.getSemantic(lineCounter).isSymbolDefined(words[arg2index])){ //esta definido
-                                    procLine = procLine + to_string(tables.getSymbolAddress(words[arg2index]) + checkSymbolOffset(words, 2, lineCounter));
+
+                        #ifdef DEBUG
+                        cout << "___DEBUG_PASS2 - Numero de argumentos " << argNumber << endl;
+                        cout << "___DEBUG_PASS2 - 1 label: " << arg1label << " 2 label: " << arg2label << endl;
+                        #endif
+
+
+                        procLine = to_string(tables.getInstructionCode(words[0]));
+                        #ifdef DEBUG
+                        cout << "___DEBUG_PASS2 - Code da instrucao " << tables.getInstructionCode(words[0]) << endl;
+                        #endif
+
+                        if(argNumber >= 1){ //1 ou 2 argumentos
+                            if(arg1label){  //primeiro eh label
+                                if(errorService.getSemantic(lineCounter).isSymbolDefined(words[1])){ //esta definido
+                                    procLine = procLine + to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter));
+                                    #ifdef DEBUG
+                                    cout << "___DEBUG_PASS2 - Endereco do label " << to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter)) << endl;
+                                    #endif
                                     lineOk = true;
                                 }
-                                else{   //nao definido - instrucao nao sera compilada
+                                else{ //nao definido - instrucao nao sera compilada
                                     lineOk = false;
                                 }
                             }
-                            else{   //se nao for label, eh imediato ??
-                                procLine = procLine + words[2];
+                            else{
+                                procLine = procLine + words[1]; //se nao for label, eh imediato ??
+                            }
+
+                            if(argNumber == 2){ //dois argumentos
+                                if(arg2label){ //segundo eh label
+                                    if(errorService.getSemantic(lineCounter).isSymbolDefined(words[arg2index])){ //esta definido
+                                        procLine = procLine + to_string(tables.getSymbolAddress(words[arg2index]) + checkSymbolOffset(words, 2, lineCounter));
+                                        lineOk = true;
+                                    }
+                                    else{   //nao definido - instrucao nao sera compilada
+                                        lineOk = false;
+                                    }
+                                }
+                                else{   //se nao for label, eh imediato ??
+                                    procLine = procLine + words[2];
+                                }
                             }
                         }
-                    }
-                    //else - redundante. caso sejam 0 argumentos, nada extra precisa ser feito
+                        //else - redundante. caso sejam 0 argumentos, nada extra precisa ser feito
 
-                    #ifdef DEBUG
-                    cout << "___DEBUG_PASS2 - procLine: " << procLine << endl;
-                    cout << "___DEBUG_PASS2 - lineOk: " << lineOk << endl;
-                    #endif
-
-                    if(lineOk){
-                        positionCounter = positionCounter + tables.getInstructionSize(words[0]);
                         #ifdef DEBUG
-                        cout << "___DEBUG_PASS2 - PositonCounter: " << positionCounter << endl;
+                        cout << "___DEBUG_PASS2 - procLine: " << procLine << endl;
+                        cout << "___DEBUG_PASS2 - lineOk: " << lineOk << endl;
                         #endif
+
+                        if(lineOk){
+                            positionCounter = positionCounter + tables.getInstructionSize(words[0]);
+                            #ifdef DEBUG
+                            cout << "___DEBUG_PASS2 - PositonCounter: " << positionCounter << endl;
+                            #endif
+                        }
+
+
+
+
+                        //se tudo ok, contador de posicao = contador de posicao + tamanho da Instrucao
+                        //gera codigo objeto conforme formato da instrucao
+                        //CHECA SEMANTICA DA INSTRUCAO
+
                     }
-
-
-
-
-                    //se tudo ok, contador de posicao = contador de posicao + tamanho da Instrucao
-                    //gera codigo objeto conforme formato da instrucao
-                    //CHECA SEMANTICA DA INSTRUCAO
-
+                }
+                else{
+                    lineOk = false;
                 }
             }
 
             if(tokenType == DIRECTIVE){
-                lineOk = true;
-                //checa sintaxe da diretiva -- ja checado na primeira passagem
-                //executa diretiva
-                if(words[0] == "SPACE"){
+                if(errorService.getSemantic(lineCounter).isDirectiveInCorrectSection(words[0])){
+                    lineOk = true;
+                    //checa sintaxe da diretiva -- ja checado na primeira passagem
+                    //executa diretiva
+                    if(words[0] == "SPACE"){
+                        #ifdef DEBUG
+                        cout << "___DEBUG_PASS2 - SPACE: " << checkSpaceSize(words) << endl;
+                        #endif
+                        positionCounter = positionCounter + checkSpaceSize(words);
+                        for(i=0;i<checkSpaceSize(words);i++){
+                            procLine = procLine + "00";
+                        }
+                    }
+                    if(words[0] == "CONST"){
+                        #ifdef DEBUG
+                        cout << "___DEBUG_PASS2 - CONST: " << words[1] << endl;
+                        #endif
+                        positionCounter = positionCounter + 1;
+                        if(errorService.getLexical(lineCounter).isHexadecimalNumber(words[1])){
+                            words[1].erase(words[1].begin(), words[1].begin()+2);
+                            procLine = to_string(stoi(words[1], NULL, 16));
+                        }
+                        else{
+                            procLine = words[1];
+                        }
+                    }
+                    if(words[0] == "SECTION"){
+                        lineOk = false;
+                    }
+
                     #ifdef DEBUG
-                    cout << "___DEBUG_PASS2 - SPACE: " << checkSpaceSize(words) << endl;
+                    cout << "___DEBUG_PASS2 - PositonCounter: " << positionCounter << endl;
                     #endif
-                    positionCounter = positionCounter + checkSpaceSize(words);
-                    for(i=0;i<checkSpaceSize(words);i++){
-                        procLine = procLine + "00";
-                    }
                 }
-                if(words[0] == "CONST"){
-                    #ifdef DEBUG
-                    cout << "___DEBUG_PASS2 - CONST: " << words[1] << endl;
-                    #endif
-                    positionCounter = positionCounter + 1;
-                    if(errorService.getLexical(lineCounter).isHexadecimalNumber(words[1])){
-                        words[1].erase(words[1].begin(), words[1].begin()+2);
-                        procLine = to_string(stoi(words[1], NULL, 16));
-                    }
-                    else{
-                        procLine = words[1];
-                    }
-                }
-                if(words[0] == "SECTION"){
-                    lineCounter--; //para nao incrementar o linecounter quando for section
+                else{
                     lineOk = false;
                 }
-
-                #ifdef DEBUG
-                cout << "___DEBUG_PASS2 - PositonCounter: " << positionCounter << endl;
-                #endif
 
 
 

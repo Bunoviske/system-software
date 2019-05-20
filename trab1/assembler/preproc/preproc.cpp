@@ -20,8 +20,8 @@ void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
     // cout << errorService.getSintatic(1).checkMacroCallSintax(tokens) << endl;
     // return;
 
-    cout << "\nPreprocessing debug\n"
-         << endl;
+    //cout << "\nPreprocessing debug\n"
+    //     << endl;
 
     lineNumber = 1;
     bool eof = false;
@@ -34,8 +34,8 @@ void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
             parseCodeLine(line, rawFile, preprocFile);
     }
 
-    cout << "\nEnd Preprocessing debug\n"
-         << endl;
+    //cout << "\nEnd Preprocessing debug\n"
+    //     << endl;
 }
 
 void PreProcessing::parseCodeLine(string line, FileReader *rawFile, FileWriter *preprocFile)
@@ -102,7 +102,7 @@ void PreProcessing::parseTokens(vector<string> &tokens, FileReader *rawFile, Fil
         else
         {
             assemblePreprocLine(tokens); //essa parte do codigo é redundante (nunca vai entrar aqui)
-            cout << "TOKEN TYPE NAO UTILIZADO NO PREPROCESSAMENTO: " << tokenType << endl;
+            //cout << "TOKEN TYPE NAO UTILIZADO NO PREPROCESSAMENTO: " << tokenType << endl;
         }
     }
     else
@@ -144,7 +144,7 @@ void PreProcessing::getLabelDefInNextLine(vector<string> *tokens, FileReader *ra
         nextLine = toUpperCase(rawFile->readNextLine());
         if (nextLine == "-1")
         {
-            cout << "Nao ha linha depois do label (vai ser gerado erro sintatico)" << endl;
+            //cout << "Nao ha linha depois do label (vai ser gerado erro sintatico)" << endl;
             break;
         }
         nextLineTokens = getTokensOfLine(nextLine);
@@ -188,7 +188,7 @@ bool PreProcessing::tokensNeedPreproc(vector<string> &tokens)
 void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
 {
 
-    cout << "label definition" << endl;
+    //cout << "label definition" << endl;
 
     //Se voltar true, quer dizer que as diretivas contem o numero correto de argumentos, entao
     //é possivel acessá-los sem verificar se vai dar seg fault
@@ -200,7 +200,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
                 !errorService.getSemantic(lineNumber).isEquAlreadyDefined(tokens[0]))
             {
-                cout << "equ def" << endl;
+                //cout << "equ def" << endl;
                 tables.setEquTable(tokens[0], tokens[2]);
             }
             else
@@ -212,7 +212,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
             if (errorService.getSemantic(lineNumber).isDirectiveInCorrectSection(tokens[1]) &&
                 !errorService.getSemantic(lineNumber).isMacroAlreadyDefined(tokens[0]))
             {
-                cout << "macro def" << endl;
+                //cout << "macro def" << endl;
                 tables.setMacroAtTable(tokens[0], macroProcessing.getNumberOfMacroArguments(tokens, true),
                                        macroProcessing.getMacroAssemblyCode(tokens, rawFile));
                 preprocTokens.push_back(tokens[0]); //adiciona no vetor que indica quando deve haver preproc para macro
@@ -223,7 +223,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
         else
         {
             assemblePreprocLine(tokens); //redundante
-            cout << "DEFINICAO DE LABEL NAO UTILIZADO NO PREPROCESSAMENTO: LINHA" << lineNumber << endl;
+            //cout << "DEFINICAO DE LABEL NAO UTILIZADO NO PREPROCESSAMENTO: LINHA" << lineNumber << endl;
         }
     }
     else
@@ -232,7 +232,7 @@ void PreProcessing::analyseDefLabel(vector<string> &tokens, FileReader *rawFile)
 
 void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile)
 {
-    cout << "diretiva de preproc" << endl;
+    //cout << "diretiva de preproc" << endl;
 
     //Se voltar true, quer dizer que as diretivas contem o numero correto de argumentos
     if (errorService.getSintatic(lineNumber).checkDirectiveSintax(tokens))
@@ -248,7 +248,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
                         skipNextMacroLine = true;
                     else
                     {
-                        cout << "pula proxima" << endl;
+                        //cout << "pula proxima" << endl;
                         // TODO - EQU PODE RECEBER NUMERO NEGATIVO NO IF ?????
                         // se a proxima linha nao puder ser escrita, le a proxima que tem algum conteudo e nao faz nada
                         string line;
@@ -257,7 +257,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
                             line = toUpperCase(rawFile->readNextLine());
                             if (line == "-1")
                             {
-                                cout << "Nao ha linha para incluir depois do if" << endl;
+                                //cout << "Nao ha linha para incluir depois do if" << endl;
                                 break;
                             }
                         } while (getTokensOfLine(line).size() == 0);
@@ -275,7 +275,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
         else
         {
             assemblePreprocLine(tokens); //redundante
-            cout << "DIRETIVA NAO UTILIZADA NO PREPROCESSAMENTO. LINHA: " << lineNumber << endl;
+            //cout << "DIRETIVA NAO UTILIZADA NO PREPROCESSAMENTO. LINHA: " << lineNumber << endl;
         }
     }
     else
@@ -284,7 +284,7 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
 
 void PreProcessing::analyseMacroCall(vector<string> &tokens, FileReader *rawFile, FileWriter *preprocFile)
 {
-    cout << "macro call" << endl;
+    //cout << "macro call" << endl;
 
     int numMacroArgs = -1; //essa variavel auxilia na logica da funcao semantica isMacroCallCorrect. Ela recebe o numero de 
     //argumentos que a chamada de macro tem durante a analise sintatica

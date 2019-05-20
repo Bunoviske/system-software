@@ -1,6 +1,6 @@
 #include "passage2.hpp"
 
-#define DEBUG 1   //prints para acompanhar a execucao
+//#define DEBUG 1   //prints para acompanhar a execucao
 
 //override
 FileReader* Passage2::getFileReader(string filename){

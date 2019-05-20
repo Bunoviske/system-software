@@ -207,13 +207,12 @@ bool SemanticAnalyser::isSymbolDefined(string label){
 
 bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset){
     int currentAddress, nextAddress;
-    if(isSymbolDefined(label)){
+    if(tables.isSymbolInTable(label)){
         currentAddress = tables.getSymbolAddress(label);
         nextAddress = tables.getNextSymbolAddress(label); //sempre vai ter um proximo offset (0LastSymbolAux)
-        cout << "current " << currentAddress << " next " << nextAddress << endl;
     }
     else{
-        return false;
+        return false; //redundante pois ja foi verificado a definicao do simbolo
     }
 
     if (currentAddress + offset < nextAddress){

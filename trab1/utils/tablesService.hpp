@@ -3,6 +3,18 @@
 
 #include "tables.hpp"
 
+struct comp
+{
+	template<typename T>
+	bool operator()(const T& l, const T& r) const
+	{
+		if (l.second != r.second)
+			return l.second < r.second;
+
+		return l.first < r.first;
+	}
+};
+
 class TablesService : private Tables
 {
 

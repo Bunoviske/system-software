@@ -3,7 +3,7 @@
 //utilizado pela funcao runOperation, para guardar o label na tabela de CONST, caso seja essa a diretiva
 string globalLabel;
 
-#define DEBUG 1 //liga varios prints para acompanhar a execucao
+//#define DEBUG 1 //liga varios prints para acompanhar a execucao
 //override
 FileReader* Passage1::getFileReader(string filename){
     #ifdef DEBUG
@@ -46,8 +46,6 @@ void Passage1::run(FileReader *rawFile){
             cout << "___DEBUG_PASS1 - 0LastSymbolAux " << positionCounter <<  endl;
             #endif
             tables.setSymbolTable("0lastSymbolAux", positionCounter);
-
-
         }
         else{
             //separa linha em rotulo, operacao e operando

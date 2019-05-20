@@ -70,9 +70,17 @@ bool TablesService::isSymbolInTable(string symbol)
 
 int TablesService::getNextSymbolAddress(string symbol)
 {
-    map<string, int>::iterator it = symbolsTable.find(symbol); //iterator comecando no simbolo conhecido
-    it++;
-    return it->second;
+    std::set<std::pair<string, int>, comp> set(symbolsTable.begin(), symbolsTable.end()); //ordena
+    bool foundCurrentSymbol = false;
+    for (auto const &pair : set)
+    {
+        if (foundCurrentSymbol){
+            //cout << pair.first << ' ' << pair.second << endl;
+            return pair.second;
+        }
+        if (pair.first == symbol)
+            foundCurrentSymbol = true;        
+    }
 }
 /****************** MACRO *******************/
 

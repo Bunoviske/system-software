@@ -19,7 +19,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
     string line, procLine = "";
     bool eof = false;
     bool arg1label, arg2label, lineOk;
-
+    bool firstObjLine = true;
 
 
     lineCounter = 1;
@@ -104,7 +104,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                         #endif
 
 
-                        procLine = to_string(tables.getInstructionCode(words[0]));
+                        procLine += to_string(tables.getInstructionCode(words[0]));
                         #ifdef DEBUG
                         cout << "___DEBUG_PASS2 - Code da instrucao " << tables.getInstructionCode(words[0]) << endl;
                         #endif
@@ -200,10 +200,10 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                     positionCounter = positionCounter + 1;
                     if(errorService.getLexical(lineCounter).isHexadecimalNumber(words[1])){ //nao gera erro
                         words[1].erase(words[1].begin(), words[1].begin()+2);
-                        procLine = to_string(stoi(words[1], NULL, 16));
+                        procLine += to_string(stoi(words[1], NULL, 16));
                     }
                     else{
-                        procLine = words[1];
+                        procLine += words[1];
                     }
                 }
                 if(words[0] == "SECTION"){
@@ -224,11 +224,16 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
             //
             // }
 
-
             lineCounter++;
 
             if(lineOk){ //escreve no arquivo apenas se a linha estiver ok
-                objFile->writeNextLine(procLine); //TODO - ESCREVER NO ARQUIVO E ADICIONAR UM ' ' NO FINAL DE PROCLINE
+                if (firstObjLine){
+                    firstObjLine = false;                    
+                }
+                else{
+                    procLine = " " + procLine;
+                }
+                objFile->writeNextOperation(procLine); //TODO - ESCREVER NO ARQUIVO E ADICIONAR UM ' ' NO FINAL DE PROCLINE
                 #ifdef DEBUG
                 cout << "___DEBUG_PASS2 - ProcLine " << procLine << endl;
                 #endif

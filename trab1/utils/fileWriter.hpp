@@ -11,6 +11,7 @@ public:
     ~FileWriter(); //destrutor
 
     void writeNextLine(string line);
+    void writeNextOperation(string line);
    
 };
 

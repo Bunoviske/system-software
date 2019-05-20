@@ -12,7 +12,7 @@ public:
 
     Passage2() { } //construtor
     ~Passage2() { }
-    void run(FileReader* rawFile, FileWriter* preprocFile);
+    void run(FileReader* rawFile, FileWriter* objFile);
     FileReader* getFileReader(string filename);
     FileWriter* getFileWriter(string filename);
 

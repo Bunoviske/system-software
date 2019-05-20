@@ -13,10 +13,10 @@ FileWriter* Passage2::getFileWriter(string filename){
 }
 
 //override
-void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
+void Passage2::run(FileReader *rawFile, FileWriter *objFile){
     vector<string> words;
     int tokenType, lineCounter, positionCounter, argNumber, i, arg1offset, arg2offset, arg2index;
-    string line, procLine;
+    string line, procLine = "";
     bool eof = false;
     bool arg1label, arg2label, lineOk;
 
@@ -28,7 +28,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
     #ifdef DEBUG
     cout << "___DEBUG_PASS2 - PASSAGEM2" << endl;
     #endif
-    errorService.getSemantic(lineCounter).checkSectionOrder();
+    errorService.getSemantic(lineCounter).checkSectionOrder(); //checa se tem secao de texto e se a de dados vem depois
 
     while(!eof){
 
@@ -61,7 +61,8 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
 
                     /*---------words[0] == instrucao;--------*/
 
-                    //checa sintaxe da Instrucao
+                    //checa sintaxe da Instrucao. Nesse caso, checa apenas se o numero de argumentos é valido.
+                    //posteriormente sera verificado se os operandos sao validos
                     if((errorService.getSintatic(lineCounter).checkInstructionSintax(words) && (errorService.getSemantic(lineCounter).checkInstructionSemantic(words)))){
 
 
@@ -110,7 +111,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                         if(argNumber >= 1){ //1 ou 2 argumentos
                             if(arg1label){  //primeiro eh label
                                 if(errorService.getSemantic(lineCounter).isSymbolDefined(words[1])){ //esta definido
-                                    procLine = procLine + to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter));
+                                    procLine = procLine + ' ' + to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter));
                                     #ifdef DEBUG
                                     cout << "___DEBUG_PASS2 - Endereco do label " << to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter)) << endl;
                                     #endif
@@ -121,13 +122,13 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                                 }
                             }
                             else{
-                                procLine = procLine + words[1]; //se nao for label, eh imediato ??
+                                procLine = procLine + ' ' + words[1]; //se nao for label, eh imediato ??
                             }
 
                             if(argNumber == 2){ //dois argumentos
                                 if(arg2label){ //segundo eh label
                                     if(errorService.getSemantic(lineCounter).isSymbolDefined(words[arg2index])){ //esta definido
-                                        procLine = procLine + to_string(tables.getSymbolAddress(words[arg2index]) + checkSymbolOffset(words, 2, lineCounter));
+                                        procLine = procLine + ' ' + to_string(tables.getSymbolAddress(words[arg2index]) + checkSymbolOffset(words, 2, lineCounter));
                                         lineOk = true;
                                     }
                                     else{   //nao definido - instrucao nao sera compilada
@@ -135,7 +136,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                                     }
                                 }
                                 else{   //se nao for label, eh imediato ??
-                                    procLine = procLine + words[2];
+                                    procLine = procLine + ' ' + words[2];
                                 }
                             }
                         }
@@ -176,12 +177,16 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
                         #ifdef DEBUG
                         cout << "___DEBUG_PASS2 - SPACE: " << checkSpaceSize(words) << endl;
                         #endif
-                        positionCounter = positionCounter + checkSpaceSize(words);
-                        for(i=0;i<checkSpaceSize(words);i++){
+                        int spaceNum = checkSpaceSize(words);
+                        positionCounter = positionCounter + spaceNum;
+                        for(i=0;i<spaceNum;i++){
                             procLine = procLine + "00";
+                            if (i < spaceNum-1) //nao add espaco no ultimo space
+                                procLine += ' ';
                         }
                     }
-                    if(words[0] == "CONST"){
+                    if(words[0] == "CONST" && words.size() == 2)
+                    { //garante q ha pelo menos duas palavras. O erro é dado na passagem 1
                         #ifdef DEBUG
                         cout << "___DEBUG_PASS2 - CONST: " << words[1] << endl;
                         #endif
@@ -219,7 +224,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
             lineCounter++;
 
             if(lineOk){ //escreve no arquivo apenas se a linha estiver ok
-                preprocFile->writeNextLine(procLine);
+                objFile->writeNextLine(procLine); //TODO - ESCREVER NO ARQUIVO E ADICIONAR UM ' ' NO FINAL DE PROCLINE
                 #ifdef DEBUG
                 cout << "___DEBUG_PASS2 - ProcLine " << procLine << endl;
                 #endif
@@ -293,8 +298,8 @@ bool Passage2::isSymbolOffset(vector<string> words, int labelIndex, int lineCoun
 
 int Passage2::checkSymbolOffset(vector<string> words, int labelIndex, int lineCounter){
     int offset = 0;
-    if(words[labelIndex] != words.back()){
-        if(words[labelIndex+1] == "+"){
+    if(words[labelIndex] != words.back()){ 
+        if(words[labelIndex+1] == "+" && words[labelIndex + 1] != words.back()){
             if(errorService.getSemantic(lineCounter).isSymbolOffsetCorrect(words[labelIndex], stoi(words[labelIndex+2]))){
                 offset = stoi(words[labelIndex+2]);
                 #ifdef DEBUG

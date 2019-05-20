@@ -39,6 +39,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
         else{
             words = getTokensOfLine(line);
             tokenType = errorService.getLexical(lineCounter).getTokenType(words[0]);
+            lineOk = false;
 
             #ifdef DEBUG
             cout << "___DEBUG_PASS2 - token: " << words[0] << " tokenType: " << tokenType << endl;
@@ -108,6 +109,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                         cout << "___DEBUG_PASS2 - Code da instrucao " << tables.getInstructionCode(words[0]) << endl;
                         #endif
 
+
                         if(argNumber >= 1){ //1 ou 2 argumentos
                             if(arg1label){  //primeiro eh label
                                 if(errorService.getSemantic(lineCounter).isSymbolDefined(words[1])){ //esta definido
@@ -122,6 +124,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                                 }
                             }
                             else{
+                                // lineOk = false;
                                 // procLine = procLine + ' ' + words[1]; //se nao for label, eh imediato ??
                             }
 
@@ -136,9 +139,13 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                                     }
                                 }
                                 else{   //se nao for label, eh imediato ??
+                                    // lineOk = false;
                                     // procLine = procLine + ' ' + words[2];
                                 }
                             }
+                        }
+                        else if(argNumber == 0){
+                            lineOk = true;
                         }
                         //else - redundante. caso sejam 0 argumentos, nada extra precisa ser feito
 
@@ -225,8 +232,8 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                 #ifdef DEBUG
                 cout << "___DEBUG_PASS2 - ProcLine " << procLine << endl;
                 #endif
-                procLine = "";
             }
+            procLine = "";
         }
 
 

@@ -36,6 +36,21 @@ bool TablesService::isInstructionInTable(string instruction)
     return !(instructionsTable.find(instruction) == instructionsTable.end());
 }
 
+/****************** CONST *******************/
+
+bool TablesService::isInConstTable(string label)
+{
+    return !(constTable.find(label) == constTable.end());
+}
+string TablesService::getConstTable(string label)
+{
+    return constTable[label];
+}
+void TablesService::setConstTable(string label, string value)
+{
+    constTable[label] = value;
+}
+
 /****************** SIMBOLOS *******************/
 
 int TablesService::getSymbolAddress(string symbol)
@@ -53,8 +68,9 @@ bool TablesService::isSymbolInTable(string symbol)
     return !(symbolsTable.find(symbol) == symbolsTable.end());
 }
 
-int TablesService::getNextSymbolAddress(string symbol){
-    map<string, int>::iterator it = symbolsTable.find(symbol);  //iterator comecando no simbolo conhecido
+int TablesService::getNextSymbolAddress(string symbol)
+{
+    map<string, int>::iterator it = symbolsTable.find(symbol); //iterator comecando no simbolo conhecido
     it++;
     return it->second;
 }
@@ -95,10 +111,11 @@ bool TablesService::isLabelInEquTable(string label)
 {
     return !(equTable.find(label) == equTable.end());
 }
-map<string,string> TablesService::getEquTable()
+map<string, string> TablesService::getEquTable()
 {
     return equTable;
 }
-void TablesService::setEquTable(string label, string value) {
+void TablesService::setEquTable(string label, string value)
+{
     equTable[label] = value;
 }

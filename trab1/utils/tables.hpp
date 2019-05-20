@@ -87,6 +87,7 @@ protected:
     map<string, string> equTable; //string representa o rotulo e inteiro represento o numero
     map<string, Mnt> mnt;
     map<int, string> mdt; //primeiro numero se refere a "linha" da tabela e a string é a macro
+    map<string, string> constTable;
 
 };
 

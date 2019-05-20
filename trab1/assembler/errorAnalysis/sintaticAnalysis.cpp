@@ -99,7 +99,7 @@ bool SintaticAnalyser::checkMacroCallSintax(vector<string> &tokens, int *numMacr
             }
         }
         *numMacroArgs = numArgs; //retorna por ponteiro o numero de argumentos da macro
-        return true; //se passar pelo loop sem erros, esta tudo certo
+        return true;             //se passar pelo loop sem erros, esta tudo certo
     }
     else
     {
@@ -313,15 +313,29 @@ bool SintaticAnalyser::checkSpaceSintax(vector<string> &tokens)
 {
     if (checkDirectiveNumOperands(tokens))
     {
-        if (tokens.size() == 2) //so analisa quando tem argumentos.
-                                //checkDirectiveNumOperands() garante que numero de argumento está correto
+        if (tokens.size() == 2)
+        { //so analisa quando tem argumentos.
+            //checkDirectiveNumOperands() garante que numero de argumento está correto
             if (lexical.getTokenType(tokens[1]) == NUMBER)
-                return true;
+            {
+                if (!lexical.isHexadecimalNumber(tokens[1]))
+                {
+                    if (stoi(tokens[1], NULL, 10) >= 0)
+                        return true;
+                    else
+                    {
+                        throwError("Argumento deve ser um numero positivo");
+                        return false;
+                    }
+                }
+                return true; //se chegar aqui, numero é hexadecimal e considera-se valido
+            }
             else
             {
                 throwError("Argumento deve ser um numero");
                 return false;
             }
+        }
         else
             return true; //apenas a diretiva SPACE sem argumentos
     }

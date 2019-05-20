@@ -29,7 +29,7 @@ public:
     void setSectionLine(string section); //currentLine é usada para determinar a linha da secao atual
 
 
-    void checkSectionOrder(); //TODO - chamar essa funcao antes da segunda passagem!
+    void checkSectionOrder(); //chamar essa funcao antes da segunda passagem!
 
     /*********** preproc semantic errors **************/
     bool isLabelInEquTable(string label);

@@ -1,6 +1,9 @@
 #include "passage1.hpp"
 
-//#define DEBUG 1 //liga varios prints para acompanhar a execucao
+//utilizado pela funcao runOperation, para guardar o label na tabela de CONST, caso seja essa a diretiva
+string globalLabel; 
+
+#define DEBUG 1 //liga varios prints para acompanhar a execucao
 //override
 FileReader* Passage1::getFileReader(string filename){
     #ifdef DEBUG
@@ -70,6 +73,7 @@ void Passage1::run(FileReader *rawFile){
                     }
                     else{   //nao achou
                         //nao achou - insere rotulo e contador de posicao na tabela
+                        globalLabel = words[0];
                         tables.setSymbolTable(words[0], positionCounter);
                         #ifdef DEBUG
                         cout << "___DEBUG_PASS1 - LABEL nao encontrado na tabela, inserido" << endl;
@@ -151,6 +155,7 @@ int Passage1::runOperation(vector<string> words, int lineCounter, int positionCo
             if(errorService.getSemantic(lineCounter).isDirectiveInCorrectSection(operation)){
                 if(errorService.getSintatic(lineCounter).checkDirectiveSintax(words)){
                     temp = 1;
+                    tables.setConstTable(globalLabel, words[1]);
                 }
             }
             #ifdef DEBUG

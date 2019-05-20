@@ -27,6 +27,8 @@ private:
 
     LexicalAnalyser lexical;
     bool isValidLabel(string label);
+    bool isPositiveNumber(string token);
+    bool checkCopyArguments(vector<string> tokens);
 
     /******* DIRETIVAS ********/
     bool checkDirectiveNumOperands(vector<string> &tokens);

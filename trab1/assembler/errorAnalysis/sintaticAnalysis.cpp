@@ -12,17 +12,92 @@ bool SintaticAnalyser::checkInstructionSintax(vector<string> tokens)
 
     int numArgs = tables.getInstructionOperands(tokens[0]);
 
-    if (numArgs == 0 && tokens.size() == 1)
+    if (numArgs == 0 && tokens.size() == 1) //stop
         return true;
 
     if (numArgs == 1 && (tokens.size() == 2 || tokens.size() == 4))
+    {
+        if (tokens.size() == 4 &&
+            (lexical.getTokenType(tokens[1]) != LABEL || tokens[2] != "+" ||
+             lexical.getTokenType(tokens[3]) != NUMBER || !isPositiveNumber(tokens[3])))
+        {
+            throwError("Operandos da instrucao invalidos. Deve ser no formato LABEL + NUMERO");
+            return false;
+        }
+        else if (tokens.size() == 2 && lexical.getTokenType(tokens[1]) != LABEL)
+        {
+            throwError("Argumento deve ser um label");
+            return false;
+        }
         return true;
+    }
 
-    if (numArgs == 2 && (tokens.size() == 3 || tokens.size() == 5 || tokens.size() == 7))
-        return true;
+    if (numArgs == 2 && (tokens.size() == 3 || tokens.size() == 5 || tokens.size() == 7)) //copy
+    {                                                                                     //somente para essa instrucao, verifica-se os argumentos, pois é necessario ter virgula apenas no primeiro argumento
+        return checkCopyArguments(tokens);
+    }
 
     throwError("Numero errado de argumentos para essa instrucao");
     return false;
+}
+bool SintaticAnalyser::checkCopyArguments(vector<string> tokens)
+//codigo igual a funcao que checa chamada de macro. Modularizar depois
+{
+    int numArgs = 0;
+    for (size_t i = 1; i < tokens.size(); i++)
+    {
+        string argument = tokens[i]; //o primeiro argumento está na posicao 2.
+        int tokenType = lexical.getTokenType(argument);
+        if (tokenType == COPY_ARGUMENT)
+        {
+            numArgs++;
+            if (i == tokens.size() - 1)
+            {
+                throwError("Ultimo argumento nao pode ter virgula");
+                return false;
+            }
+        }
+        else if (tokenType == LABEL)
+        {
+            numArgs++;
+            if (checkSymbolOffsetSintax(tokens, i))
+            {
+                i += 2;
+                if (tokens[i][tokens[i].size() - 1] == ',') //se tiver virgula
+                {
+                    if (i == tokens.size() - 1)
+                    {
+                        throwError("Ultimo argumento nao pode ter virgula");
+                        return false;
+                    }
+                }
+                else //se nao tiver virgula no final
+                {
+                    if (i < tokens.size() - 1)
+                    {
+                        throwError("Somente ultimo argumento nao tem virgula");
+                        return false;
+                    }
+                }
+            }
+            else if (i < tokens.size() - 1)
+            {
+                throwError("Somente ultimo argumento nao tem virgula");
+                return false;
+            }
+        }
+        else
+        {
+            throwError("Operandos invalidos. Copy Deve ser na forma de COPY A, B");
+            return false;
+        }
+    }
+    if (numArgs > 2)
+    {
+        throwError("COPY so aceita dois operandos");
+        return false;
+    }
+    return true; //se passar pelo loop sem erros, tudo esta certo!
 }
 
 bool SintaticAnalyser::checkInstructionOperandSintax(string s)
@@ -220,9 +295,8 @@ bool SintaticAnalyser::checkSymbolOffsetSintax(vector<string> tokens, int labelI
             return false;
         }
     }
-    else
+    else //nao gera erro aqui, pois se nao for operacao de +, outro erro sintatico sera gerado
         return false;
-    //TODO!!!!!!!!!
 }
 /********************************* METODOS PRIVADOS QUE ANALISAM DIRETIVAS
  *
@@ -308,6 +382,20 @@ bool SintaticAnalyser::checkEquSintax(vector<string> &tokens)
     else
         return false;
 }
+bool SintaticAnalyser::isPositiveNumber(string token)
+{
+    if (!lexical.isHexadecimalNumber(token))
+    {
+        if (stoi(token, NULL, 10) >= 0)
+            return true;
+        else
+        {
+            throwError("Argumento deve ser um numero positivo");
+            return false;
+        }
+    }
+    return true; //se chegar aqui, numero é hexadecimal e considera-se valido
+}
 
 bool SintaticAnalyser::checkSpaceSintax(vector<string> &tokens)
 {
@@ -318,17 +406,7 @@ bool SintaticAnalyser::checkSpaceSintax(vector<string> &tokens)
             //checkDirectiveNumOperands() garante que numero de argumento está correto
             if (lexical.getTokenType(tokens[1]) == NUMBER)
             {
-                if (!lexical.isHexadecimalNumber(tokens[1]))
-                {
-                    if (stoi(tokens[1], NULL, 10) >= 0)
-                        return true;
-                    else
-                    {
-                        throwError("Argumento deve ser um numero positivo");
-                        return false;
-                    }
-                }
-                return true; //se chegar aqui, numero é hexadecimal e considera-se valido
+                return isPositiveNumber(tokens[1]);
             }
             else
             {

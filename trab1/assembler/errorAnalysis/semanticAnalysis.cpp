@@ -6,7 +6,7 @@ int SemanticAnalyser::lineSectionData = 0;
 int SemanticAnalyser::positionSectionText = 0;
 int SemanticAnalyser::positionSectionData = 0;
 
-//TODO - TODA VEZ QUE CHAMAR LEXICO, TEM QUE CHAMAR A FUNCAO lexical.setCurrentLine();
+//TODA VEZ QUE CHAMAR LEXICO, TEM QUE CHAMAR A FUNCAO lexical.setCurrentLine();
 
 bool SemanticAnalyser::isDirectiveInCorrectSection(string directive)
 {
@@ -57,11 +57,14 @@ bool SemanticAnalyser::isInstructionInCorrectSection()
     }
 }
 
-void SemanticAnalyser::setSectionPosition(string section, int position){
-    if (section == "TEXT"){
+void SemanticAnalyser::setSectionPosition(string section, int position)
+{
+    if (section == "TEXT")
+    {
         positionSectionText = position;
     }
-    else if (section == "DATA"){
+    else if (section == "DATA")
+    {
         positionSectionData = position;
     }
 }
@@ -77,7 +80,6 @@ void SemanticAnalyser::setSectionLine(string section)
         throwError("Secao inexistente");
     }
 }
-
 
 void SemanticAnalyser::checkSectionOrder()
 {
@@ -152,19 +154,23 @@ bool SemanticAnalyser::isMacroCallCorrect(vector<string> tokens, int numMacroArg
 
 /************* 1st passage semantic errors **************/
 
-bool SemanticAnalyser::isSymbolAlreadyDefined(string label){
+bool SemanticAnalyser::isSymbolAlreadyDefined(string label)
+{
 
-    if(tables.isSymbolInTable(label)){
+    if (tables.isSymbolInTable(label))
+    {
         throwError("Label ja definido anteriormente");
         return true;
     }
 
-    if(tables.isMacroInTable(label)){
+    if (tables.isMacroInTable(label))
+    {
         throwError("Label ja definido como macro");
         return true;
     }
 
-    if(tables.isLabelInEquTable(label)){
+    if (tables.isLabelInEquTable(label))
+    {
         throwError("Label ja definido com a diretiva EQU");
         return true;
     }
@@ -172,15 +178,18 @@ bool SemanticAnalyser::isSymbolAlreadyDefined(string label){
     return false;
 }
 
-bool SemanticAnalyser::isOperation(string token){
+bool SemanticAnalyser::isOperation(string token)
+{
 
     lexical.setLineNumber(this->currentLine);
     int tokenType = lexical.getTokenType(token);
 
-    if ((tokenType == INSTRUCTION) || (tokenType == DIRECTIVE)){
+    if ((tokenType == INSTRUCTION) || (tokenType == DIRECTIVE))
+    {
         return true;
     }
-    else{
+    else
+    {
         throwError("Operacao invalida");
         return false;
     }
@@ -188,22 +197,24 @@ bool SemanticAnalyser::isOperation(string token){
 
 /************* 2nd passage semantic errors **************/
 
-
-bool SemanticAnalyser::isSymbolDefined(string label){
-    if(!tables.isSymbolInTable(label)){
+bool SemanticAnalyser::isSymbolDefined(string label)
+{
+    if (!tables.isSymbolInTable(label))
+    {
         throwError("Label nao definido");
         return false;
     }
     return true;
 }
 
-
-bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset){
+bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset)
+{
     int currentAddress, nextAddress;
     currentAddress = tables.getSymbolAddress(label);
-    nextAddress = tables.getNextSymbolAddress(label);
+    nextAddress = tables.getNextSymbolAddress(label); //sempre vai ter um proximo offset (0LastSymbolAux)
 
-    if(currentAddress + offset < nextAddress){
+    if (currentAddress + offset < nextAddress)
+    {
         return true;
     }
 
@@ -211,17 +222,68 @@ bool SemanticAnalyser::isSymbolOffsetCorrect(string label, int offset){
     return false;
 }
 
-
-bool SemanticAnalyser::checkInstructionSemantic(vector<string> tokens){
-    if((tokens[0] == "JMP") || (tokens[0] == "JMPN") || (tokens[0] == "JMPP") || (tokens[0] == "JMPZ")){
+//so se entra nessa funcao se souber que a sintaxe esta certa, entao pode acessar vetor sem verificar
+bool SemanticAnalyser::checkInstructionSemantic(vector<string> tokens)
+{
+    if ((tokens[0] == "JMP") || (tokens[0] == "JMPN") || (tokens[0] == "JMPP") || (tokens[0] == "JMPZ"))
+    {
         return checkJumpToCorrectSection(tokens);
+    }
+    else if (tokens[0] == "DIV")
+    {
+        if (tables.isInConstTable(tokens[1]))
+        {
+            string constNum = tables.getConstTable(tokens[1]);
+            int num;
+            if (lexical.isHexadecimalNumber(constNum))
+            {
+                constNum = constNum.substr(2, constNum.size());
+                num = stoi(constNum, NULL, 16);
+            }
+            else
+            {
+                num = stoi(constNum, NULL, 10);
+            }
+            if (num == 0)
+            {
+                throwError("Divisao por valor constante igual a zero");
+                return false;
+            }
+        }
+    }
+    else if (tokens[0] == "STORE" || tokens[0] == "INPUT")
+    {
+        if (tables.isInConstTable(tokens[1]))
+        { //sintaxe ja foi verificada, entao pode acessar
+            throwError("Nao pode alterar valor constante");
+            return false;
+        }
+    }
+    else if (tokens[0] == "COPY")
+    {
+        int numLabel = 0;
+        for (size_t i = 1; i < tokens.size(); i++)
+        {
+            int tokenType = lexical.getTokenType(tokens[i]);
+            if (tokenType == COPY_ARGUMENT || tokenType == LABEL)
+                numLabel++;
+
+            if (numLabel == 2 && tables.isInConstTable(tokens[i])) 
+            //sintaxe vai estar correta, entao ultimo label pode ser acessado por token[i] diretamente
+            {
+                throwError("Nao pode alterar valor constante");
+                return false;
+            }
+        }
     }
     return true;
 }
 
-bool SemanticAnalyser::checkJumpToCorrectSection(vector<string> tokens){
-    if(tables.getSymbolAddress(tokens[1]) < positionSectionData){
-        return true; //TODO  - checar se o label do jump esta na secao correta; necessario saber a POSICAO onde data comeca, nao a linha
+bool SemanticAnalyser::checkJumpToCorrectSection(vector<string> tokens)
+{
+    if (tables.getSymbolAddress(tokens[1]) < positionSectionData)
+    {
+        return true;
     }
     throwError("Jump para a secao de dados");
     return false;

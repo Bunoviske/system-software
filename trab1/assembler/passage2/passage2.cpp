@@ -168,48 +168,45 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                 }
             }
 
-            if(tokenType == DIRECTIVE){
-                if(errorService.getSemantic(lineCounter).isDirectiveInCorrectSection(words[0])){
-                    lineOk = true;
-                    //checa sintaxe da diretiva -- ja checado na primeira passagem
-                    //executa diretiva
-                    if(words[0] == "SPACE"){
-                        #ifdef DEBUG
-                        cout << "___DEBUG_PASS2 - SPACE: " << checkSpaceSize(words) << endl;
-                        #endif
-                        int spaceNum = checkSpaceSize(words);
-                        positionCounter = positionCounter + spaceNum;
-                        for(i=0;i<spaceNum;i++){
-                            procLine = procLine + "00";
-                            if (i < spaceNum-1) //nao add espaco no ultimo space
-                                procLine += ' ';
-                        }
-                    }
-                    if(words[0] == "CONST" && words.size() == 2)
-                    { //garante q ha pelo menos duas palavras. O erro é dado na passagem 1
-                        #ifdef DEBUG
-                        cout << "___DEBUG_PASS2 - CONST: " << words[1] << endl;
-                        #endif
-                        positionCounter = positionCounter + 1;
-                        if(errorService.getLexical(lineCounter).isHexadecimalNumber(words[1])){
-                            words[1].erase(words[1].begin(), words[1].begin()+2);
-                            procLine = to_string(stoi(words[1], NULL, 16));
-                        }
-                        else{
-                            procLine = words[1];
-                        }
-                    }
-                    if(words[0] == "SECTION"){
-                        lineOk = false;
-                    }
+            if(tokenType == DIRECTIVE){ //todos os erros de diretiva ja foram checados na primeira passagem
 
+                lineOk = true;
+                //checa sintaxe da diretiva -- ja checado na primeira passagem
+                //executa diretiva
+                if(words[0] == "SPACE"){
                     #ifdef DEBUG
-                    cout << "___DEBUG_PASS2 - PositonCounter: " << positionCounter << endl;
+                    cout << "___DEBUG_PASS2 - SPACE: " << checkSpaceSize(words) << endl;
                     #endif
+                    int spaceNum = checkSpaceSize(words);
+                    positionCounter = positionCounter + spaceNum;
+                    for(i=0;i<spaceNum;i++){
+                        procLine = procLine + "00";
+                        if (i < spaceNum-1) //nao add espaco no ultimo space
+                            procLine += ' ';
+                    }
                 }
-                else{
+                if(words[0] == "CONST" && words.size() == 2)
+                { //garante q ha pelo menos duas palavras. O erro é dado na passagem 1
+                    #ifdef DEBUG
+                    cout << "___DEBUG_PASS2 - CONST: " << words[1] << endl;
+                    #endif
+                    positionCounter = positionCounter + 1;
+                    if(errorService.getLexical(lineCounter).isHexadecimalNumber(words[1])){ //nao gera erro
+                        words[1].erase(words[1].begin(), words[1].begin()+2);
+                        procLine = to_string(stoi(words[1], NULL, 16));
+                    }
+                    else{
+                        procLine = words[1];
+                    }
+                }
+                if(words[0] == "SECTION"){
                     lineOk = false;
                 }
+
+                #ifdef DEBUG
+                cout << "___DEBUG_PASS2 - PositonCounter: " << positionCounter << endl;
+                #endif
+
 
 
 

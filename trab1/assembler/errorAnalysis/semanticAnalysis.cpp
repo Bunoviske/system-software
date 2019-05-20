@@ -264,6 +264,9 @@ bool SemanticAnalyser::checkInstructionSemantic(vector<string> tokens)
         int numLabel = 0;
         for (size_t i = 1; i < tokens.size(); i++)
         {
+            if (tokens[i].back() == ',') //caso seja um numero + virgula
+                tokens[i].pop_back();
+
             int tokenType = lexical.getTokenType(tokens[i]);
             if (tokenType == COPY_ARGUMENT || tokenType == LABEL)
                 numLabel++;

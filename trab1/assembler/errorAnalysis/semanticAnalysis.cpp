@@ -136,13 +136,13 @@ bool SemanticAnalyser::isMacroAlreadyDefined(string macroName)
 }
 
 //funcao checa se o numero de argumentos é compativel e se a macro foi definida
-bool SemanticAnalyser::isMacroCallCorrect(vector<string> tokens)
+bool SemanticAnalyser::isMacroCallCorrect(vector<string> tokens, int numMacroArgs)
 {
 
     if (isMacroInTable(tokens[0]))
     {
         int numArguments = tables.getMacroArguments(tokens[0]);
-        if (numArguments == tokens.size() - 1)
+        if (numArguments == numMacroArgs)
             return true;
 
         throwError("Numero errado de argumentos da macro");

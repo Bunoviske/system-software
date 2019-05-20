@@ -2,6 +2,8 @@
 
 /************* MACRO DEFINITION ************/
 
+//nao seria mais necessario isMacroDefinition pois essa funcao so é valida para definicao
+//ela nao trata receber argumentos por offset
 int MacroProcessing::getNumberOfMacroArguments(vector<string> &tokens, bool isMacroDefinition)
 {
     //offset determina a partir de qual token começa a analisa dos argumentos
@@ -70,6 +72,8 @@ string MacroProcessing::assembleMacroLine(vector<string> tokens, vector<string> 
     return macroLine;
 }
 
+//agora nao seria mais necessario usar o bool isMacroDefinition pq foi criada 
+//getMacroCallArguments para receber args por offset
 vector<string> MacroProcessing::getMacroArguments(vector<string> &tokens, bool isMacroDefinition)
 {
     //offset determina a partir de qual token começa a analisa dos argumentos
@@ -96,6 +100,34 @@ vector<string> MacroProcessing::getMacroArguments(vector<string> &tokens, bool i
 
 /************* MACRO CALL ************/
 
+vector<string> MacroProcessing::getMacroCallArguments(vector<string> &tokens)
+{
+
+    vector<string> arguments;
+    int numArguments = tables.getMacroArguments(tokens[0]);
+    int argCount = 0;
+    for (size_t i = 1; i < tokens.size(); i++)
+    {
+        string argument = tokens[i]; //o primeiro argumento está na posicao 2.
+        
+        //se chegar aqui, é pq a sintaxe esta certa, entao posso sair acessando o proximo elemento depois do '+'
+        if (tokens[i] != tokens.back() && tokens[i+1] == "+"){
+            argument += " + " + tokens[i+2];
+            i += 2;
+        }
+        
+        argCount++;
+        int charOffset = 1; //o padrao é que tenha que tirar apenas a virgula em macro call
+        if (argCount == numArguments)
+            charOffset--; //se for o ultimo argumento, nao tem virgula para tirar
+
+        //tira a virgula (caso nao seja o ultimo argumento) 
+        argument = argument.substr(0, argument.size() - charOffset);
+        arguments.push_back(argument);
+    }
+    return arguments;
+}
+
 vector<string> MacroProcessing::expandMacro(vector<string> &tokens)
 {
 
@@ -103,7 +135,7 @@ vector<string> MacroProcessing::expandMacro(vector<string> &tokens)
     string macroAssemblyCode = tables.getMacroAssemblyCode(tokens[0]);
     istringstream aux(macroAssemblyCode);
 
-    vector<string> arguments = getMacroArguments(tokens, false); //pega os parametros
+    vector<string> arguments = getMacroCallArguments(tokens); //pega os parametros
 
     vector<string> macroLines;      //variavel de retorno contendo as linhas da macro ja substituidas pelos parametros
     vector<string> macroLineTokens; //tokens de cada linha da macro. Utilizado para substituir #i por parametros

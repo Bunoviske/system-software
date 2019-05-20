@@ -35,7 +35,7 @@ public:
     bool isLabelInEquTable(string label);
     bool isEquAlreadyDefined(string label);
     bool isMacroInTable(string macroName);
-    bool isMacroCallCorrect(vector<string> tokens);
+    bool isMacroCallCorrect(vector<string> tokens, int numMacroArgs);
     bool isMacroAlreadyDefined(string macroName);
 
 

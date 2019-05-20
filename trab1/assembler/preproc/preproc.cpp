@@ -16,9 +16,8 @@ FileWriter *PreProcessing::getFileWriter(string filename)
 void PreProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
 {
 
-    // //vector<string> tokens = getTokensOfLine("SWAP: MACRO &A, &VALOR, &SIM");
-    // vector<string> tokens = getTokensOfLine("ADD_NUMBERS: MACRO &a, &b");
-    // cout << errorService.getSintatic(1).checkLabelDefinitionSintax(tokens) << endl;
+    // vector<string> tokens = getTokensOfLine("SWAP a, b + 1, c");
+    // cout << errorService.getSintatic(1).checkMacroCallSintax(tokens) << endl;
     // return;
 
     cout << "\nPreprocessing debug\n"
@@ -286,13 +285,16 @@ void PreProcessing::analyseDirective(vector<string> &tokens, FileReader *rawFile
 void PreProcessing::analyseMacroCall(vector<string> &tokens, FileReader *rawFile, FileWriter *preprocFile)
 {
     cout << "macro call" << endl;
-    //analisa se o numero de parametros esta certo
-    if (errorService.getSintatic(lineNumber).checkMacroCallSintax(tokens))
+
+    int numMacroArgs = -1; //essa variavel auxilia na logica da funcao semantica isMacroCallCorrect. Ela recebe o numero de 
+    //argumentos que a chamada de macro tem durante a analise sintatica
+
+    //analisa se o numero de parametros esta certo. a funcao retorna o numero de parametros dessa chamada de macro
+    if (errorService.getSintatic(lineNumber).checkMacroCallSintax(tokens, &numMacroArgs))
     {
         // analisa se a macro ja foi definida e se foi chamada da forma correta. Nao analisa se esta na secao certa!
-        if (errorService.getSemantic(lineNumber).isMacroCallCorrect(tokens))
+        if (errorService.getSemantic(lineNumber).isMacroCallCorrect(tokens, numMacroArgs))
         {
-
             //expansao da macro
             vector<string> macroLines = macroProcessing.expandMacro(tokens);
 

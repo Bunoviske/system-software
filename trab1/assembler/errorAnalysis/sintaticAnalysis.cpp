@@ -37,7 +37,7 @@ bool SintaticAnalyser::checkInstructionOperandSintax(string s)
 }
 
 //quando essa funcao é chamada, sabe-se q tem pelo menos uma posicao no vetor igual ao LABEL
-bool SintaticAnalyser::checkMacroCallSintax(vector<string> &tokens)
+bool SintaticAnalyser::checkMacroCallSintax(vector<string> &tokens, int *numMacroArgs)
 {
     lexical.setLineNumber(this->currentLine);
 
@@ -98,6 +98,7 @@ bool SintaticAnalyser::checkMacroCallSintax(vector<string> &tokens)
                 return false;
             }
         }
+        *numMacroArgs = numArgs; //retorna por ponteiro o numero de argumentos da macro
         return true; //se passar pelo loop sem erros, esta tudo certo
     }
     else
@@ -252,7 +253,7 @@ bool SintaticAnalyser::checkDirectiveNumOperands(vector<string> &tokens)
     else if (tokens.size() - 1 == numOperands) //faz tokens.size - 1 para tirar o nome da diretiva da comparacao
         return true;
 
-    throwError("Numero de argumentos errado"); //se chegar aqui é pq numero de argumento é invalido
+    throwError("Numero de argumentos invalido"); //se chegar aqui é pq numero de argumento é invalido
     return false;
 }
 

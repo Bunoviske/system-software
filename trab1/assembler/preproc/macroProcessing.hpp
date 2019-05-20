@@ -24,6 +24,7 @@ private:
     string assembleMacroLine(vector<string> tokens, vector<string> arguments);
 
     //macro call
+    vector<string> getMacroCallArguments(vector<string> &tokens); //pode ter argumentos com offset
     string substituteArguments(vector<string> tokens, vector<string> arguments);
 
     //both

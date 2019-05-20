@@ -21,7 +21,7 @@ void Passage1::run(FileReader *rawFile){
     string instruction, line, operation;
 
     positionCounter = 0;
-    lineCounter = 0;
+    lineCounter = 1;
 
     #ifdef DEBUG
     cout << "___DEBUG_PASS1 - PASSAGEM1" << endl;

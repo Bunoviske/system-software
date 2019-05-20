@@ -22,7 +22,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *preprocFile){
 
 
 
-    lineCounter = 0;
+    lineCounter = 1;
     positionCounter = 0;
 
     #ifdef DEBUG

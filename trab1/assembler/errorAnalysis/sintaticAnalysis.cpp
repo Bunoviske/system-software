@@ -42,52 +42,68 @@ bool SintaticAnalyser::checkMacroCallSintax(vector<string> &tokens)
     lexical.setLineNumber(this->currentLine);
 
     //sintaxe de uma chamada de macro deve ser LABEL ARG1, ARG2, ARG3
-
-    //TODO //ARG1 + 2, //ARG1 + 2. Essa primeira condicao ja daria problema, pois teria mais que 4 tokens
-    if (tokens.size() > 4)
+    int numArgs = 0;
+    if (lexical.getTokenType(tokens[0]) == LABEL)
     {
-        throwError("Chamadas de macro podem ter no maximo 3 argumentos");
-        return false;
-    }
-    else
-    {
-        if (lexical.getTokenType(tokens[0]) == LABEL)
+        for (size_t i = 1; i < tokens.size(); i++) //percorre todos argumentos
         {
-            for (size_t i = 1; i < tokens.size(); i++) //percorre todos argumentos
+            int tokenType = lexical.getTokenType(tokens[i]);
+            if (tokenType == COPY_ARGUMENT)
             {
-                //pode ser nas seguintes formas:
-                //ARG1,
-                //ARG1
-                int tokenType = lexical.getTokenType(tokens[i]);
-                if (tokenType == COPY_ARGUMENT)
+                numArgs++;
+                if (i == tokens.size() - 1)
                 {
-                    if (i == tokens.size() - 1)
-                    {
-                        throwError("Ultimo argumento nao pode ter virgula");
-                        return false;
-                    }
-                }
-                else if (tokenType == LABEL)
-                {
-                    if (i < tokens.size() - 1)
-                    {
-                        throwError("Somente ultimo argumento nao tem virgula");
-                        return false;
-                    }
-                }
-                else
-                {
-                    throwError("Os unicos argumentos que a macro aceita sao labels");
+                    throwError("Ultimo argumento nao pode ter virgula");
                     return false;
                 }
             }
-            return true; //se passar pelo loop sem erros, esta tudo certo
+            else if (tokenType == LABEL)
+            {
+                numArgs++;
+                if (checkSymbolOffsetSintax(tokens, i))
+                {
+                    i += 2;
+                    if (tokens[i][tokens[i].size() - 1] == ',') //se tiver virgula
+                    {
+                        if (i == tokens.size() - 1)
+                        {
+                            throwError("Ultimo argumento nao pode ter virgula");
+                            return false;
+                        }
+                    }
+                    else //se nao tiver virgula no final
+                    {
+                        if (i < tokens.size() - 1)
+                        {
+                            throwError("Somente ultimo argumento nao tem virgula");
+                            return false;
+                        }
+                    }
+                }
+                else if (i < tokens.size() - 1)
+                {
+                    throwError("Somente ultimo argumento nao tem virgula");
+                    return false;
+                }
+            }
+            else
+            {
+                throwError("Os unicos argumentos que a macro aceita sao labels");
+                return false;
+            }
+
+            if (numArgs > 3)
+            {
+                throwError("Pode ser passado no maximo tres argumentos para a macro");
+                return false;
+            }
         }
-        else
-        {
-            throwError("Chamadas de macro devem ser feitas com um label no primeiro token da linha");
-            return false;
-        }
+        return true; //se passar pelo loop sem erros, esta tudo certo
+    }
+    else
+    {
+        throwError("Chamadas de macro devem ser feitas com um label no primeiro token da linha");
+        return false;
     }
 }
 
@@ -179,12 +195,20 @@ bool SintaticAnalyser::checkDirectiveSintax(vector<string> &tokens)
 bool SintaticAnalyser::checkSymbolOffsetSintax(vector<string> tokens, int labelIndex)
 {
     lexical.setLineNumber(this->currentLine);
-    if(tokens[labelIndex+1] == "+"){
-        if(tokens[labelIndex+1] != tokens.back()){
-            if(lexical.getTokenType(tokens[labelIndex+2]) == NUMBER){
+    if (tokens[labelIndex] != tokens.back() && tokens[labelIndex + 1] == "+")
+    {
+        if (tokens[labelIndex + 1] != tokens.back())
+        {
+            string aux = tokens[labelIndex + 2];
+            if (aux[aux.size() - 1] == ',')
+                aux.pop_back();
+
+            if (lexical.getTokenType(aux) == NUMBER)
+            {
                 return true;
             }
-            else{
+            else
+            {
                 throwError("Erro na sintaxe de vetores");
                 return false;
             }
@@ -195,6 +219,9 @@ bool SintaticAnalyser::checkSymbolOffsetSintax(vector<string> tokens, int labelI
             return false;
         }
     }
+    else
+        return false;
+    //TODO!!!!!!!!!
 }
 /********************************* METODOS PRIVADOS QUE ANALISAM DIRETIVAS
  *

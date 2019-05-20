@@ -89,7 +89,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                                 #ifdef DEBUG
                                 cout << "___DEBUG_PASS2 - copy - virgula removida do fim do arg1: " << words[arg2index-1] << endl;
                                 #endif
-                                words[1].erase(words[arg2index-1].end()-1); //remove a virgula do final do primeiro operando do copy
+                                words[arg2index-1].erase(words[arg2index-1].end()-1); //remove a virgula do final do primeiro operando do copy
                             }
                             if(argNumber == 2){
                                 arg2label = checkLabel(words[arg2index], lineCounter);  //segundo argumento eh label
@@ -113,7 +113,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                                 if(errorService.getSemantic(lineCounter).isSymbolDefined(words[1])){ //esta definido
                                     procLine = procLine + ' ' + to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter));
                                     #ifdef DEBUG
-                                    cout << "___DEBUG_PASS2 - Endereco do label " << to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter)) << endl;
+                                    cout << "___DEBUG_PASS2 - Endereco do label: " << words[1] << " - " <<to_string(tables.getSymbolAddress(words[1]) + checkSymbolOffset(words, 1, lineCounter)) << endl;
                                     #endif
                                     lineOk = true;
                                 }
@@ -122,7 +122,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                                 }
                             }
                             else{
-                                procLine = procLine + ' ' + words[1]; //se nao for label, eh imediato ??
+                                // procLine = procLine + ' ' + words[1]; //se nao for label, eh imediato ??
                             }
 
                             if(argNumber == 2){ //dois argumentos
@@ -136,7 +136,7 @@ void Passage2::run(FileReader *rawFile, FileWriter *objFile){
                                     }
                                 }
                                 else{   //se nao for label, eh imediato ??
-                                    procLine = procLine + ' ' + words[2];
+                                    // procLine = procLine + ' ' + words[2];
                                 }
                             }
                         }
@@ -295,7 +295,7 @@ bool Passage2::isSymbolOffset(vector<string> words, int labelIndex, int lineCoun
 
 int Passage2::checkSymbolOffset(vector<string> words, int labelIndex, int lineCounter){
     int offset = 0;
-    if(words[labelIndex] != words.back()){ 
+    if(words[labelIndex] != words.back()){
         if(words[labelIndex+1] == "+" && words[labelIndex + 1] != words.back()){
             if(errorService.getSemantic(lineCounter).isSymbolOffsetCorrect(words[labelIndex], stoi(words[labelIndex+2]))){
                 offset = stoi(words[labelIndex+2]);

@@ -139,7 +139,9 @@ int Passage1::runOperation(vector<string> words, int lineCounter, int positionCo
             // if(errorService.getSintatic(lineCounter).checkSectionSintax(words)){
             //     errorService.getSemantic(lineCounter).setSectionLine(words[1]);
             // }
-            errorService.getSemantic(lineCounter).setSectionPosition(words[1], positionCounter);
+            if(errorService.getSintatic(lineCounter).checkDirectiveSintax(words))
+                errorService.getSemantic(lineCounter).setSectionPosition(words[1], positionCounter);
+                
             #ifdef DEBUG
             cout << "___DEBUG_PASS1 - Diretiva SECTION - Guarda posicao das sections" << endl;
             #endif

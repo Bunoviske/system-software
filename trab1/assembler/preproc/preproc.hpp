@@ -15,6 +15,7 @@ public:
         preprocTokens.push_back("SECTION");
         skipNextMacroLine = false;
         isMacroLine = false;
+        getNextMacroLine = false;
 
     }; //construtor
 
@@ -28,7 +29,7 @@ private:
     MacroProcessing macroProcessing;
     string preprocLine;
     int lineNumber;
-    bool isMacroLine, skipNextMacroLine; //auxilia na logica do IF caso ele esteja dentro de uma MACRO expandida
+    bool isMacroLine,getNextMacroLine, skipNextMacroLine; //auxilia na logica do IF caso ele esteja dentro de uma MACRO expandida
     map<string, int> macroNumberOfLines; //variavel auxilia na contagem das linhas de uma macro
     vector<string> preprocTokens;        //contem diretivas e rotulos declarados que sao necessarios analisar no preproc
 

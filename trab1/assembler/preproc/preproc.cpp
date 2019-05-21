@@ -78,7 +78,7 @@ void PreProcessing::parseTokens(vector<string> &tokens, FileReader *rawFile, Fil
     //que deve ser substituido
     changeEquValues(&tokens);
 
-    if (tokensNeedPreproc(tokens))
+    if (tokensNeedPreproc(tokens) && !getNextMacroLine)
     //analisa se essa linha requer alguma acao do preprocessamento que requer analise de erro
     {
         //cout << "tokens need preproc" << endl;
@@ -105,7 +105,7 @@ void PreProcessing::parseTokens(vector<string> &tokens, FileReader *rawFile, Fil
             //cout << "TOKEN TYPE NAO UTILIZADO NO PREPROCESSAMENTO: " << tokenType << endl;
         }
     }
-    else
+    else if (!getNextMacroLine)
     {
         //cout << "tokens dont need preproc" << endl;
         assemblePreprocLine(tokens);
@@ -167,7 +167,10 @@ void PreProcessing::checkDefLabelInNextLine(vector<string> *tokens, FileReader *
         //nao precisa escrever no arquivo preproc caso dê erro aqui
         if (errorService.getLexical(lineNumber).getTokenType((*tokens)[0]) == DEF_LABEL)
         {
-            getLabelDefInNextLine(tokens, rawFile);
+            if (isMacroLine)
+                getNextMacroLine = true;
+            else
+                getLabelDefInNextLine(tokens, rawFile);
         }
     }
 }
@@ -308,6 +311,16 @@ void PreProcessing::analyseMacroCall(vector<string> &tokens, FileReader *rawFile
                 {
                     i++; //pula a proxima linha caso seja IF 0
                     skipNextMacroLine = false;
+                }
+                else if (getNextMacroLine)
+                {
+                    getNextMacroLine = false;
+                    if (i < macroLines.size() - 1)
+                    {
+                        isMacroLine = true; //variavel que auxilia na logica do label na linha seguinte
+                        parseCodeLine(macroLines[i] + " " + macroLines[i + 1], rawFile, preprocFile);
+                        i++;
+                    }
                 }
             }
             //se for expandida uma macro aqui, é necessario resetar preprocLine

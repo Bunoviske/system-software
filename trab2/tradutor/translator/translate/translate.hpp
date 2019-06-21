@@ -41,9 +41,9 @@ private:
 
     void analyseDefLabel(vector<string> &tokens, FileReader *rawFile);
     void analyseDirective(vector<string> &tokens, FileReader *rawFile);
-    void analyseInstruction(vector<string> &tokens, FileReader *rawFile);
+    void analyseInstruction(vector<string> &tokens, FileReader *rawFile, int variableBegin);
 
-    string getLabel(vector<string> &tokens);
+    string getLabel(vector<string> &tokens, int begin);
     void parseCodeLine(string line, FileReader *rawFile, FileWriter *preprocFile);
     void translateTokens(vector<string> &tokens, FileReader *rawFile, FileWriter *preprocFile);
     bool preprocTokens(vector<string> &tokens, FileReader *rawFile, FileWriter *preprocFile);

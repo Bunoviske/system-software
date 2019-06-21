@@ -57,7 +57,7 @@ void TranslateProcessing::translateTokens(vector<string> &tokens, FileReader *ra
         analyseDefLabel(tokens, rawFile);
 
     else if (tokenType == INSTRUCTION) //nesse caso so pode ser chamando MACRO
-        analyseInstruction(tokens, rawFile);
+        analyseInstruction(tokens, rawFile,1); //instrucao sem definicao de label antes
 
     else if (tokenType == DIRECTIVE)
         analyseDirective(tokens, rawFile);
@@ -65,13 +65,13 @@ void TranslateProcessing::translateTokens(vector<string> &tokens, FileReader *ra
     //assembletranslatedLine(tokens);
 }
 
-string TranslateProcessing::getLabel(vector<string> &tokens){
+string TranslateProcessing::getLabel(vector<string> &tokens, int begin){
     //label pode ter offset (displacement)
-    
+
     //TODO - COPY e S_OUTPUT/INPUT nao aceita displacement
 
     string structure = "";
-    for (size_t i = 1; i < tokens.size(); i++)
+    for (size_t i = begin; i < tokens.size(); i++)
     {
         structure += tokens[i];
     }
@@ -79,97 +79,98 @@ string TranslateProcessing::getLabel(vector<string> &tokens){
     
 }
 
-void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader *rawFile)
+void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader *rawFile, int variableBegin)
 {
-    if (tokens[0] == "ADD")
+    if (tokens[variableBegin-1] == "ADD")
     {
-        translatedLine = "ADD EAX,[" + getLabel(tokens) + ']';
+        translatedLine = "ADD EAX,[" + getLabel(tokens,variableBegin) + ']';
     }
-    else if (tokens[0] == "SUB")
+    else if (tokens[variableBegin-1] == "SUB")
     {
-        translatedLine = "SUB EAX,[" + getLabel(tokens) + ']';
+        translatedLine = "SUB EAX,[" + getLabel(tokens,variableBegin) + ']';
     }
-    else if (tokens[0] == "MULT")
+    else if (tokens[variableBegin-1] == "MULT")
     {
-        translatedLine = "IMUL DWORD [" + getLabel(tokens) + ']';
+        translatedLine = "IMUL DWORD [" + getLabel(tokens,variableBegin) + ']';
     }
-    else if (tokens[0] == "DIV")
+    else if (tokens[variableBegin-1] == "DIV")
     {
-        translatedLine = "MOV EDX,0\nIDIV DWORD [" + getLabel(tokens) + ']';
+        translatedLine = "MOV EDX,0\nIDIV DWORD [" + getLabel(tokens,variableBegin) + ']';
     }
-    else if (tokens[0] == "JMP")
+    else if (tokens[variableBegin-1] == "JMP")
     {
-        translatedLine = "JMP " + tokens[1];
+        translatedLine = "JMP " + tokens[variableBegin];
     }
-    else if (tokens[0] == "JMPN")
+    else if (tokens[variableBegin-1] == "JMPN")
     {
-        translatedLine = "CMP EAX,0\nJL " + tokens[1];
+        translatedLine = "CMP EAX,0\nJL " + tokens[variableBegin];
     }
-    else if (tokens[0] == "JMPP")
+    else if (tokens[variableBegin-1] == "JMPP")
     {
-        translatedLine = "CMP EAX,0\nJG " + tokens[1];
+        translatedLine = "CMP EAX,0\nJG " + tokens[variableBegin];
     }
-    else if (tokens[0] == "JMPZ")
+    else if (tokens[variableBegin-1] == "JMPZ")
     {
-        translatedLine = "CMP EAX,0\nJE " + tokens[1];
+        translatedLine = "CMP EAX,0\nJE " + tokens[variableBegin];
     }
-    else if (tokens[0] == "COPY")
+    else if (tokens[variableBegin-1] == "COPY")
     {
         tokens[1].pop_back(); //tira a virgula
-        translatedLine = "PUSH EAX\n MOV EAX,[" + tokens[1] + "]\nMOV [" + tokens[2] + "],EAX\nPOP EAX";
+        translatedLine = "PUSH EAX\nMOV EAX,[" + tokens[variableBegin] +
+         "]\nMOV [" + tokens[variableBegin+1] + "],EAX\nPOP EAX";
     }
-    else if (tokens[0] == "LOAD")
+    else if (tokens[variableBegin-1] == "LOAD")
     {
-        translatedLine = "MOV EAX,[" + getLabel(tokens) + ']';
+        translatedLine = "MOV EAX,[" + getLabel(tokens,variableBegin) + ']';
     }
-    else if (tokens[0] == "STORE")
+    else if (tokens[variableBegin-1] == "STORE")
     {
-        translatedLine = "MOV [" + getLabel(tokens) + "],EAX";
+        translatedLine = "MOV [" + getLabel(tokens,variableBegin) + "],EAX";
     }
-    else if (tokens[0] == "STOP")
+    else if (tokens[variableBegin-1] == "STOP")
     {
-        translatedLine = "MOV EAX,0\nMOV EBX, 1\nINT 80h";
+        translatedLine = "MOV EAX,0\nMOV EBX,1\nINT 80h";
     }
-    else if (tokens[0] == "INPUT")
+    else if (tokens[variableBegin-1] == "INPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens);
+        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
         translatedLine += "\nCALL " + INPUT_FUNCTION;
     }
-    else if (tokens[0] == "OUTPUT")
+    else if (tokens[variableBegin-1] == "OUTPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens);
+        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
         translatedLine += "\nCALL " + OUTPUT_FUNCTION;
     }
-    else if (tokens[0] == "C_INPUT")
+    else if (tokens[variableBegin-1] == "C_INPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens);
+        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
         translatedLine += "\nCALL " + C_INPUT_FUNCTION;
     }
-    else if (tokens[0] == "C_OUTPUT")
+    else if (tokens[variableBegin-1] == "C_OUTPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens);
+        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
         translatedLine += "\nCALL " + C_OUTPUT_FUNCTION;
     }
-    else if (tokens[0] == "H_INPUT")
+    else if (tokens[variableBegin-1] == "H_INPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens);
+        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
         translatedLine += "\nCALL " + H_INPUT_FUNCTION;
     }
-    else if (tokens[0] == "H_OUTPUT")
+    else if (tokens[variableBegin-1] == "H_OUTPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens);
+        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
         translatedLine += "\nCALL " + H_OUTPUT_FUNCTION;
     }
-    else if (tokens[0] == "S_INPUT")
+    else if (tokens[variableBegin-1] == "S_INPUT")
     {
         tokens[1].pop_back(); //tira a virgula
-        translatedLine = "PUSH " + tokens[1] + "\nPUSH " + tokens[2];
+        translatedLine = "PUSH " + tokens[variableBegin] + "\nPUSH " + tokens[variableBegin+1];
         translatedLine += "\nCALL " + S_INPUT_FUNCTION;
     }
-    else if (tokens[0] == "S_OUTPUT")
+    else if (tokens[variableBegin-1] == "S_OUTPUT")
     {
         tokens[1].pop_back(); //tira a virgula
-        translatedLine = "PUSH " + tokens[1] + "\nPUSH " + tokens[2];
+        translatedLine = "PUSH " + tokens[variableBegin] + "\nPUSH " + tokens[variableBegin+1];
         translatedLine += "\nCALL " + S_OUTPUT_FUNCTION;
     }
 }
@@ -208,6 +209,9 @@ void TranslateProcessing::analyseDefLabel(vector<string> &tokens, FileReader *ra
     else if (tokens[1] == "CONST")
     {
         translatedLine = tokens[0] + " dd " + tokens[2];
+    }
+    else if (getTokenType(tokens[1]) == INSTRUCTION){
+        analyseInstruction(tokens,rawFile,2); //instrucao COM definicao de label antes
     }
     else
     {

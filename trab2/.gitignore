@@ -1,6 +1,7 @@
-/build/*
+/tradutor/build/*
+/tradutor/ligador_ia32/*
 /.vscode/*
-Trabalho1.pdf
+
 /CMakeFiles/*
 tradutor.exe
 cmake_install.cmake

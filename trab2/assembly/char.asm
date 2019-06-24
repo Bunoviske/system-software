@@ -4,8 +4,6 @@
 
 section .data
 
-linebreak db 0dH, 0aH
-user_char_buffer db 0   ;buffer usado no input
 
 user_char db 0  ;usado apenas para a simulacao da funcao
 section .bss
@@ -34,16 +32,21 @@ C_INPUT:
     push ebx    ;dont push eax because eax is the return value
     push ecx    ;counter of elements - always 1
     push edx    ;pointer for char string
+
+    push word 0 ;reserve space for input buffer
     ;ask for input
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
-    mov ecx, user_char_buffer
+    mov ecx, esp
+    add ecx, 2
     mov edx, 1
     int 80H
 
     mov eax, [ecx]  ;moving the char read to the return address on the stack
     mov [ebp + 8], eax  ; ||
     mov eax, 1  ;eax contains the number of elements read - always 1 char
+
+    pop cx ; removes the buffer from top of stack
 
     pop edx
     pop ecx
@@ -71,11 +74,13 @@ C_OUTPUT:
     int 80H
 
     ;outputs a linebreak
+    push word 0d0aH ;add linebreak to stack
     mov eax, 4
     mov ebx, 1
-    mov ecx, linebreak
+    mov ecx, esp
     mov edx, 2
     int 80H
+    add esp, 2 ;remove linebreak from stack
 
     mov eax, 1    ;number of chars printed - always 1 char
     pop edx

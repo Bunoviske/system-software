@@ -4,7 +4,6 @@
 
 section .data
 
-linebreak db 0dH, 0aH
 ; user_integer_buffer db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  ;buffer usado no input
 ; user_integer_buffer2 db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ;buffer usado no output
 
@@ -96,11 +95,13 @@ S_OUTPUT:
     int 80H
 
     ;outputs a linebreak
+    push word 0d0aH ;add linebreak to stack
     mov eax, 4
     mov ebx, 1
-    mov ecx, linebreak
+    mov ecx, esp
     mov edx, 2
     int 80H
+    add esp, 2 ;remove linebreak from stack
 
     pop eax ;moved ecx into eax - char counter
     pop edx

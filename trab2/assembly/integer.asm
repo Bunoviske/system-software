@@ -4,9 +4,6 @@
 
 section .data
 
-linebreak db 0dH, 0aH
-user_integer_buffer db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0  ;buffer usado no input
-user_integer_buffer2 db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ;buffer usado no output
 
 user_integer db 0, 0, 0, 0  ;usado apenas na simulacao da funcao
 section .bss
@@ -36,21 +33,29 @@ INPUT:
     push ecx    ;counter of elements
     push edx    ;pointer for char string
     push esi    ;flag for negative
+
+    push dword 0    ;reserve space to use as buffer
+    push dword 0
+    push dword 0
     ;ask for input
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
-    mov ecx, user_integer_buffer
+    mov ecx, esp
+    add ecx, 12     ;  use stack as buffer - esp - 12 is the start
     mov edx, 11
     int 80H
 
     xor eax, eax ;reset the accumulator to zero
-    mov edx, user_integer_buffer   ;put address in edx
+    mov edx, esp   ;put address in edx
+    add edx, 12
     push dword 10 ;stack the value 10 to multiply
     xor esi, esi  ;zero the negative number flag
     xor ecx, ecx ; zero the counter
 
 
 convert_charint:
+    cmp ecx, 11 ;avoids acessing an extra element
+    je finish_charint
     movzx ebx, byte [edx] ;get char
     inc edx ;prepare next char
     inc ecx ;increment counter
@@ -73,13 +78,14 @@ negative_charint:
 
 finish_charint:
     dec ecx ; counter will have 1 extra from the ending char
-    add esp, 4  ;remove 10 from top of stack
+    add esp, 16  ;remove 10 and buffer from top of stack
     cmp esi, 1 ;check if negative
     jne finish_after_check_charint  ;if not negative, go on to finish
     imul eax, -1    ;if negative, multiply by -1
 finish_after_check_charint:
     mov[ebp + 8], eax   ;no arguments - return value is ebp + 8 bytes pushed by call and frame creation (return and ebp)
     mov eax, ecx    ;move counter into eax - number of characters input
+
     pop esi ;pops original value of: esi
     pop edx ; -edx
     pop ecx ; -ecx
@@ -97,12 +103,18 @@ OUTPUT:
     push ecx    ;digit counter
     push edx    ;rest of division - number to convert
     push esi    ;flag for negative
-    push dword 10 ;stack the value 10 to divide
+
+    push dword 0    ;reserve space to use as buffer
+    push dword 0
+    push dword 0
+
 
 
     mov eax, [ebp + 8]   ;number - passed as argument through stack
-    mov ebx, user_integer_buffer2   ;string
+    mov ebx, esp   ;string
+    add ebx, 12
     mov ecx, 0  ;digit counter
+    push dword 10 ;stack the value 10 to divide
 
 check_negative:
     xor esi, esi    ;set negative flag to zero
@@ -142,24 +154,28 @@ output_intchar:
     inc edx ;edx will have 1 more byte to print, in case of negative
 
     finish_after_check_intchar:
-    add esp, 4 ;remove the value 10 used to divide
+    add esp, 4 ;remove the value 10from top of stack
 print_output:
     ;outputs number
     push ecx    ;saves ecx - digits converted
     mov eax, 4
     mov ebx, 1
     add edx, ecx
-    mov ecx, user_integer_buffer2
+    mov ecx, esp
+    add ecx, 16 ;12 bytes of buffer and 4 bytes of pushed ecx - get to the start of the buffer
     int 80H
 
     ;outputs a linebreak
+    push word 0d0aH ;add linebreak to stack
     mov eax, 4
     mov ebx, 1
-    mov ecx, linebreak
+    mov ecx, esp
     mov edx, 2
     int 80H
+    add esp, 2 ;remove linebreak from stack
 
     pop eax ;moved ecx into eax - digit counter
+    add esp, 12    ;remove buffer from top of stack
     pop esi ;unstacking orgiginal values of: -esi
     pop edx ;-edx
     pop ecx ;-ecx

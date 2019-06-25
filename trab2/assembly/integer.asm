@@ -38,12 +38,44 @@ INPUT:
     push dword 0
     push dword 0
     ;ask for input
+
+    push edi
+    push word 0 ;reserve buffer to read the extra chars
+    mov ecx, esp    ;move the buffer to ecx
+    xor esi, esi    ;reset counter
+    mov edi, esp ;pointer to string
+    add edi, 18
+
+    get_input_charbychar:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
-    mov ecx, esp
-    add ecx, 12     ;  use stack as buffer - esp - 12 is the start
-    mov edx, 11
+    mov edx, 1
     int 80H
+    cmp byte [ecx], 0aH    ;check if char is ENTER
+    je finish_input ;if enter - finish input
+    breakpoint:
+    mov eax, [ecx]  ;move the char into the string
+    mov byte [edi + esi], al
+    inc esi ;increment char counter
+    ; dec edi ; get next char address
+    cmp esi, 12  ;check if string is full --> counter == string size
+    je check_extra_char_enter   ;if yes = string full but still no enter, read and trash next chars until enter
+    jmp get_input_charbychar    ;keep getting input
+
+    check_extra_char_enter: ;read char and throw it away until enter
+    mov eax, 3
+    mov ebx, 0  ;0 = stdin - teclado
+    mov edx, 1
+    int 80H
+    cmp byte [ecx], 0aH    ;check if char is ENTER
+    jne check_extra_char_enter
+
+    finish_input:   ;finish fetting inputs
+
+    add esp, 2  ;remove buffer
+    pop edi ;pops edi back
+
+
 
     xor eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx

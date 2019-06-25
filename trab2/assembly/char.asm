@@ -41,9 +41,19 @@ C_INPUT:
     add ecx, 2
     mov edx, 1
     int 80H
-
+    
     mov eax, [ecx]  ;moving the char read to the return address on the stack
     mov [ebp + 8], eax  ; ||
+    
+    dec ecx ;get to the second byte of memory on the buffer - used to read until enter
+    check_extra_char_enter:
+    mov eax, 3
+    mov ebx, 0  ;0 = stdin - teclado
+    mov edx, 1
+    int 80H
+    cmp byte [ecx], 0aH    ;check if char is ENTER
+    jne check_extra_char_enter
+    
     mov eax, 1  ;eax contains the number of elements read - always 1 char
 
     pop cx ; removes the buffer from top of stack

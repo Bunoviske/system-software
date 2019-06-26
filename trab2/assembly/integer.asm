@@ -70,7 +70,7 @@ INPUT:
     cmp byte [ecx], 0aH    ;check if char is ENTER
     jne check_extra_char_enter
 
-    finish_input:   ;finish fetting inputs
+    finish_input:   ;finish getting inputs
 
     add esp, 2  ;remove buffer
     pop edi ;pops edi back
@@ -163,7 +163,6 @@ convert_intchar:
     inc ecx ;count number of digits converted
     cmp eax, 0  ;check if eax is 0 or if there is still stuff to divide
     jne convert_intchar ;jumps while not finished
-    jmp output_intchar  ;jump when finished
 
 
 

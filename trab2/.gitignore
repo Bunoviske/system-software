@@ -1,5 +1,7 @@
 /tradutor/build/*
-/tradutor/ligador_ia32/*
+/tradutor/.vscode/*
+/ligador_ia32/build/*
+/ligador_ia32/.vscode/*
 /.vscode/*
 
 /CMakeFiles/*

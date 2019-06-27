@@ -139,7 +139,7 @@ void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader 
     }
     else if (tokens[variableBegin - 1] == "STOP")
     {
-        translatedLine = "MOV EAX,0\nMOV EBX,1\nINT 80h";
+        translatedLine = "MOV EAX,0\nMOV EBX,1\nINT 0X80";
     }
     else if (tokens[variableBegin - 1] == "INPUT")
     {
@@ -255,9 +255,9 @@ void TranslateProcessing::analyseDirective(vector<string> &tokens, FileReader *r
     else if (tokens[0] == "SECTION")
     {
         if (tokens[1] == "TEXT")
-            translatedLine = "SECTION .TEXT\nGLOBAL _start\n_start:";
+            translatedLine = "SECTION .text\nGLOBAL _start\n_start:";
         else if (tokens[1] == "DATA")
-            translatedLine = "SECTION .DATA";
+            translatedLine = "SECTION .data";
         else
             cout << "Diretiva invalida" << endl;
     }

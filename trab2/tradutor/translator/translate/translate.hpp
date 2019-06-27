@@ -11,14 +11,14 @@ class TranslateProcessing : public ServiceInterface, private BaseClass
 public:
     TranslateProcessing()
     {
-        INPUT_FUNCTION = "BLABLA";
-        OUTPUT_FUNCTION = "BLABLA";
-        C_INPUT_FUNCTION = "BLABLA";
-        C_OUTPUT_FUNCTION = "BLABLA";
-        H_INPUT_FUNCTION = "BLABLA";
-        H_OUTPUT_FUNCTION = "BLABLA";
-        S_INPUT_FUNCTION = "BLABLA";
-        S_OUTPUT_FUNCTION = "BLABLA";
+        INPUT_FUNCTION = "LERINTEIRO";
+        OUTPUT_FUNCTION = "ESCREVERINTEIRO";
+        C_INPUT_FUNCTION = "LERCHAR";
+        C_OUTPUT_FUNCTION = "ESCREVERCHAR";
+        H_INPUT_FUNCTION = "LERHEXA";
+        H_OUTPUT_FUNCTION = "ESCREVERHEXA";
+        S_INPUT_FUNCTION = "LERSTRING";
+        S_OUTPUT_FUNCTION = "ESCREVERSTRING";
     };                        //construtor
     ~TranslateProcessing(){}; //destrutor
 

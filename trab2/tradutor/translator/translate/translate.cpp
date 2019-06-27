@@ -28,8 +28,25 @@ void TranslateProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
     }
 }
 
+void TranslateProcessing::importAssemblyFunctions(FileWriter* preprocFile){
+    FileReader* functionsFile = getFileReader("./translator/translate/functions.asm");
+    bool eof = false;
+
+    while(!eof){
+        string line = toUpperCase(functionsFile->readNextLine());
+        if (line == "-1"){
+            eof = true;
+        }
+        else{
+            //write line to file
+            preprocFile->writeNextLine(line);
+        }
+    }
+}
+
 void TranslateProcessing::parseCodeLine(string line, FileReader *rawFile, FileWriter *preprocFile)
 {
+    importAssembly = false;
     vector<string> tokens;
     tokens = getTokensOfLine(line); //retorna apenas palavras diferentes de comentarios, \t e \n
 
@@ -39,6 +56,10 @@ void TranslateProcessing::parseCodeLine(string line, FileReader *rawFile, FileWr
         {
             translateTokens(tokens, rawFile, preprocFile);
 
+            if(importAssembly){
+                importAssemblyFunctions(preprocFile);
+                importAssembly = false;
+            }
             if (translatedLine != "")
             {
                 preprocFile->writeNextLine(translatedLine);
@@ -257,8 +278,10 @@ void TranslateProcessing::analyseDirective(vector<string> &tokens, FileReader *r
     {
         if (tokens[1] == "TEXT")
             translatedLine = "SECTION .text\nGLOBAL _start\n_start:";
-        else if (tokens[1] == "DATA")
+        else if (tokens[1] == "DATA"){
+            importAssembly = true;
             translatedLine = "SECTION .data";
+        }
         else
             cout << "Diretiva invalida" << endl;
     }

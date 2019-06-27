@@ -38,6 +38,9 @@ private:
 
     string translatedLine;
     int lineNumber;
+    bool importAssembly; //used to call the function to import the assembly functions
+
+    void importAssemblyFunctions(FileWriter *functionsFile);
 
     void analyseDefLabel(vector<string> &tokens, FileReader *rawFile);
     void analyseDirective(vector<string> &tokens, FileReader *rawFile);

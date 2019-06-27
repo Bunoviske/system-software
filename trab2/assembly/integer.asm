@@ -57,7 +57,6 @@ INPUT:
     mov eax, [ecx]  ;move the char into the string
     mov byte [edi + esi], al
     inc esi ;increment char counter
-    ; dec edi ; get next char address
     cmp esi, 12  ;check if string is full --> counter == string size
     je check_extra_char_enter   ;if yes = string full but still no enter, read and trash next chars until enter
     jmp get_input_charbychar    ;keep getting input

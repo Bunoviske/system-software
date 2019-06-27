@@ -26,7 +26,7 @@ _start:
     jmp exit
 
 H_INPUT:
-;receive integer (ascii string) input
+;receive integer (ascii string) input in hex
     push ebp        ;creating stack frame
     mov ebp, esp    ;creating stack frame
     push ebx    ;dont push eax because eax is the return value
@@ -51,11 +51,9 @@ H_INPUT:
     int 80H
     cmp byte [ecx], 0aH    ;check if char is ENTER
     je finish_input ;if enter - finish input
-    breakpoint:
     mov eax, [ecx]  ;move the char into the string
     mov byte [edi + esi], al
     inc esi ;increment char counter
-    ; dec edi ; get next char address
     cmp esi, 8  ;check if string is full --> counter == string size
     je check_extra_char_enter   ;if yes = string full but still no enter, read and trash next chars until enter
     jmp get_input_charbychar    ;keep getting input
@@ -141,7 +139,7 @@ finish_after_check_charint_hex:
 
 
 H_OUTPUT:
-;print integer (ascii string) output
+;print integer (ascii string) output in hex
     push ebp    ;creating stack frame
     mov ebp, esp    ;creating stack frame
     push ebx    ;dont push eax because eax is the return value

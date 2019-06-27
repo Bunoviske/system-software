@@ -56,8 +56,8 @@ void TranslateProcessing::translateTokens(vector<string> &tokens, FileReader *ra
     if (tokenType == DEF_LABEL)
         analyseDefLabel(tokens, rawFile);
 
-    else if (tokenType == INSTRUCTION) //nesse caso so pode ser chamando MACRO
-        analyseInstruction(tokens, rawFile,1); //instrucao sem definicao de label antes
+    else if (tokenType == INSTRUCTION)          //nesse caso so pode ser chamando MACRO
+        analyseInstruction(tokens, rawFile, 1); //instrucao sem definicao de label antes
 
     else if (tokenType == DIRECTIVE)
         analyseDirective(tokens, rawFile);
@@ -65,113 +65,122 @@ void TranslateProcessing::translateTokens(vector<string> &tokens, FileReader *ra
     //assembletranslatedLine(tokens);
 }
 
-string TranslateProcessing::getLabel(vector<string> &tokens, int begin){
-    //label pode ter offset (displacement)
+string TranslateProcessing::getLabelWithDisplacement(vector<string> &tokens, int begin)
+{
+    //label pode ter offset (displacement). Se nao tiver, essa funcao retorna o label normalmente
 
-    //TODO - COPY e S_OUTPUT/INPUT nao aceita displacement. Multiplicar deslocamento do SPACE por 4
-
+    //TODO - COPY e S_OUTPUT/INPUT nao aceita displacement
 
     string structure = "";
     for (size_t i = begin; i < tokens.size(); i++)
-    {
-        structure += tokens[i];
+    { //caso seja um numero, tem que multiplicar por 4 (enderecamento de 32 bits = 4 bytes)
+        if (isDecimalNumber(tokens[i]))
+        {
+            int offset = 4 * stoi(tokens[i]);
+            stringstream ss;
+            ss << offset;
+            structure += ss.str();
+        }
+        else
+        {
+            structure += tokens[i];
+        }
     }
     return structure;
-    
 }
 
 void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader *rawFile, int variableBegin)
 {
-    if (tokens[variableBegin-1] == "ADD")
+    if (tokens[variableBegin - 1] == "ADD")
     {
-        translatedLine = "ADD EAX,[" + getLabel(tokens,variableBegin) + ']';
+        translatedLine = "ADD EAX,[" + getLabelWithDisplacement(tokens, variableBegin) + ']';
     }
-    else if (tokens[variableBegin-1] == "SUB")
+    else if (tokens[variableBegin - 1] == "SUB")
     {
-        translatedLine = "SUB EAX,[" + getLabel(tokens,variableBegin) + ']';
+        translatedLine = "SUB EAX,[" + getLabelWithDisplacement(tokens, variableBegin) + ']';
     }
-    else if (tokens[variableBegin-1] == "MULT")
+    else if (tokens[variableBegin - 1] == "MUL")
     {
-        translatedLine = "IMUL DWORD [" + getLabel(tokens,variableBegin) + ']';
+        translatedLine = "IMUL DWORD [" + getLabelWithDisplacement(tokens, variableBegin) + ']';
     }
-    else if (tokens[variableBegin-1] == "DIV")
+    else if (tokens[variableBegin - 1] == "DIV")
     {
-        translatedLine = "MOV EDX,0\nIDIV DWORD [" + getLabel(tokens,variableBegin) + ']';
+        translatedLine = "MOV EDX,0\nIDIV DWORD [" + getLabelWithDisplacement(tokens, variableBegin) + ']';
     }
-    else if (tokens[variableBegin-1] == "JMP")
+    else if (tokens[variableBegin - 1] == "JMP")
     {
         translatedLine = "JMP " + tokens[variableBegin];
     }
-    else if (tokens[variableBegin-1] == "JMPN")
+    else if (tokens[variableBegin - 1] == "JMPN")
     {
         translatedLine = "CMP EAX,0\nJL " + tokens[variableBegin];
     }
-    else if (tokens[variableBegin-1] == "JMPP")
+    else if (tokens[variableBegin - 1] == "JMPP")
     {
         translatedLine = "CMP EAX,0\nJG " + tokens[variableBegin];
     }
-    else if (tokens[variableBegin-1] == "JMPZ")
+    else if (tokens[variableBegin - 1] == "JMPZ")
     {
         translatedLine = "CMP EAX,0\nJE " + tokens[variableBegin];
     }
-    else if (tokens[variableBegin-1] == "COPY")
+    else if (tokens[variableBegin - 1] == "COPY")
     {
         tokens[1].pop_back(); //tira a virgula
         translatedLine = "PUSH EAX\nMOV EAX,[" + tokens[variableBegin] +
-         "]\nMOV [" + tokens[variableBegin+1] + "],EAX\nPOP EAX";
+                         "]\nMOV [" + tokens[variableBegin + 1] + "],EAX\nPOP EAX";
     }
-    else if (tokens[variableBegin-1] == "LOAD")
+    else if (tokens[variableBegin - 1] == "LOAD")
     {
-        translatedLine = "MOV EAX,[" + getLabel(tokens,variableBegin) + ']';
+        translatedLine = "MOV EAX,[" + getLabelWithDisplacement(tokens, variableBegin) + ']';
     }
-    else if (tokens[variableBegin-1] == "STORE")
+    else if (tokens[variableBegin - 1] == "STORE")
     {
-        translatedLine = "MOV [" + getLabel(tokens,variableBegin) + "],EAX";
+        translatedLine = "MOV [" + getLabelWithDisplacement(tokens, variableBegin) + "],EAX";
     }
-    else if (tokens[variableBegin-1] == "STOP")
+    else if (tokens[variableBegin - 1] == "STOP")
     {
         translatedLine = "MOV EAX,0\nMOV EBX,1\nINT 80h";
     }
-    else if (tokens[variableBegin-1] == "INPUT")
+    else if (tokens[variableBegin - 1] == "INPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
+        translatedLine = "PUSH " + getLabelWithDisplacement(tokens, variableBegin);
         translatedLine += "\nCALL " + INPUT_FUNCTION;
     }
-    else if (tokens[variableBegin-1] == "OUTPUT")
+    else if (tokens[variableBegin - 1] == "OUTPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
+        translatedLine = "PUSH " + getLabelWithDisplacement(tokens, variableBegin);
         translatedLine += "\nCALL " + OUTPUT_FUNCTION;
     }
-    else if (tokens[variableBegin-1] == "C_INPUT")
+    else if (tokens[variableBegin - 1] == "C_INPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
+        translatedLine = "PUSH " + getLabelWithDisplacement(tokens, variableBegin);
         translatedLine += "\nCALL " + C_INPUT_FUNCTION;
     }
-    else if (tokens[variableBegin-1] == "C_OUTPUT")
+    else if (tokens[variableBegin - 1] == "C_OUTPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
+        translatedLine = "PUSH " + getLabelWithDisplacement(tokens, variableBegin);
         translatedLine += "\nCALL " + C_OUTPUT_FUNCTION;
     }
-    else if (tokens[variableBegin-1] == "H_INPUT")
+    else if (tokens[variableBegin - 1] == "H_INPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
+        translatedLine = "PUSH " + getLabelWithDisplacement(tokens, variableBegin);
         translatedLine += "\nCALL " + H_INPUT_FUNCTION;
     }
-    else if (tokens[variableBegin-1] == "H_OUTPUT")
+    else if (tokens[variableBegin - 1] == "H_OUTPUT")
     {
-        translatedLine = "PUSH " + getLabel(tokens,variableBegin);
+        translatedLine = "PUSH " + getLabelWithDisplacement(tokens, variableBegin);
         translatedLine += "\nCALL " + H_OUTPUT_FUNCTION;
     }
-    else if (tokens[variableBegin-1] == "S_INPUT")
+    else if (tokens[variableBegin - 1] == "S_INPUT")
     {
         tokens[1].pop_back(); //tira a virgula
-        translatedLine = "PUSH " + tokens[variableBegin] + "\nPUSH " + tokens[variableBegin+1];
+        translatedLine = "PUSH " + tokens[variableBegin] + "\nPUSH " + tokens[variableBegin + 1];
         translatedLine += "\nCALL " + S_INPUT_FUNCTION;
     }
-    else if (tokens[variableBegin-1] == "S_OUTPUT")
+    else if (tokens[variableBegin - 1] == "S_OUTPUT")
     {
         tokens[1].pop_back(); //tira a virgula
-        translatedLine = "PUSH " + tokens[variableBegin] + "\nPUSH " + tokens[variableBegin+1];
+        translatedLine = "PUSH " + tokens[variableBegin] + "\nPUSH " + tokens[variableBegin + 1];
         translatedLine += "\nCALL " + S_OUTPUT_FUNCTION;
     }
 }
@@ -211,8 +220,9 @@ void TranslateProcessing::analyseDefLabel(vector<string> &tokens, FileReader *ra
     {
         translatedLine = tokens[0] + " dd " + tokens[2];
     }
-    else if (getTokenType(tokens[1]) == INSTRUCTION){
-        analyseInstruction(tokens,rawFile,2); //instrucao COM definicao de label antes
+    else if (getTokenType(tokens[1]) == INSTRUCTION)
+    {
+        analyseInstruction(tokens, rawFile, 2); //instrucao COM definicao de label antes
     }
     else
     {

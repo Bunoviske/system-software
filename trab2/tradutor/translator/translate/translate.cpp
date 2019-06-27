@@ -139,7 +139,7 @@ void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader 
     }
     else if (tokens[variableBegin - 1] == "STOP")
     {
-        translatedLine += "MOV EAX,0\nMOV EBX,1\nINT 0X80";
+        translatedLine += "MOV EAX,1\nMOV EBX,0\nINT 0X80";
     }
     else if (tokens[variableBegin - 1] == "INPUT")
     {

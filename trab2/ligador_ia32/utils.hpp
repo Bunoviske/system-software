@@ -14,12 +14,12 @@
 /***********
  * Esses defines são vistos tanto pelo ligador quanto pelo elfioWriter
  ************/ 
-#define TEXT_SEGMENT_ADDRESS 268435456 //0x10000000
+#define TEXT_SEGMENT_ADDRESS 268435456 //0x10000000 
 #define DATA_SEGMENT_ADDRESS 285212672 //0x11000000
 
 using namespace std;
 
-string hex2ascii(uint64_t hexNumber);
+string hex2ascii(uint32_t hexNumber, bool zeroExtension);
 uint32_t toLittleEndian(uint32_t hexNumber);
 
 string readNextLine(fstream &myFile);

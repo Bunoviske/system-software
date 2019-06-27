@@ -27,15 +27,15 @@ public:
     void run(string &text, string &data, string filename);
 
 private:
-    void firstPassage(string filename);
+    void firstPassage(string &data, string filename); 
     void secondPassage(string &text, string &data, string filename);
 
-    void writeTextSection(string &text, vector<string> tokens);
+    void writeTextSection(string &text, string &data, vector<string> tokens);
     void writeDataSection(string &data, vector<string> tokens);
-    void writeBinaryFile(string &text, string &data, vector<string> tokens);
+    void writeBinaryInstructions(string &text, string &data, vector<string> tokens);
     bool setCurrentSection(vector<string> tokens);
 
-    void searchSymbol(vector<string> tokens);
+    void searchSymbol(string &data, vector<string> tokens);
     bool isSymbolInTable(string symbol);
     bool isInstructionInTable(string instruction);
 

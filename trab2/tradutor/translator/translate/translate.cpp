@@ -68,7 +68,8 @@ void TranslateProcessing::translateTokens(vector<string> &tokens, FileReader *ra
 string TranslateProcessing::getLabel(vector<string> &tokens, int begin){
     //label pode ter offset (displacement)
 
-    //TODO - COPY e S_OUTPUT/INPUT nao aceita displacement
+    //TODO - COPY e S_OUTPUT/INPUT nao aceita displacement. Multiplicar deslocamento do SPACE por 4
+
 
     string structure = "";
     for (size_t i = begin; i < tokens.size(); i++)
@@ -228,7 +229,6 @@ void TranslateProcessing::analyseDirective(vector<string> &tokens, FileReader *r
         if (tokens[1] == "0")
         {
             //cout << "pula proxima" << endl;
-            // TODO - EQU PODE RECEBER NUMERO NEGATIVO NO IF ?????
             // se a proxima linha nao puder ser escrita, le a proxima que tem algum conteudo e nao faz nada
             string line;
             do

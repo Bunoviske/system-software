@@ -1,7 +1,8 @@
 #include "utils.hpp"
 
 //retorna o hexadecimal em formato char ascii
-string hex2ascii(uint64_t hexNumber)
+//extensao do sinal apenas para os numeros da secao de dados (sempre devem ter 32 bits)
+string hex2ascii(uint32_t hexNumber, bool zeroExtension)
 //é necessario usar essa funcao pois precisa transformar numero inteiro em hexa para ascii
 //so é possivel fazer isso transformando cada dois hexadecimais para char e depois concatenando numa string
 {
@@ -11,6 +12,11 @@ string hex2ascii(uint64_t hexNumber)
 
     if (hexString.size() % 2 != 0) //se for impar, adiciona 0 no inicio do numero hexadecimal
         hexString = "0" + hexString;
+
+    while (zeroExtension && hexString.size() < 8) //todo dado deve ter os 32 bits preenchidos (extensao de zero)
+        hexString = "0" + hexString;
+
+    cout << hexString << endl;
 
     string result = "";
     for (size_t i = 0; i < hexString.size(); i += 2)
@@ -53,7 +59,6 @@ string readNextLine(fstream &myFile)
         else
             return "-1"; //eof
     }
-
 }
 
 vector<string> getTokensOfLine(string line)

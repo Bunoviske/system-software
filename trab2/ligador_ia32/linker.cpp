@@ -7,7 +7,6 @@ void Linker::run(string &text, string &data, string filename)
 
     firstPassage(data, filename); //set symbol table
     secondPassage(text, data, filename);
-
 }
 
 void Linker::writeTextSection(string &text, string &data, vector<string> tokens)
@@ -18,45 +17,46 @@ void Linker::writeTextSection(string &text, string &data, vector<string> tokens)
 
     for (size_t i = 0; i < tokens.size(); i++)
     {
-        if (isInstructionInTable(tokens[i]))
+        if (isInstructionInTable(tokens[i])) //text += opcode
         {
-            //text += opcode
         }
-        else if (isSymbolInTable(tokens[i]))
+        else if (isSymbolInTable(tokens[i])) //text += address do simbolo (displacement ou offset)
         {
-            //text += address do simbolo (displacement ou offset)
-
             //cout << tokens[i] << endl;
-            uint32_t val = DATA_SEGMENT_ADDRESS + symbolsTable[tokens[i]];
-            //cout << hex << val << endl;
-            //text += hex2ascii(toLittleEndian(val));
+            uint32_t val = DATA_SEGMENT_ADDRESS + symbolsTable[tokens[i]]; //numero ja tem os 32 bits extendidos pois DATA SEGMENT tem 32bits
+            text += hex2ascii(toLittleEndian(val), false);
+            // cout << hex << val << endl;
         }
         else if (tokens[i][0] == '[') //tem que acessar o dado armazenado
         {
-            cout << tokens[i] << endl;
-
             //retira [ ]
             tokens[i].pop_back();
             tokens[i].erase(tokens[i].begin());
             if (isSymbolInTable(tokens[i]))
             {
-                int index = symbolsTable[tokens[i]];   //acessa secao de dados e pega valor da memoria
-                cout << data.substr(index, 8) << endl; //8 digitos em hexadecimal representam 32 bits
+                int index = symbolsTable[tokens[i]]; //acessa secao de dados e pega valor da memoria
+                //cout << data.substr(index, 8) << endl;
+                text += data.substr(index, 8); //8 digitos em hexadecimal representam 32 bits
             }
-            if (tokens[i].find('+') != string::npos)
+            else if (tokens[i].find('+') != string::npos)
             {
-                //getAddressWithDisplacement();
+                // cout << tokens[i] << endl;
+                // cout << getAddressDisplacement(tokens[i]) << endl;
+                // cout << getLabelName(tokens[i]) << endl;
             }
+            else 
+                cout << "Erro na montagem das instrucoes" << endl;
         }
-        else if (tokens[i].find('+') != string::npos)
+        else if (tokens[i].find('+') != string::npos) //displacement do endereco de memoria
         {
-            //getAddressWithDisplacement();
-            cout << tokens[i] << endl;
+            // cout << tokens[i] << endl;
+            // cout << getAddressDisplacement(tokens[i]) << endl;
+            // cout << getLabelName(tokens[i]) << endl;
         }
-        // else
-        // {
-        //     cout << "Erro na montagem das instrucoes" << endl;
-        // }
+        else
+        {
+            cout << "Erro na montagem das instrucoes" << endl;
+        }
     }
 
     // text = hex2ascii(0xB804000000) + hex2ascii(0xBB01000000) + hex2ascii(0xB900000011) +
@@ -150,6 +150,19 @@ bool Linker::setCurrentSection(vector<string> tokens)
         return true;
     }
     return false;
+}
+
+int Linker::getAddressDisplacement(string token)
+{
+    int pos = token.find('+');
+    string displacement = token.substr(pos + 1);
+    return stoi(displacement);
+}
+string Linker::getLabelName(string token)
+{
+    int pos = token.find('+');
+    string label = token.substr(0, pos);
+    return label;
 }
 
 void Linker::searchSymbol(string &data, vector<string> tokens)

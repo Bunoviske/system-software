@@ -16,7 +16,7 @@ string hex2ascii(uint32_t hexNumber, bool zeroExtension)
     while (zeroExtension && hexString.size() < 8) //todo dado deve ter os 32 bits preenchidos (extensao de zero)
         hexString = "0" + hexString;
 
-    cout << hexString << endl;
+    //cout << hexString << endl;
 
     string result = "";
     for (size_t i = 0; i < hexString.size(); i += 2)

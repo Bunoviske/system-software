@@ -75,7 +75,7 @@ LerInteiro:
     push edi
     push word 0 ;reserve buffer to read the extra chars
     mov ecx, esp    ;move the buffer to ecx
-    xor esi, esi    ;reset counter
+    sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
     add edi, 18
 
@@ -108,12 +108,12 @@ LerInteiro:
 
 
 
-    xor eax, eax ;reset the accumulator to zero
+    sub eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx
     add edx, 12
     push dword 10 ;stack the value 10 to multiply
-    xor esi, esi  ;zero the negative number flag
-    xor ecx, ecx ; zero the counter
+    sub esi, esi  ;zero the negative number flag
+    sub ecx, ecx ; zero the counter
 
 
 convert_charint:
@@ -131,7 +131,7 @@ convert_charint:
     ja finish_charint
     sub ebx, '0' ;convert to integer
     push edx    ;save edx before ultiplication
-    mul dword [esp+4] ;multiply eax by 10 = get ready for next digit
+    imul dword [esp+4] ;multiply eax by 10 = get ready for next digit
     pop edx ;no use for edx, maximum value of multiplication fits eax
     add eax, ebx    ;adds toacumulator value
     jmp convert_charint ;jump until finished
@@ -181,15 +181,15 @@ EscreverInteiro:
     push dword 10 ;stack the value 10 to divide
 
 check_negative:
-    xor esi, esi    ;set negative flag to zero
+    sub esi, esi    ;set negative flag to zero
     cmp eax, 0  ;check if number is smaller then 0
     jge convert_intchar ;jump if number is positive
     mov edx, -1 ;put -1 on edx for multiplication
     imul edx     ;if negative multiply number by -1 to operate on unsigned number
     mov esi, 1 ; esi is a negative flag
 convert_intchar:
-    xor edx, edx    ;zero edx (rest of division - number to convert)
-    div dword [esp + ecx * 2] ;divide by 10
+    sub edx, edx    ;zero edx (rest of division - number to convert)
+    idiv dword [esp + ecx * 2] ;divide by 10
     add edx, '0'    ;convert digit to ascii char
     push dx ;stack number converted to ascii - stack works with a minimum 16 bits
     inc ecx ;count number of digits converted
@@ -212,7 +212,7 @@ output_intchar:
     cmp eax, ecx    ;check with ecx if finished unstacking all chars
     jne unstack_result_integer  ;jump if not finished
     cmp esi, 0  ;checks if negative again
-    xor edx, edx    ;resets edx
+    sub edx, edx    ;resets edx
     je finish_after_check_intchar   ;jumps if positive
     inc edx ;edx will have 1 more byte to print, in case of negative
 
@@ -341,7 +341,7 @@ LerString:
 
     push word 0 ;reserve buffer to read the extra chars
     mov ecx, esp    ;move the buffer to ecx
-    xor esi, esi    ;reset counter
+    sub esi, esi    ;reset counter
     mov edi, [ebp + 12] ;pointer to string
 
     get_input_charbychar_string:
@@ -456,7 +456,7 @@ LerHexa:
     push edi
     push word 0 ;reserve buffer to read the extra chars
     mov ecx, esp    ;move the buffer to ecx
-    xor esi, esi    ;reset counter
+    sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
     add edi, 14
 
@@ -490,11 +490,11 @@ LerHexa:
 
 
 
-    xor eax, eax ;reset the accumulator to zero
+    sub eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx
     add edx, 8
     push dword 16 ;stack the value 16 to multiply
-    xor ecx, ecx ; zero the counter
+    sub ecx, ecx ; zero the counter
 
 
 convert_charint_hex:
@@ -534,7 +534,7 @@ convert_charint_hex:
 
     after_check_charint_hex:
     push edx    ;save edx before ultiplication
-    mul dword [esp+4] ;multiply eax by 16 = get ready for next digit
+    imul dword [esp+4] ;multiply eax by 16 = get ready for next digit
     pop edx ;no use for edx, maximum value of multiplication fits eax
     add eax, ebx    ;adds to acumulator value
     jmp convert_charint_hex ;jump until finished
@@ -577,7 +577,7 @@ EscreverHexa:
 
 convert_intchar_hex:
     mov edx, 0    ;zero edx (rest of division - number to convert)
-    div dword [esp + ecx * 2] ;divide by 16
+    idiv dword [esp + ecx * 2] ;divide by 16
     cmp edx, 10
     jge convert_int_hex
     add edx, '0'    ;convert digit to ascii char
@@ -601,7 +601,7 @@ output_intchar_hex:
     cmp eax, ecx    ;check with ecx if finished unstacking all chars
     jne unstack_result_hex  ;jump if not finished
     cmp esi, 0  ;checks if negative again
-    xor edx, edx    ;resets edx
+    sub edx, edx    ;resets edx
     je finish_after_check_intchar_hex   ;jumps if positive
     inc edx ;edx will have 1 more byte to print, in case of negative
 

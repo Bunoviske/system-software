@@ -1,5 +1,3 @@
-section .text
-
 LerInteiro:
 ;receive integer (ascii string) input
     push ebp        ;creating stack frame
@@ -17,7 +15,7 @@ LerInteiro:
     push edi
     push word 0 ;reserve buffer to read the extra chars
     mov ecx, esp    ;move the buffer to ecx
-    xor esi, esi    ;reset counter
+    sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
     add edi, 18
 
@@ -25,8 +23,8 @@ LerInteiro:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
     mov edx, 1
-    int 80H
-    cmp byte [ecx], 0aH    ;check if char is ENTER
+    int 0X80
+    cmp byte [ecx], 0X0A    ;check if char is ENTER
     je finish_input_integer ;if enter - finish input
     mov eax, [ecx]  ;move the char into the string
     mov byte [edi + esi], al
@@ -39,8 +37,8 @@ LerInteiro:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
     mov edx, 1
-    int 80H
-    cmp byte [ecx], 0aH    ;check if char is ENTER
+    int 0X80
+    cmp byte [ecx], 0X0A    ;check if char is ENTER
     jne check_extra_char_enter_integer
 
     finish_input_integer:   ;finish getting inputs
@@ -50,12 +48,12 @@ LerInteiro:
 
 
 
-    xor eax, eax ;reset the accumulator to zero
+    sub eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx
     add edx, 12
     push dword 10 ;stack the value 10 to multiply
-    xor esi, esi  ;zero the negative number flag
-    xor ecx, ecx ; zero the counter
+    sub esi, esi  ;zero the negative number flag
+    sub ecx, ecx ; zero the counter
 
 
 convert_charint:
@@ -73,7 +71,7 @@ convert_charint:
     ja finish_charint
     sub ebx, '0' ;convert to integer
     push edx    ;save edx before ultiplication
-    mul dword [esp+4] ;multiply eax by 10 = get ready for next digit
+    imul dword [esp+4] ;multiply eax by 10 = get ready for next digit
     pop edx ;no use for edx, maximum value of multiplication fits eax
     add eax, ebx    ;adds toacumulator value
     jmp convert_charint ;jump until finished
@@ -88,7 +86,8 @@ finish_charint:
     jne finish_after_check_charint  ;if not negative, go on to finish
     imul eax, -1    ;if negative, multiply by -1
 finish_after_check_charint:
-    mov[ebp + 8], eax   ;no arguments - return value is ebp + 8 bytes pushed by call and frame creation (return and ebp)
+    mov edx, [ebp + 8]
+    mov [edx], eax   ;no arguments - return value is ebp + 8 bytes pushed by call and frame creation (return and ebp)
     mov eax, ecx    ;move counter into eax - number of characters input
 
     pop esi ;pops original value of: esi
@@ -122,15 +121,15 @@ EscreverInteiro:
     push dword 10 ;stack the value 10 to divide
 
 check_negative:
-    xor esi, esi    ;set negative flag to zero
+    sub esi, esi    ;set negative flag to zero
     cmp eax, 0  ;check if number is smaller then 0
     jge convert_intchar ;jump if number is positive
     mov edx, -1 ;put -1 on edx for multiplication
     imul edx     ;if negative multiply number by -1 to operate on unsigned number
     mov esi, 1 ; esi is a negative flag
 convert_intchar:
-    xor edx, edx    ;zero edx (rest of division - number to convert)
-    div dword [esp + ecx * 2] ;divide by 10
+    sub edx, edx    ;zero edx (rest of division - number to convert)
+    idiv dword [esp + ecx * 2] ;divide by 10
     add edx, '0'    ;convert digit to ascii char
     push dx ;stack number converted to ascii - stack works with a minimum 16 bits
     inc ecx ;count number of digits converted
@@ -153,7 +152,7 @@ output_intchar:
     cmp eax, ecx    ;check with ecx if finished unstacking all chars
     jne unstack_result_integer  ;jump if not finished
     cmp esi, 0  ;checks if negative again
-    xor edx, edx    ;resets edx
+    sub edx, edx    ;resets edx
     je finish_after_check_intchar   ;jumps if positive
     inc edx ;edx will have 1 more byte to print, in case of negative
 
@@ -167,15 +166,15 @@ print_output_integer:
     add edx, ecx
     mov ecx, esp
     add ecx, 16 ;12 bytes of buffer and 4 bytes of pushed ecx - get to the start of the buffer
-    int 80H
+    int 0X80
 
     ;outputs a linebreak
-    push word 0d0aH ;add linebreak to stack
+    push word 0X0D0A ;add linebreak to stack
     mov eax, 4
     mov ebx, 1
     mov ecx, esp
     mov edx, 2
-    int 80H
+    int 0X80
     add esp, 2 ;remove linebreak from stack
 
     pop eax ;moved ecx into eax - digit counter
@@ -204,18 +203,19 @@ LerChar:
     mov ecx, esp
     add ecx, 2
     mov edx, 1
-    int 80H
+    int 0X80
 
     mov eax, [ecx]  ;moving the char read to the return address on the stack
-    mov [ebp + 8], eax  ; ||
+    mov ecx, [ebp + 8]  ;||
+    mov [ecx], eax  ; ||
 
     dec ecx ;get to the second byte of memory on the buffer - used to read until enter
     check_extra_char_enter_char:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
     mov edx, 1
-    int 80H
-    cmp byte [ecx], 0aH    ;check if char is ENTER
+    int 0X80
+    cmp byte [ecx], 0X0A    ;check if char is ENTER
     jne check_extra_char_enter_char
 
     mov eax, 1  ;eax contains the number of elements read - always 1 char
@@ -245,15 +245,15 @@ EscreverChar:
     mov ecx, ebp   ;char to print - passed as argument through stack
     add ecx, 8  ;||
     mov edx, 1 ;1 char to print
-    int 80H
+    int 0X80
 
     ;outputs a linebreak
-    push word 0d0aH ;add linebreak to stack
+    push word 0X0D0A ;add linebreak to stack
     mov eax, 4
     mov ebx, 1
     mov ecx, esp
     mov edx, 2
-    int 80H
+    int 0X80
     add esp, 2 ;remove linebreak from stack
 
     mov eax, 1    ;number of chars printed - always 1 char
@@ -281,15 +281,15 @@ LerString:
 
     push word 0 ;reserve buffer to read the extra chars
     mov ecx, esp    ;move the buffer to ecx
-    xor esi, esi    ;reset counter
+    sub esi, esi    ;reset counter
     mov edi, [ebp + 12] ;pointer to string
 
     get_input_charbychar_string:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
     mov edx, 1
-    int 80H
-    cmp byte [ecx], 0aH    ;check if char is ENTER
+    int 0X80
+    cmp byte [ecx], 0X0A    ;check if char is ENTER
     je finish_input_string ;if enter - finish input
     mov byte al, [ecx]  ;move the char into the string
     mov byte [edi + esi], al
@@ -302,8 +302,8 @@ LerString:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
     mov edx, 1
-    int 80H
-    cmp byte [ecx], 0aH    ;check if char is ENTER
+    int 0X80
+    cmp byte [ecx], 0X0A    ;check if char is ENTER
     jne check_extra_char_enter_string
 
     finish_input_string:   ;finish fetting inputs
@@ -318,7 +318,7 @@ LerString:
     mov ebx, [ebp + 8]  ;move the string size to ebx - avoid segfault if string is max size and has no ENTER
     dec ebx ; dec string size to get the last element index - needed to compare with counter (from 1->x to 0->x-1)
     count_input:
-    cmp byte [edx], 0aH    ;check if char is ENTER
+    cmp byte [edx], 0X0A    ;check if char is ENTER
     je endcount_input ;if yes, end counting loop
     inc ecx ;increment counter
     cmp ecx, ebx    ;check if counter is at the end of the string
@@ -349,7 +349,7 @@ EscreverString:
     mov ebx, [ebp + 8]  ;string size
 
     count_output:
-    cmp byte [edx], 0aH    ;check if char is ENTER
+    cmp byte [edx], 0X0A    ;check if char is ENTER
     je endcount_output ;if yes, end counting loop
     inc ecx ;increment counter
     cmp ecx, ebx    ;check if counter is at the end of the string
@@ -363,15 +363,15 @@ EscreverString:
     mov ebx, 1  ;1 = stdout - monitor
     mov edx, ecx
     mov ecx, [ebp + 12]
-    int 80H
+    int 0X80
 
     ;outputs a linebreak
-    push word 0d0aH ;add linebreak to stack
+    push word 0X0D0A ;add linebreak to stack
     mov eax, 4
     mov ebx, 1
     mov ecx, esp
     mov edx, 2
-    int 80H
+    int 0X80
     add esp, 2 ;remove linebreak from stack
 
     pop eax ;moved ecx into eax - char counter
@@ -396,7 +396,7 @@ LerHexa:
     push edi
     push word 0 ;reserve buffer to read the extra chars
     mov ecx, esp    ;move the buffer to ecx
-    xor esi, esi    ;reset counter
+    sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
     add edi, 14
 
@@ -405,8 +405,8 @@ LerHexa:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
     mov edx, 1
-    int 80H
-    cmp byte [ecx], 0aH    ;check if char is ENTER
+    int 0X80
+    cmp byte [ecx], 0X0A    ;check if char is ENTER
     je finish_input_hex ;if enter - finish input
     mov eax, [ecx]  ;move the char into the string
     mov byte [edi + esi], al
@@ -419,8 +419,8 @@ LerHexa:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
     mov edx, 1
-    int 80H
-    cmp byte [ecx], 0aH    ;check if char is ENTER
+    int 0X80
+    cmp byte [ecx], 0X0A    ;check if char is ENTER
     jne check_extra_char_enter_hex
 
     finish_input_hex:   ;finish getting inputs
@@ -430,11 +430,11 @@ LerHexa:
 
 
 
-    xor eax, eax ;reset the accumulator to zero
+    sub eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx
     add edx, 8
     push dword 16 ;stack the value 16 to multiply
-    xor ecx, ecx ; zero the counter
+    sub ecx, ecx ; zero the counter
 
 
 convert_charint_hex:
@@ -474,7 +474,7 @@ convert_charint_hex:
 
     after_check_charint_hex:
     push edx    ;save edx before ultiplication
-    mul dword [esp+4] ;multiply eax by 16 = get ready for next digit
+    imul dword [esp+4] ;multiply eax by 16 = get ready for next digit
     pop edx ;no use for edx, maximum value of multiplication fits eax
     add eax, ebx    ;adds to acumulator value
     jmp convert_charint_hex ;jump until finished
@@ -483,7 +483,8 @@ finish_charint_hex:
     dec ecx ; counter will have 1 extra from the ending char
     add esp, 12  ;remove 16  and buffer from top of stack
 finish_after_check_charint_hex:
-    mov[ebp + 8], eax   ;no arguments - return value is ebp + 8 bytes pushed by call and frame creation (return and ebp)
+    mov edx, [ebp + 8]
+    mov[edx], eax   ;no arguments - return value is ebp + 8 bytes pushed by call and frame creation (return and ebp)
     mov eax, ecx    ;move counter into eax - number of characters input
 
     pop edx
@@ -516,7 +517,7 @@ EscreverHexa:
 
 convert_intchar_hex:
     mov edx, 0    ;zero edx (rest of division - number to convert)
-    div dword [esp + ecx * 2] ;divide by 16
+    idiv dword [esp + ecx * 2] ;divide by 16
     cmp edx, 10
     jge convert_int_hex
     add edx, '0'    ;convert digit to ascii char
@@ -540,7 +541,7 @@ output_intchar_hex:
     cmp eax, ecx    ;check with ecx if finished unstacking all chars
     jne unstack_result_hex  ;jump if not finished
     cmp esi, 0  ;checks if negative again
-    xor edx, edx    ;resets edx
+    sub edx, edx    ;resets edx
     je finish_after_check_intchar_hex   ;jumps if positive
     inc edx ;edx will have 1 more byte to print, in case of negative
 
@@ -554,15 +555,15 @@ print_output_hex:
     add edx, ecx
     mov ecx, esp
     add ecx, 12 ;12 bytes of buffer and 4 bytes of pushed ecx - get to the start of the buffer
-    int 80H
+    int 0X80
 
     ;outputs a linebreak
-    push word 0d0aH ;add linebreak to stack
+    push word 0X0D0A;add linebreak to stack
     mov eax, 4
     mov ebx, 1
     mov ecx, esp
     mov edx, 2
-    int 80H
+    int 0X80
     add esp, 2 ;remove linebreak from stack
 
     pop eax ;moved ecx into eax - digit counter

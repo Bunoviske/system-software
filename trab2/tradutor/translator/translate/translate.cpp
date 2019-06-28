@@ -169,7 +169,7 @@ void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader 
     }
     else if (tokens[variableBegin - 1] == "OUTPUT")
     {
-        translatedLine += "PUSH " + getLabelWithDisplacement(tokens, variableBegin);
+        translatedLine += "PUSH DWORD [" + getLabelWithDisplacement(tokens, variableBegin) + "]";
         translatedLine += "\nCALL " + OUTPUT_FUNCTION;
     }
     else if (tokens[variableBegin - 1] == "C_INPUT")
@@ -179,7 +179,7 @@ void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader 
     }
     else if (tokens[variableBegin - 1] == "C_OUTPUT")
     {
-        translatedLine += "PUSH " + getLabelWithDisplacement(tokens, variableBegin);
+        translatedLine += "PUSH DWORD [" + getLabelWithDisplacement(tokens, variableBegin) + "]";
         translatedLine += "\nCALL " + C_OUTPUT_FUNCTION;
     }
     else if (tokens[variableBegin - 1] == "H_INPUT")
@@ -189,7 +189,7 @@ void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader 
     }
     else if (tokens[variableBegin - 1] == "H_OUTPUT")
     {
-        translatedLine += "PUSH " + getLabelWithDisplacement(tokens, variableBegin);
+        translatedLine += "PUSH DWORD [" + getLabelWithDisplacement(tokens, variableBegin) + "]";
         translatedLine += "\nCALL " + H_OUTPUT_FUNCTION;
     }
     else if (tokens[variableBegin - 1] == "S_INPUT")

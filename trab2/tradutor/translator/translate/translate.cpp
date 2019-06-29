@@ -226,14 +226,16 @@ void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader 
     {
         vector<string> firstArg, secondArg;
         getCopyOrStringFunctionArguments(tokens, firstArg, secondArg);
-        translatedLine += "PUSH " + getLabelWithDisplacement(firstArg,0) + "\nPUSH " + getLabelWithDisplacement(secondArg,0);
+        translatedLine += "PUSH " + getLabelWithDisplacement(firstArg,0) + "\nPUSH DWORD [" + 
+        getLabelWithDisplacement(secondArg,0) + "]";
         translatedLine += "\nCALL " + S_INPUT_FUNCTION;
     }
     else if (tokens[variableBegin - 1] == "S_OUTPUT")
     {
         vector<string> firstArg, secondArg;
         getCopyOrStringFunctionArguments(tokens, firstArg, secondArg);
-        translatedLine += "PUSH " + getLabelWithDisplacement(firstArg,0) + "\nPUSH " + getLabelWithDisplacement(secondArg,0);
+        translatedLine += "PUSH " + getLabelWithDisplacement(firstArg,0) + "\nPUSH DWORD ["
+         + getLabelWithDisplacement(secondArg,0) + "]";
         translatedLine += "\nCALL " + S_OUTPUT_FUNCTION;
     }
 }

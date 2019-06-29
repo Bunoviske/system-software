@@ -30,7 +30,7 @@ void TranslateProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
 
 void TranslateProcessing::importAssemblyFunctions(FileWriter *preprocFile)
 {
-    FileReader *functionsFile = getFileReader("../translator/translate/functions.asm");
+    FileReader *functionsFile = getFileReader("./translator/translate/functions.asm");
     bool eof = false;
 
     while (!eof)

@@ -27,7 +27,7 @@ LerInteiro:
     cmp byte [ecx], 0X0A    ;check if char is ENTER
     je finish_input_integer ;if enter - finish input
     mov eax, [ecx]  ;move the char into the string
-    mov byte [edi + esi], al
+    mov byte [edi+esi], al
     inc esi ;increment char counter
     cmp esi, 12  ;check if string is full --> counter == string size
     je check_extra_char_enter_integer   ;if yes = string full but still no enter, read and trash next chars until enter
@@ -86,7 +86,7 @@ finish_charint:
     jne finish_after_check_charint  ;if not negative, go on to finish
     imul eax, -1    ;if negative, multiply by -1
 finish_after_check_charint:
-    mov edx, [ebp + 8]
+    mov edx, [ebp+8]
     mov [edx], eax   ;no arguments - return value is ebp + 8 bytes pushed by call and frame creation (return and ebp)
     mov eax, ecx    ;move counter into eax - number of characters input
 
@@ -114,7 +114,7 @@ EscreverInteiro:
 
 
 
-    mov eax, [ebp + 8]   ;number - passed as argument through stack
+    mov eax, [ebp+8]   ;number - passed as argument through stack
     mov ebx, esp   ;string
     add ebx, 12
     mov ecx, 0  ;digit counter
@@ -142,12 +142,12 @@ output_intchar:
     mov eax, 0  ;reset eax to use it as counter of chars added to string
     cmp esi, 0  ;check if negative
     je unstack_result_integer   ;if positive, jumps
-    mov byte [ebx + eax], '-'   ;adds '-' to start of string
+    mov byte [ebx+eax], '-'   ;adds '-' to start of string
     inc eax ;increment eax - counter of chars added to string
     inc ecx ;increment ecx - counter of digits converted - + the negative char
     unstack_result_integer:
     pop dx  ;pops the chars converted to get the right order
-    mov [ebx + eax], dl ;moves the actual byte of the char to the string buffer and ignores the empty dh
+    mov [ebx+eax], dl ;moves the actual byte of the char to the string buffer and ignores the empty dh
     inc eax ;increments eax - counter of chars unstacked
     cmp eax, ecx    ;check with ecx if finished unstacking all chars
     jne unstack_result_integer  ;jump if not finished
@@ -206,7 +206,7 @@ LerChar:
     int 0X80
 
     mov eax, [ecx]  ;moving the char read to the return address on the stack
-    mov ecx, [ebp + 8]  ;||
+    mov ecx, [ebp+8]  ;||
     mov [ecx], eax  ; ||
 
     dec ecx ;get to the second byte of memory on the buffer - used to read until enter
@@ -282,7 +282,7 @@ LerString:
     push word 0 ;reserve buffer to read the extra chars
     mov ecx, esp    ;move the buffer to ecx
     sub esi, esi    ;reset counter
-    mov edi, [ebp + 12] ;pointer to string
+    mov edi, [ebp+12] ;pointer to string
 
     get_input_charbychar_string:
     mov eax, 3
@@ -292,9 +292,9 @@ LerString:
     cmp byte [ecx], 0X0A    ;check if char is ENTER
     je finish_input_string ;if enter - finish input
     mov byte al, [ecx]  ;move the char into the string
-    mov byte [edi + esi], al
+    mov byte [edi+esi], al
     inc esi ;increment char counter
-    cmp esi, [ebp + 8]  ;check if string is full --> counter == string size
+    cmp esi, [ebp+8]  ;check if string is full --> counter == string size
     je check_extra_char_enter_string   ;if yes = string full but still no enter, read and trash next chars until enter
     jmp get_input_charbychar_string    ;keep getting input
 
@@ -313,9 +313,9 @@ LerString:
     pop esi ;pops esi back
 
 
-    mov edx, [ebp + 12] ; move the string pointer to edx
+    mov edx, [ebp+12] ; move the string pointer to edx
     mov ecx, 0  ;reset counter
-    mov ebx, [ebp + 8]  ;move the string size to ebx - avoid segfault if string is max size and has no ENTER
+    mov ebx, [ebp+8]  ;move the string size to ebx - avoid segfault if string is max size and has no ENTER
     dec ebx ; dec string size to get the last element index - needed to compare with counter (from 1->x to 0->x-1)
     count_input:
     cmp byte [edx], 0X0A    ;check if char is ENTER
@@ -345,8 +345,8 @@ EscreverString:
     push edx    ;size of string and pointer to string
 
     mov ecx, 0  ;reset counter
-    mov edx, [ebp + 12] ;pointer to string moved into edx
-    mov ebx, [ebp + 8]  ;string size
+    mov edx, [ebp+12] ;pointer to string moved into edx
+    mov ebx, [ebp+8]  ;string size
 
     count_output:
     cmp byte [edx], 0X0A    ;check if char is ENTER
@@ -362,7 +362,7 @@ EscreverString:
     mov eax, 4
     mov ebx, 1  ;1 = stdout - monitor
     mov edx, ecx
-    mov ecx, [ebp + 12]
+    mov ecx, [ebp+12]
     int 0X80
 
     ;outputs a linebreak
@@ -409,7 +409,7 @@ LerHexa:
     cmp byte [ecx], 0X0A    ;check if char is ENTER
     je finish_input_hex ;if enter - finish input
     mov eax, [ecx]  ;move the char into the string
-    mov byte [edi + esi], al
+    mov byte [edi+esi], al
     inc esi ;increment char counter
     cmp esi, 8  ;check if string is full --> counter == string size
     je check_extra_char_enter_hex   ;if yes = string full but still no enter, read and trash next chars until enter
@@ -483,7 +483,7 @@ finish_charint_hex:
     dec ecx ; counter will have 1 extra from the ending char
     add esp, 12  ;remove 16  and buffer from top of stack
 finish_after_check_charint_hex:
-    mov edx, [ebp + 8]
+    mov edx, [ebp+8]
     mov[edx], eax   ;no arguments - return value is ebp + 8 bytes pushed by call and frame creation (return and ebp)
     mov eax, ecx    ;move counter into eax - number of characters input
 
@@ -509,7 +509,7 @@ EscreverHexa:
 
 
 
-    mov eax, [ebp + 8]   ;number - passed as argument through stack
+    mov eax, [ebp+8]   ;number - passed as argument through stack
     mov ebx, esp   ;string
     add ebx, 8
     mov ecx, 0  ;digit counter
@@ -536,7 +536,7 @@ convert_intchar_hex:
 output_intchar_hex:
     unstack_result_hex:
     pop dx  ;pops the chars converted to get the right order
-    mov [ebx + eax], dl ;moves the actual byte of the char to the string buffer and ignores the empty dh
+    mov [ebx+eax], dl ;moves the actual byte of the char to the string buffer and ignores the empty dh
     inc eax ;increments eax - counter of chars unstacked
     cmp eax, ecx    ;check with ecx if finished unstacking all chars
     jne unstack_result_hex  ;jump if not finished

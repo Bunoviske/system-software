@@ -28,16 +28,20 @@ void TranslateProcessing::run(FileReader *rawFile, FileWriter *preprocFile)
     }
 }
 
-void TranslateProcessing::importAssemblyFunctions(FileWriter* preprocFile){
-    FileReader* functionsFile = getFileReader("./translator/translate/functions.asm");
+void TranslateProcessing::importAssemblyFunctions(FileWriter *preprocFile)
+{
+    FileReader *functionsFile = getFileReader("../translator/translate/functions.asm");
     bool eof = false;
 
-    while(!eof){
+    while (!eof)
+    {
         string line = toUpperCase(functionsFile->readNextLine());
-        if (line == "-1"){
+        if (line == "-1")
+        {
             eof = true;
         }
-        else{
+        else
+        {
             //write line to file
             preprocFile->writeNextLine(line);
         }
@@ -56,7 +60,8 @@ void TranslateProcessing::parseCodeLine(string line, FileReader *rawFile, FileWr
         {
             translateTokens(tokens, rawFile, preprocFile);
 
-            if(importAssembly){
+            if (importAssembly)
+            {
                 importAssemblyFunctions(preprocFile);
                 importAssembly = false;
             }
@@ -86,11 +91,34 @@ void TranslateProcessing::translateTokens(vector<string> &tokens, FileReader *ra
     //assembletranslatedLine(tokens);
 }
 
+void TranslateProcessing::getCopyOrStringFunctionArguments(vector<string> tokens,
+ vector<string> &firstArg, vector<string> &secondArg)
+{
+    string buffer = "";
+    for (size_t i = 1; i < tokens.size(); i++)
+    {
+        if (tokens[i].back() == ',')
+        {
+            tokens[i].pop_back();
+            buffer += tokens[i] + " ";
+            firstArg = getTokensOfLine(buffer);
+            buffer = "";
+        }
+        else if (i == tokens.size() - 1)
+        {
+            buffer += tokens[i] + " ";
+            secondArg = getTokensOfLine(buffer);
+        }
+        else
+        {
+            buffer += tokens[i] + " ";
+        }
+    }
+}
+
 string TranslateProcessing::getLabelWithDisplacement(vector<string> &tokens, int begin)
 {
     //label pode ter offset (displacement). Se nao tiver, essa funcao retorna o label normalmente
-
-    //TODO - COPY e S_OUTPUT/INPUT nao aceita displacement
 
     string structure = "";
     for (size_t i = begin; i < tokens.size(); i++)
@@ -107,6 +135,7 @@ string TranslateProcessing::getLabelWithDisplacement(vector<string> &tokens, int
             structure += tokens[i];
         }
     }
+    
     return structure;
 }
 
@@ -146,9 +175,10 @@ void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader 
     }
     else if (tokens[variableBegin - 1] == "COPY")
     {
-        tokens[1].pop_back(); //tira a virgula
-        translatedLine += "PUSH EAX\nMOV EAX,[" + tokens[variableBegin] +
-                         "]\nMOV [" + tokens[variableBegin + 1] + "],EAX\nPOP EAX";
+        vector<string> firstArg, secondArg;
+        getCopyOrStringFunctionArguments(tokens, firstArg, secondArg);
+        translatedLine += "PUSH EAX\nMOV EAX,[" + getLabelWithDisplacement(firstArg,0) +
+                          "]\nMOV [" + getLabelWithDisplacement(secondArg,0) + "],EAX\nPOP EAX";
     }
     else if (tokens[variableBegin - 1] == "LOAD")
     {
@@ -194,14 +224,16 @@ void TranslateProcessing::analyseInstruction(vector<string> &tokens, FileReader 
     }
     else if (tokens[variableBegin - 1] == "S_INPUT")
     {
-        tokens[1].pop_back(); //tira a virgula
-        translatedLine += "PUSH " + tokens[variableBegin] + "\nPUSH " + tokens[variableBegin + 1];
+        vector<string> firstArg, secondArg;
+        getCopyOrStringFunctionArguments(tokens, firstArg, secondArg);
+        translatedLine += "PUSH " + getLabelWithDisplacement(firstArg,0) + "\nPUSH " + getLabelWithDisplacement(secondArg,0);
         translatedLine += "\nCALL " + S_INPUT_FUNCTION;
     }
     else if (tokens[variableBegin - 1] == "S_OUTPUT")
     {
-        tokens[1].pop_back(); //tira a virgula
-        translatedLine += "PUSH " + tokens[variableBegin] + "\nPUSH " + tokens[variableBegin + 1];
+        vector<string> firstArg, secondArg;
+        getCopyOrStringFunctionArguments(tokens, firstArg, secondArg);
+        translatedLine += "PUSH " + getLabelWithDisplacement(firstArg,0) + "\nPUSH " + getLabelWithDisplacement(secondArg,0);
         translatedLine += "\nCALL " + S_OUTPUT_FUNCTION;
     }
 }
@@ -278,7 +310,8 @@ void TranslateProcessing::analyseDirective(vector<string> &tokens, FileReader *r
     {
         if (tokens[1] == "TEXT")
             translatedLine = "SECTION .text\nGLOBAL _start\n_start:";
-        else if (tokens[1] == "DATA"){
+        else if (tokens[1] == "DATA")
+        {
             importAssembly = true;
             translatedLine = "SECTION .data";
         }

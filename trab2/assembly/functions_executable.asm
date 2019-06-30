@@ -1,7 +1,7 @@
 section .data
 
 
-user_integer db 0, 0, 0, 0  ;usado apenas na simulacao da funcao
+user_integer dd 0, 0, 0, 0  ;usado apenas na simulacao da funcao
 user_char db 0
 user_string db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 
@@ -11,43 +11,59 @@ global _start
 
 _start:
     ;--int
-    push user_integer
+    ; push user_integer
+    ; call LerInteiro
+    ; ; pop ebx
+    ; ; mov [user_integer], ebx
+    ; ;--
+    ; mov ebx, [user_integer]
+    ; push ebx
+    ; call EscreverInteiro
+    ;
+    ; ;--char
+    ; push user_char
+    ; call LerChar
+    ; ; pop ebx
+    ; ; mov [user_char], ebx
+    ; ;--
+    ; mov ebx, [user_char]
+    ; push ebx
+    ; call EscreverChar
+    ;
+    ; ;--string
+    ; push user_string
+    ; push dword 10
+    ; call LerString
+    ; ;--
+    ; push user_string
+    ; push dword 10
+    ; call EscreverString
+    ;
+    ; ;--hex
+    ; push user_integer
+    ; call LerHexa
+    ; ; pop ebx
+    ; ; mov [user_integer], ebx
+    ; ;--
+    ; mov ebx, [user_integer]
+    ; push ebx
+    ; call EscreverHexa
+
+
+    push DWORD user_integer
+    call LerHexa
+    push DWORD user_integer+4
+    call LerHexa
+    push DWORD user_integer + 8
     call LerInteiro
-    ; pop ebx
-    ; mov [user_integer], ebx
-    ;--
-    mov ebx, [user_integer]
-    push ebx
+    push DWORD [user_integer]
+    call EscreverHexa
+    push DWORD [user_integer + 4]
+    call EscreverHexa
+    push DWORD [user_integer + 8]
     call EscreverInteiro
 
-    ;--char
-    push user_char
-    call LerChar
-    ; pop ebx
-    ; mov [user_char], ebx
-    ;--
-    mov ebx, [user_char]
-    push ebx
-    call EscreverChar
 
-    ;--string
-    push user_string
-    push dword 10
-    call LerString
-    ;--
-    push user_string
-    push dword 10
-    call EscreverString
-
-    ;--hex
-    push user_integer
-    call LerHexa
-    ; pop ebx
-    ; mov [user_integer], ebx
-    ;--
-    mov ebx, [user_integer]
-    push ebx
-    call EscreverHexa
 
     mov eax, 1
     mov ebx, 0
@@ -77,7 +93,7 @@ LerInteiro:
     mov ecx, esp    ;move the buffer to ecx
     sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
-    add edi, 18
+    add edi, 14
 
     get_input_charbychar_integer:
     mov eax, 3
@@ -110,7 +126,7 @@ LerInteiro:
 
     sub eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx
-    add edx, 12
+    add edx, 8
     push dword 10 ;stack the value 10 to multiply
     sub esi, esi  ;zero the negative number flag
     sub ecx, ecx ; zero the counter
@@ -156,7 +172,7 @@ finish_after_check_charint:
     pop ebx ; -ebx
 
     pop ebp ;removing stack frame
-    ret
+    ret 4
 
 
 EscreverInteiro:
@@ -261,7 +277,6 @@ LerChar:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
     mov ecx, esp
-    add ecx, 2
     mov edx, 1
     int 0X80
 
@@ -269,7 +284,7 @@ LerChar:
     mov ecx, [ebp + 8]  ;||
     mov [ecx], eax  ; ||
 
-    dec ecx ;get to the second byte of memory on the buffer - used to read until enter
+    inc ecx ;get to the second byte of memory on the buffer - used to read until enter
     check_extra_char_enter_char:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
@@ -288,7 +303,7 @@ LerChar:
 
     pop ebp ;remove the stack frame
 
-    ret
+    ret 4
 
 
 EscreverChar:
@@ -458,7 +473,7 @@ LerHexa:
     mov ecx, esp    ;move the buffer to ecx
     sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
-    add edi, 14
+    add edi, 10
 
     ;ask for input
     get_input_charbychar_hex:
@@ -492,7 +507,7 @@ LerHexa:
 
     sub eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx
-    add edx, 8
+    add edx, 4
     push dword 16 ;stack the value 16 to multiply
     sub ecx, ecx ; zero the counter
 
@@ -512,9 +527,9 @@ convert_charint_hex:
     jb finish_charint_hex   ;already jumped if between 0-9
     cmp ebx, 'F'    ;check if number as hex upper
     jbe convert_hex_int_upper
-    cmp ebx, 'a'    ;check if number as hex lower
+    cmp ebx, 0X61    ;check if number as hex lower - using ascii code due to touppercase (a)
     jb finish_charint_hex
-    cmp ebx, 'f'    ;check if umber as hex lower
+    cmp ebx, 0X66    ;check if umber as hex lower  - using ascii code due to touppercase (f)
     jbe convert_hex_int_lower   ;already jumped if other cases
     jmp finish_charint_hex  ;checked everything - not a valid char
     ;if reorganized, could have spared one extra jump, but this way the code is more readable
@@ -525,7 +540,7 @@ convert_charint_hex:
     add ebx, 10
     jmp after_check_charint_hex
     convert_hex_int_lower:
-    sub ebx, 'a'    ;convert to integer number
+    sub ebx, 0X61    ;convert to integer number  - using ascii code due to touppercase (a)
     add ebx, 10
     jmp after_check_charint_hex
 
@@ -553,7 +568,7 @@ finish_after_check_charint_hex:
 
     pop ebp ;removing stack frame
 
-    ret
+    ret 4
 
 
 EscreverHexa:
@@ -571,7 +586,7 @@ EscreverHexa:
 
     mov eax, [ebp + 8]   ;number - passed as argument through stack
     mov ebx, esp   ;string
-    add ebx, 8
+    add ebx, 4
     mov ecx, 0  ;digit counter
     push dword 16 ;stack the value 16 to divide
 
@@ -614,7 +629,7 @@ print_output_hex:
     mov ebx, 1
     add edx, ecx
     mov ecx, esp
-    add ecx, 12 ;12 bytes of buffer and 4 bytes of pushed ecx - get to the start of the buffer
+    add ecx, 8 ;8 bytes of buffer and 4 bytes of pushed ecx - get to the start of the buffer
     int 0X80
 
     ;outputs a linebreak

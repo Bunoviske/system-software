@@ -13,11 +13,11 @@ LerInteiro:
     ;ask for input
 
     push edi
-    push word 0 ;reserve buffer to read the extra chars
+    push dword 0 ;reserve buffer to read the extra chars
     mov ecx, esp    ;move the buffer to ecx
     sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
-    add edi, 14
+    add edi, 16
 
     get_input_charbychar_integer:
     mov eax, 3
@@ -43,7 +43,7 @@ LerInteiro:
 
     finish_input_integer:   ;finish getting inputs
 
-    add esp, 2  ;remove buffer
+    add esp, 4  ;remove buffer
     pop edi ;pops edi back
 
 
@@ -169,13 +169,13 @@ print_output_integer:
     int 0X80
 
     ;outputs a linebreak
-    push word 0X0D0A ;add linebreak to stack
+    push dword 0X0D0A ;add linebreak to stack
     mov eax, 4
     mov ebx, 1
     mov ecx, esp
     mov edx, 2
     int 0X80
-    add esp, 2 ;remove linebreak from stack
+    add esp, 4 ;remove linebreak from stack
 
     pop eax ;moved ecx into eax - digit counter
     add esp, 12    ;remove buffer from top of stack
@@ -196,7 +196,7 @@ LerChar:
     push ecx    ;counter of elements - always 1
     push edx    ;pointer for char string
 
-    push word 0 ;reserve space for input buffer
+    push dword 0 ;reserve space for input buffer
     ;ask for input
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
@@ -204,11 +204,11 @@ LerChar:
     mov edx, 1
     int 0X80
 
-    mov eax, [ecx]  ;moving the char read to the return address on the stack
-    mov ecx, [ebp + 8]  ;||
-    mov [ecx], eax  ; ||
 
-    inc ecx ;get to the second byte of memory on the buffer - used to read until enter
+    mov eax, [ecx]  ;moving the char read to the return address on the stack
+    mov edx, [ebp + 8]  ;||
+    mov [edx], eax  ; ||
+
     check_extra_char_enter_char:
     mov eax, 3
     mov ebx, 0  ;0 = stdin - teclado
@@ -219,7 +219,7 @@ LerChar:
 
     mov eax, 1  ;eax contains the number of elements read - always 1 char
 
-    pop cx ; removes the buffer from top of stack
+    add esp, 4; removes the buffer from top of stack
 
     pop edx
     pop ecx
@@ -247,13 +247,13 @@ EscreverChar:
     int 0X80
 
     ;outputs a linebreak
-    push word 0X0D0A ;add linebreak to stack
+    push dword 0X0D0A ;add linebreak to stack
     mov eax, 4
     mov ebx, 1
     mov ecx, esp
     mov edx, 2
     int 0X80
-    add esp, 2 ;remove linebreak from stack
+    add esp, 4 ;remove linebreak from stack
 
     mov eax, 1    ;number of chars printed - always 1 char
     pop edx
@@ -278,7 +278,7 @@ LerString:
 
 
 
-    push word 0 ;reserve buffer to read the extra chars
+    push dword 0 ;reserve buffer to read the extra chars
     mov ecx, esp    ;move the buffer to ecx
     sub esi, esi    ;reset counter
     mov edi, [ebp + 12] ;pointer to string
@@ -289,13 +289,17 @@ LerString:
     mov edx, 1
     int 0X80
     cmp byte [ecx], 0X0A    ;check if char is ENTER
-    je finish_input_string ;if enter - finish input
-    mov byte al, [ecx]  ;move the char into the string
-    mov byte [edi + esi], al
+    je insert_enter ;if enter - finish input
+    mov eax, [ecx]  ;move the char into the string
+    mov [edi + esi*4], eax  ;treat and store each character as a 32bit value
     inc esi ;increment char counter
     cmp esi, [ebp + 8]  ;check if string is full --> counter == string size
     je check_extra_char_enter_string   ;if yes = string full but still no enter, read and trash next chars until enter
     jmp get_input_charbychar_string    ;keep getting input
+
+    insert_enter:
+    mov dword [edi + esi*4], 0X0A
+    jmp finish_input_string
 
     check_extra_char_enter_string: ;read char and throw it away until enter
     mov eax, 3
@@ -307,7 +311,7 @@ LerString:
 
     finish_input_string:   ;finish fetting inputs
 
-    add esp, 2  ;remove buffer
+    add esp, 4  ;remove buffer
     pop edi ;pops edi back
     pop esi ;pops esi back
 
@@ -318,12 +322,14 @@ LerString:
     dec ebx ; dec string size to get the last element index - needed to compare with counter (from 1->x to 0->x-1)
     count_input:
     cmp byte [edx], 0X0A    ;check if char is ENTER
-    je endcount_input ;if yes, end counting loop
+    je endcount_input_plusone ;if yes, end counting loop
     inc ecx ;increment counter
     cmp ecx, ebx    ;check if counter is at the end of the string
     je endcount_input ;if yes, end counting loop
-    inc edx ;get next char
+    add edx, 4 ;get next char
     jmp count_input   ;keep counting
+    endcount_input_plusone:
+    inc ecx
     endcount_input:
     mov eax, ecx    ;move counter to eax - return the number of chars read
 
@@ -353,10 +359,13 @@ EscreverString:
     inc ecx ;increment counter
     cmp ecx, ebx    ;check if counter is at the end of the string
     je endcount_output ;if yes, end counting loop
-    inc edx ;get next char
+    add edx, 4 ;get next char
     jmp count_output   ;keep counting
     endcount_output:
     push ecx    ;store the number of chars in the string
+
+    add ecx, ecx  ;multiply ecx by 4  - treat each char as 32 bit
+    add ecx, ecx  ;||
 
     mov eax, 4
     mov ebx, 1  ;1 = stdout - monitor
@@ -365,13 +374,13 @@ EscreverString:
     int 0X80
 
     ;outputs a linebreak
-    push word 0X0D0A ;add linebreak to stack
+    push dword 0X0D0A ;add linebreak to stack
     mov eax, 4
     mov ebx, 1
     mov ecx, esp
     mov edx, 2
     int 0X80
-    add esp, 2 ;remove linebreak from stack
+    add esp, 4 ;remove linebreak from stack
 
     pop eax ;moved ecx into eax - char counter
     pop edx
@@ -393,11 +402,11 @@ LerHexa:
     push dword 0
 
     push edi
-    push word 0 ;reserve buffer to read the extra chars
+    push dword 0 ;reserve buffer to read the extra chars
     mov ecx, esp    ;move the buffer to ecx
     sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
-    add edi, 10
+    add edi, 12
 
     ;ask for input
     get_input_charbychar_hex:
@@ -424,7 +433,7 @@ LerHexa:
 
     finish_input_hex:   ;finish getting inputs
 
-    add esp, 2  ;remove buffer
+    add esp, 4  ;remove buffer
     pop edi ;pops edi back
 
 
@@ -557,13 +566,13 @@ print_output_hex:
     int 0X80
 
     ;outputs a linebreak
-    push word 0X0D0A;add linebreak to stack
+    push dword 0X0D0A;add linebreak to stack
     mov eax, 4
     mov ebx, 1
     mov ecx, esp
     mov edx, 2
     int 0X80
-    add esp, 2 ;remove linebreak from stack
+    add esp, 4 ;remove linebreak from stack
 
     pop eax ;moved ecx into eax - digit counter
     add esp, 8    ;remove buffer from top of stack

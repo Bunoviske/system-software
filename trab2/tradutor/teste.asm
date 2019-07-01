@@ -1,4 +1,4 @@
-l1: 
+l1:
 equ 1
 L2:
  EQU 0
@@ -19,10 +19,10 @@ ADD L4
 SUB L4
 MUL L4
 DIV L4
-JMP OLA
-JMPP OLA
-JMPN OLA
-JMPZ OLA
+; JMP OLA
+; JMPP OLA
+; JMPN OLA
+; JMPZ OLA
 STORE L8
 COPY L7, L6
 
@@ -44,13 +44,11 @@ STOP
 ;;;;;;;;;;;;;;;;  DADOS ;;;;;;;;;;;;
 
 section DATA
-L4: 
-CONST L2 
+L4:
+CONST 2
 
 L5:
- CONST 0x10f
+ CONST 0X10F
 L6: SPACE 0X10
 L7: CONST 0
 L8: SPACE 4
-
-

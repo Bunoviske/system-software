@@ -77,7 +77,8 @@ void Linker::secondPassage(string &text, string filename)
     fstream myFile = fstream();
     openFile(filename, true, myFile);
 
-    //variavel ira contar os enderecos de cada instrucao para que seja possivel calcular os jumps relativos
+    //variavel ira contar os enderecos de cada instrucao para que seja possivel calcular os jumps relativos.
+    //o jump é relativo a instrucao seguinte, entao textSymbolAddress sempre vai atualizar antes de calcular os jumps
     textSymbolAddress = 0;
 
     bool eof = false;
@@ -112,6 +113,7 @@ string Linker::getBinaryFunctions()
 
     bool eof = false;
     string allFunctions = "";
+    int cont = 0;
 
     while (!eof)
     {
@@ -121,8 +123,12 @@ string Linker::getBinaryFunctions()
         else
         {
             vector<string> hexCodes = getTokensOfLine(line);
+            if (hexCodes.size() > 0)
+                cont++;
+
             for (size_t i = 0; i < hexCodes.size(); i++)
             {
+
                 std::stringstream str;
                 str << hexCodes[i];
                 uint32_t val;
@@ -131,6 +137,7 @@ string Linker::getBinaryFunctions()
             }
         }
     }
+    cout << cont << endl;
     closeFile(myFile);
     return allFunctions;
 }
@@ -145,7 +152,6 @@ void Linker::getArgumentsBinaryCode(string &text, vector<string> tokens, bool is
             //somente aqui pode acontecer um JUMP e um CALL (label sem [] e sem displacement)
             if (isJump)
             {
-                cout << "jump" << endl;
                 if (tokens[0] == "CALL") //(endereco relativo de 32 bits) + offset da funcao LERINTEIRO = finalMainAddress
                 {
                     //distancia da funcao ate LERINTEIRO + distancia atual do codigo ate LERINTEIRO
@@ -154,11 +160,13 @@ void Linker::getArgumentsBinaryCode(string &text, vector<string> tokens, bool is
                 }
                 else //algum dos JUMPS (endereco relativo de 8 bits)
                 {
-                    int relativeAddress = textSymbolAddress - textSymbolsTable[tokens[1]]; //label na posicao 1
-                    if (relativeAddress < 0)                                               //somar 256 se a diferenca entre os labels for negativa
+                    int relativeAddress = textSymbolsTable[tokens[1]] - textSymbolAddress; //label na posicao 1
+                    cout << relativeAddress << endl;
+                    if (relativeAddress < 0) //somar 256 se a diferenca entre os labels for negativa
                         relativeAddress += 256;
                     val = relativeAddress;
-                    text += hex2ascii(toLittleEndian(val), false);
+                    cout << relativeAddress << endl;
+                    text += hex2ascii(val, false); //aqui nao é littleEndian
                 }
             }
             else

@@ -1,54 +1,28 @@
-l1:
-equ 1
-L2:
- EQU 0
-
-;;;;;;;;;;;;;;;;  TEXTO  ;;;;;;;;;;;;
-
 section text
 
-;;;;;;;;;;;;;;;;  INSTRUCOES ;;;;;;;;;;;;
-IF L1
-INPUT l6 + 5
-IF L2
-OUTPUT l6 + 9
+OUTPUT L7
+OUTPUT L8
 
-OLA:
-LOAD L5 + 1
-ADD L4
-SUB L4
-MUL L4
-DIV L4
-; JMP OLA
-; JMPP OLA
-; JMPN OLA
-; JMPZ OLA
-STORE L8
-COPY L7, L6
+INPUT L6
+OUTPUT L6
+; INPUT L6 + 1
+; INPUT L6 + 2
+; OUTPUT L6
+; OUTPUT L6 + 1
+C_INPUT L6 + 1
+C_OUTPUT L6 + 1
+H_INPUT L6 + 2
+H_OUTPUT L6 + 2
+S_INPUT L6 + 3, L8
+S_OUTPUT L6 + 3, L8
 
-INPUT L8 + 1
-OUTPUT L8 + 1
-
-C_INPUT L8 + 1
-C_OUTPUT L8 + 1
-
-H_INPUT L8 + 1
-H_OUTPUT L8 + 1
-
-S_INPUT L8, L5
-S_OUTPUT L8, L5
-
-
+END:
 STOP
 
-;;;;;;;;;;;;;;;;  DADOS ;;;;;;;;;;;;
-
 section DATA
-L4:
-CONST 2
 
-L5:
- CONST 0X10F
-L6: SPACE 0X10
-L7: CONST 0
-L8: SPACE 4
+L4: CONST 0x31
+L5: CONST 0x32
+L6: SPACE 0x10
+L7: CONST -1
+L8: CONST 2

@@ -33,11 +33,13 @@ void Linker::writeDataSection(string &data, vector<string> tokens)
     {
         if (isHexadecimalNumber(tokens[i]))
         {
-            data += hex2ascii(stoi(tokens[i], nullptr, 16), true);
+            //cout << hex << toLittleEndian(stoi(tokens[i], nullptr, 16)) << ' ' << flush;
+            data += hex2ascii(toLittleEndian(stoi(tokens[i], nullptr, 16)), true);
         }
         else if (isDecimalNumber(tokens[i]))
         {
-            data += hex2ascii(stoi(tokens[i]), true);
+            //cout << hex << toLittleEndian(stoi(tokens[i])) << ' ' << flush;
+            data += hex2ascii(toLittleEndian(stoi(tokens[i])), true);
         }
     }
     //data = "Hello World\n";
@@ -62,12 +64,12 @@ void Linker::firstPassage(string &data, string filename)
         }
     }
 
-    cout << "Tabela de simbolos na secao de texto:" << endl;
-    for (std::map<string, uint32_t>::iterator it = textSymbolsTable.begin(); it != textSymbolsTable.end(); ++it)
-        std::cout << it->first << " => " << it->second << '\n';
-    cout << "Tabela de simbolos na secao de dados:" << endl;
-    for (std::map<string, uint32_t>::iterator it = dataSymbolsTable.begin(); it != dataSymbolsTable.end(); ++it)
-        std::cout << it->first << " => " << it->second << '\n';
+    // cout << "Tabela de simbolos na secao de texto:" << endl;
+    // for (std::map<string, uint32_t>::iterator it = textSymbolsTable.begin(); it != textSymbolsTable.end(); ++it)
+    //     std::cout << it->first << " => " << it->second << '\n';
+    // cout << "Tabela de simbolos na secao de dados:" << endl;
+    // for (std::map<string, uint32_t>::iterator it = dataSymbolsTable.begin(); it != dataSymbolsTable.end(); ++it)
+    //     std::cout << it->first << " => " << it->second << '\n';
 
     closeFile(myFile);
 }
@@ -113,8 +115,6 @@ string Linker::getBinaryFunctions()
 
     bool eof = false;
     string allFunctions = "";
-    int cont = 0;
-
     while (!eof)
     {
         string line = readNextLine(myFile);
@@ -123,9 +123,6 @@ string Linker::getBinaryFunctions()
         else
         {
             vector<string> hexCodes = getTokensOfLine(line);
-            if (hexCodes.size() > 0)
-                cont++;
-
             for (size_t i = 0; i < hexCodes.size(); i++)
             {
 
@@ -137,7 +134,6 @@ string Linker::getBinaryFunctions()
             }
         }
     }
-    cout << cont << endl;
     closeFile(myFile);
     return allFunctions;
 }
@@ -161,11 +157,9 @@ void Linker::getArgumentsBinaryCode(string &text, vector<string> tokens, bool is
                 else //algum dos JUMPS (endereco relativo de 8 bits)
                 {
                     int relativeAddress = textSymbolsTable[tokens[1]] - textSymbolAddress; //label na posicao 1
-                    cout << relativeAddress << endl;
                     if (relativeAddress < 0) //somar 256 se a diferenca entre os labels for negativa
                         relativeAddress += 256;
                     val = relativeAddress;
-                    cout << relativeAddress << endl;
                     text += hex2ascii(val, false); //aqui nao é littleEndian
                 }
             }
@@ -256,7 +250,7 @@ string Linker::getInstructionOpcode(vector<string> tokens)
     else
         textSymbolAddress += instructionsTable[tokens[0]];
 
-    cout << completeInstruction << endl;
+    // cout << completeInstruction << endl;
     return opcodesTable[completeInstruction];
 }
 
@@ -319,8 +313,8 @@ void Linker::searchSymbol(string &data, vector<string> tokens)
     if (tokens[0] == "LERINTEIRO:")
     {                                         // realiza a primeira passagem somente no assembly inventado
         finalMainAddress = textSymbolAddress; //LERINTEIRO é a primeira funcao depois do STOP
-        cout << "Endereco final:" << endl;
-        cout << finalMainAddress << endl;
+        // cout << "Endereco final:" << endl;
+        // cout << finalMainAddress << endl;
     }
 
     if (currentSection != DATA_SECTION && finalMainAddress != 0) //nao processa as funcoes implementadas em assembly

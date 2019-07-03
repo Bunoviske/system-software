@@ -13,10 +13,12 @@ string hex2ascii(uint32_t hexNumber, bool zeroExtension)
     if (hexString.size() % 2 != 0) //se for impar, adiciona 0 no inicio do numero hexadecimal
         hexString = "0" + hexString;
 
+    //ATENCAO: todo numero que pede extensao de sinal vem em littleEndian, entao nunca vai entrar aqui pq a
+    //condicao de cima ja vai ter preenchido com um zero caso precise
     while (zeroExtension && hexString.size() < 8) //todo dado deve ter os 32 bits preenchidos (extensao de zero)
         hexString = "0" + hexString;
 
-    //cout << hexString << endl;
+    // cout << hexString << endl;
 
     string result = "";
     for (size_t i = 0; i < hexString.size(); i += 2)

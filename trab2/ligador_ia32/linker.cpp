@@ -157,7 +157,7 @@ void Linker::getArgumentsBinaryCode(string &text, vector<string> tokens, bool is
                 else //algum dos JUMPS (endereco relativo de 8 bits)
                 {
                     int relativeAddress = textSymbolsTable[tokens[1]] - textSymbolAddress; //label na posicao 1
-                    if (relativeAddress < 0) //somar 256 se a diferenca entre os labels for negativa
+                    if (relativeAddress < 0)                                               //somar 256 se a diferenca entre os labels for negativa
                         relativeAddress += 256;
                     val = relativeAddress;
                     text += hex2ascii(val, false); //aqui nao é littleEndian
@@ -186,7 +186,7 @@ void Linker::getArgumentsBinaryCode(string &text, vector<string> tokens, bool is
                     cout << "Simbolo nao definido" << endl;
 
                 int displacement = getAddressDisplacement(tokens[i]);
-                uint32_t val = DATA_SEGMENT_ADDRESS + dataSymbolsTable[tokens[i]] + displacement;
+                uint32_t val = DATA_SEGMENT_ADDRESS + dataSymbolsTable[label] + displacement;
                 text += hex2ascii(toLittleEndian(val), true);
             }
         }
@@ -220,17 +220,18 @@ string Linker::getInstructionOpcode(vector<string> tokens)
         if (tokens[i] == "DWORD" || tokens[i] == "WORD" || tokens[i] == "BYTE")
             continue;
 
-        if (tokens[i][0] == '[') //caso o argumento tenha brackets, remove!
+        string operand;
+        operand.assign(tokens[i]);
+        if (operand[0] == '[')    //caso o argumento tenha brackets, add ao completeInstruction!
         {
             //retira []
-            tokens[i].pop_back();
-            tokens[i].erase(tokens[i].begin());
+            operand.pop_back();
+            operand.erase(operand.begin());
             completeInstruction += " []"; //adiciona brackets ao nome na posicao do argumento que acessa a memoria
         }
 
-        string operand = tokens[i]; //caso tenha displacement, pega apenas nome do label
-        if (tokens[i].find('+') != string::npos)
-            operand = getLabelName(tokens[i]);
+        if (operand.find('+') != string::npos) //caso tenha displacement, pega apenas nome do label
+            operand = getLabelName(operand);
 
         //se nao tiver na tabela de simbolos e nao for imediato, adiciona a instrucao completa para verificar opcode.
         if (isSymbolInTable(operand) || isDecimalNumber(operand) || isHexadecimalNumber(operand))
@@ -250,7 +251,7 @@ string Linker::getInstructionOpcode(vector<string> tokens)
     else
         textSymbolAddress += instructionsTable[tokens[0]];
 
-    // cout << completeInstruction << endl;
+    //cout << completeInstruction << endl;
     return opcodesTable[completeInstruction];
 }
 

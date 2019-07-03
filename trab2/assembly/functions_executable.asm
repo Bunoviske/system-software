@@ -49,32 +49,32 @@ _start:
     ; call EscreverHexa
 
 ;----------------- teste hexa ---------
-    ; push DWORD user_integer
-    ; call LerHexa
-    ; push DWORD user_integer+4
-    ; call LerHexa
-    ; push DWORD user_integer + 8
-    ; call LerHexa
-    ; push DWORD [user_integer]
-    ; call EscreverHexa
-    ; push DWORD [user_integer + 4]
-    ; call EscreverHexa
-    ; push DWORD [user_integer + 8]
-    ; call EscreverHexa
+    push DWORD user_integer
+    call LerHexa
+    push DWORD user_integer+4
+    call LerHexa
+    push DWORD user_integer + 8
+    call LerHexa
+    push DWORD [user_integer]
+    call EscreverHexa
+    push DWORD [user_integer + 4]
+    call EscreverHexa
+    push DWORD [user_integer + 8]
+    call EscreverHexa
 
 ;---------------------- teste inteiro -------------
-    ; push DWORD user_integer
-    ; call LerInteiro
-    ; push DWORD user_integer+4
-    ; call LerInteiro
-    ; push DWORD user_integer + 8
-    ; call LerInteiro
-    ; push DWORD [user_integer]
-    ; call EscreverInteiro
-    ; push DWORD [user_integer + 4]
-    ; call EscreverInteiro
-    ; push DWORD [user_integer + 8]
-    ; call EscreverInteiro
+    push DWORD user_integer
+    call LerInteiro
+    push DWORD user_integer+4
+    call LerInteiro
+    push DWORD user_integer + 8
+    call LerInteiro
+    push DWORD [user_integer]
+    call EscreverInteiro
+    push DWORD [user_integer + 4]
+    call EscreverInteiro
+    push DWORD [user_integer + 8]
+    call EscreverInteiro
 
 ;----------------------- teste char -----------------
     ; push DWORD user_string
@@ -91,24 +91,24 @@ _start:
     ; call EscreverChar
 
 ;------------------ teste string -----------------
-
-    push DWORD user_string
-    push DWORD 10
-    call LerString
-    push DWORD user_string
-    push DWORD 10
-    call EscreverString
-
-
-    push DWORD user_string
-    call LerChar
-    push DWORD user_string+4
-    call LerChar
-    push DWORD user_string + 8
-    call LerChar
-    push DWORD user_string
-    push DWORD 3
-    call EscreverString
+    ;
+    ; push DWORD user_string
+    ; push DWORD 10
+    ; call LerString
+    ; push DWORD user_string
+    ; push DWORD 10
+    ; call EscreverString
+    ;
+    ;
+    ; push DWORD user_string
+    ; call LerChar
+    ; push DWORD user_string+4
+    ; call LerChar
+    ; push DWORD user_string + 8
+    ; call LerChar
+    ; push DWORD user_string
+    ; push DWORD 3
+    ; call EscreverString
 
 
 ;------------------------
@@ -141,7 +141,7 @@ LerInteiro:
     mov ecx, esp    ;move the buffer to ecx
     sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
-    add edi, 16
+    add edi, 8
 
     get_input_charbychar_integer:
     mov eax, 3
@@ -174,7 +174,7 @@ LerInteiro:
 
     sub eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx
-    add edx, 8
+    ; add edx, 8
     push dword 10 ;stack the value 10 to multiply
     sub esi, esi  ;zero the negative number flag
     sub ecx, ecx ; zero the counter
@@ -238,9 +238,10 @@ EscreverInteiro:
 
 
 
+
     mov eax, [ebp + 8]   ;number - passed as argument through stack
     mov ebx, esp   ;string
-    add ebx, 12
+    ; add ebx, 12
     mov ecx, 0  ;digit counter
     push dword 10 ;stack the value 10 to divide
 
@@ -289,7 +290,7 @@ print_output_integer:
     mov ebx, 1
     add edx, ecx
     mov ecx, esp
-    add ecx, 16 ;12 bytes of buffer and 4 bytes of pushed ecx - get to the start of the buffer
+    add ecx, 4 ;4 bytes of pushed ecx - get to the start of the buffer
     int 0X80
 
     ;outputs a linebreak
@@ -530,7 +531,7 @@ LerHexa:
     mov ecx, esp    ;move the buffer to ecx
     sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
-    add edi, 12
+    add edi, 8
 
     ;ask for input
     get_input_charbychar_hex:
@@ -564,7 +565,7 @@ LerHexa:
 
     sub eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx
-    add edx, 4
+    ; add edx, 4
     push dword 16 ;stack the value 16 to multiply
     sub ecx, ecx ; zero the counter
 
@@ -643,7 +644,7 @@ EscreverHexa:
 
     mov eax, [ebp + 8]   ;number - passed as argument through stack
     mov ebx, esp   ;string
-    add ebx, 4
+    ; add ebx, 4
     mov ecx, 0  ;digit counter
     push dword 16 ;stack the value 16 to divide
 
@@ -686,7 +687,7 @@ print_output_hex:
     mov ebx, 1
     add edx, ecx
     mov ecx, esp
-    add ecx, 8 ;8 bytes of buffer and 4 bytes of pushed ecx - get to the start of the buffer
+    add ecx, 4 ;4 bytes of pushed ecx - get to the start of the buffer
     int 0X80
 
     ;outputs a linebreak

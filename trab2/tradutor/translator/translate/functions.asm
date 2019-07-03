@@ -17,7 +17,7 @@ LerInteiro:
     mov ecx, esp    ;move the buffer to ecx
     sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
-    add edi, 16
+    add edi, 8
 
     get_input_charbychar_integer:
     mov eax, 3
@@ -50,7 +50,7 @@ LerInteiro:
 
     sub eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx
-    add edx, 8
+    ; add edx, 8
     push dword 10 ;stack the value 10 to multiply
     sub esi, esi  ;zero the negative number flag
     sub ecx, ecx ; zero the counter
@@ -114,9 +114,10 @@ EscreverInteiro:
 
 
 
+
     mov eax, [ebp + 8]   ;number - passed as argument through stack
     mov ebx, esp   ;string
-    add ebx, 12
+    ; add ebx, 12
     mov ecx, 0  ;digit counter
     push dword 10 ;stack the value 10 to divide
 
@@ -165,7 +166,7 @@ print_output_integer:
     mov ebx, 1
     add edx, ecx
     mov ecx, esp
-    add ecx, 16 ;12 bytes of buffer and 4 bytes of pushed ecx - get to the start of the buffer
+    add ecx, 4 ;4 bytes of pushed ecx - get to the start of the buffer
     int 0X80
 
     ;outputs a linebreak
@@ -406,7 +407,7 @@ LerHexa:
     mov ecx, esp    ;move the buffer to ecx
     sub esi, esi    ;reset counter
     mov edi, esp ;pointer to string
-    add edi, 12
+    add edi, 8
 
     ;ask for input
     get_input_charbychar_hex:
@@ -440,7 +441,7 @@ LerHexa:
 
     sub eax, eax ;reset the accumulator to zero
     mov edx, esp   ;put address in edx
-    add edx, 4
+    ; add edx, 4
     push dword 16 ;stack the value 16 to multiply
     sub ecx, ecx ; zero the counter
 
@@ -519,7 +520,7 @@ EscreverHexa:
 
     mov eax, [ebp + 8]   ;number - passed as argument through stack
     mov ebx, esp   ;string
-    add ebx, 4
+    ; add ebx, 4
     mov ecx, 0  ;digit counter
     push dword 16 ;stack the value 16 to divide
 
@@ -562,7 +563,7 @@ print_output_hex:
     mov ebx, 1
     add edx, ecx
     mov ecx, esp
-    add ecx, 8 ;8 bytes of buffer and 4 bytes of pushed ecx - get to the start of the buffer
+    add ecx, 4 ;4 bytes of pushed ecx - get to the start of the buffer
     int 0X80
 
     ;outputs a linebreak

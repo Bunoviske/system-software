@@ -9,13 +9,13 @@
 
 //distancia das funcoes até a instrucao seguinte a STOP (igual ao endereco do label LERINTEIRO)
 #define LER_INTEIRO_OFFSET 0x00
-#define ESCREVER_INTEIRO_OFFSET 0xab
-#define LER_CHAR_OFFSET 0x14a
-#define ESCREVER_CHAR_OFFSET 0x191
-#define LER_STRING_OFFSET 0x1d4
-#define ESCREVER_STRING_OFFSET 0x251
-#define LER_HEXA_OFFSET 0x2aa
-#define ESCREVER_HEXA_OFFSET 0x361
+#define ESCREVER_INTEIRO_OFFSET 0xa8
+#define LER_CHAR_OFFSET 0x144
+#define ESCREVER_CHAR_OFFSET 0x18b
+#define LER_STRING_OFFSET 0x1ce
+#define ESCREVER_STRING_OFFSET 0x24b
+#define LER_HEXA_OFFSET 0x2a4
+#define ESCREVER_HEXA_OFFSET 0x358
 
 class Linker
 {
